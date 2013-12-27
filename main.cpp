@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	string input_file;
 	string output_file;	
 	long int seed;
+
 	
 	// Option parser
     namespace po = boost::program_options; 
