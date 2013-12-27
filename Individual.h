@@ -36,6 +36,8 @@ public :
     void update_fitness(const double);
     double get_fitness() const;
     double get_phenotype() const;
+    double get_genot_value() const;
+    
     Haplotype produce_gamete() const;
     static Individual mate(const Individual&, const Individual&);
     void draw_mutation();
@@ -49,6 +51,7 @@ public :
 
 public :
     Genotype genotype;
+    double genot_value;
     double phenotype;
     double fitness;
 

@@ -23,6 +23,7 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
 
 Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
+    , genot_value(copy.genot_value)
     , phenotype(copy.phenotype)
     , fitness(0)
 {
@@ -48,6 +49,7 @@ Individual & Individual::operator= (const Individual& copy)
         return (*this);
 
     genotype=copy.genotype;
+    genot_value=copy.genot_value;
     phenotype=copy.phenotype;
     fitness=copy.fitness;
 
@@ -60,7 +62,8 @@ Individual & Individual::operator= (const Individual& copy)
 void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
-    phenotype = archi -> phenotypic_value(genotype) + Environment::rand_effect();
+    genot_value = archi -> phenotypic_value(genotype);
+    phenotype = genot_value + Environment::rand_effect();
     fitness = 0;
 }
 
@@ -84,6 +87,10 @@ double Individual::get_fitness() const
     return(fitness);
 }
 
+double Individual::get_genot_value() const
+{
+	return(genot_value);
+}
 
 double Individual::get_phenotype() const
 {

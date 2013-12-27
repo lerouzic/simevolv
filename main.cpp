@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
         }
     }
 
-	file_out.close(); // This probably does not harm if the file is not open at all
+	file_out.close(); // This probably does not harm if the file is not open
 	return(0);
 }
 

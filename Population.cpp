@@ -3,6 +3,7 @@
 #include "Fitness.h"
 #include "OutputFormat.h"
 #include "Parconst.h"
+#include "Statistics.h"
 
 using namespace std;
 
@@ -127,13 +128,12 @@ vector<double> Population::phenotypes() const
 
 double Population::mean_phenotype() const
 {
-    double sum=0;
-    for (vector<Individual>::const_iterator i = pop.begin();
-            i != pop.end(); i++)
-    {
-        sum += i->get_phenotype();
-    }
-    return(sum/(pop.size()));
+	vector<double> phen(pop.size());
+	for (unsigned int i = 0; i < pop.size(); i++) {
+		phen.push_back(pop[i].get_phenotype());
+	}
+	UnivariateStat us(phen);
+    return(us.mean());
 }
 
 
@@ -254,24 +254,24 @@ void Population::write_simple(ostream & out) const
 
 void Population::write_summary(ostream & out) const
 {
-    double sumphen = 0.0, sumphen2 = 0.0;
-    double sumfit = 0.0, sumfit2 = 0.0;
-
-    for (vector<Individual>::const_iterator indiv = pop.begin();
-            indiv != pop.end(); indiv++)
-    {
-        sumfit += indiv->get_fitness();
-        sumfit2 += indiv->get_fitness()*indiv->get_fitness();
-
-        sumphen += indiv->get_phenotype();
-        sumphen2 += indiv->get_phenotype()*indiv->get_phenotype();
-    }
-
-    double N = double(pop.size());
-    out << "MeanPhen = " << sumphen/N << "\t";
-    out << "VarPhen = " << sumphen2/N - (sumphen/N)*(sumphen/N) << "\t";
-    out << "MeanFit = " << sumfit/N << "\t";
-    out << "VarFit = " << sumfit2/N - (sumfit/N)*(sumfit/N) << "\t";
+	vector<double> phen(pop.size());
+	vector<double> gen(pop.size());
+	vector<double> fit(pop.size());
+	
+	for (unsigned int i = 0; i < pop.size(); i++) {
+		phen.push_back(pop[i].get_phenotype());
+		gen.push_back(pop[i].get_genot_value());
+		fit.push_back(pop[i].get_fitness());
+	}
+	
+	UnivariateStat phenstat(phen);
+	UnivariateStat genstat(gen);
+	UnivariateStat fitstat(fit);
+	
+    out << "MeanPhen = " << phenstat.mean() << "\t";
+    out << "VarPhen = " << phenstat.var() << "\t";
+    out << "MeanFit = " << fitstat.mean() << "\t";
+    out << "VarFit = " << fitstat.var() << "\t";
     out << "FitOpt = " << Fitness::current_optimum() << "\t";
     out << endl;
 }
