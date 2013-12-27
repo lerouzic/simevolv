@@ -114,23 +114,24 @@ void Population::update(void)
 }
 
 
-vector<double> Population::phenotypes() const
-{
-    vector<double> pheno;
-    for (vector<Individual>::const_iterator indiv = pop.begin();
-            indiv != pop.end(); indiv++)
-    {
-        pheno.push_back(indiv->get_phenotype());
-    }
-    return(pheno);
-}
+//~ vector<double> Population::phenotypes() const
+//~ {
+    //~ vector<double> pheno;
+    //~ for (vector<Individual>::const_iterator indiv = pop.begin();
+            //~ indiv != pop.end(); indiv++)
+    //~ {
+        //~ pheno.push_back(indiv->get_phenotype());
+    //~ }
+    //~ return(pheno);
+//~ }
 
 
 double Population::mean_phenotype() const
 {
+	int focal_phen = 0; // Dirty, needs to be fixed at one point
 	vector<double> phen(pop.size());
 	for (unsigned int i = 0; i < pop.size(); i++) {
-		phen.push_back(pop[i].get_phenotype());
+		phen.push_back(pop[i].get_phenotype()[focal_phen]);
 	}
 	UnivariateStat us(phen);
     return(us.mean());
@@ -254,13 +255,15 @@ void Population::write_simple(ostream & out) const
 
 void Population::write_summary(ostream & out) const
 {
+	int focal_phen = 0;
+	
 	vector<double> phen(pop.size());
 	vector<double> gen(pop.size());
 	vector<double> fit(pop.size());
 	
 	for (unsigned int i = 0; i < pop.size(); i++) {
-		phen.push_back(pop[i].get_phenotype());
-		gen.push_back(pop[i].get_genot_value());
+		phen.push_back(pop[i].get_phenotype()[focal_phen]);
+		gen.push_back(pop[i].get_genot_value()[focal_phen]);
 		fit.push_back(pop[i].get_fitness());
 	}
 	

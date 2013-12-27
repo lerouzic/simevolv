@@ -63,7 +63,7 @@ void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
     genot_value = archi -> phenotypic_value(genotype);
-    phenotype = genot_value + Environment::rand_effect();
+    phenotype = Environment::rand_effect(genot_value);
     fitness = 0;
 }
 
@@ -87,12 +87,12 @@ double Individual::get_fitness() const
     return(fitness);
 }
 
-double Individual::get_genot_value() const
+Phenotype Individual::get_genot_value() const
 {
 	return(genot_value);
 }
 
-double Individual::get_phenotype() const
+Phenotype Individual::get_phenotype() const
 {
     return(phenotype);
 }
@@ -131,7 +131,7 @@ void Individual::write_debug(ostream& out) const
 {
     out << "Genotype:" << endl;
     genotype.write_debug(out);
-    out << "Phenotype:\t" << phenotype << endl;
+    phenotype.write_debug(out);
     out << "Fitness:\t" << fitness << endl;
 }
 
@@ -144,5 +144,7 @@ void Individual::write_xml(ostream& out) const
 
 void Individual::write_simple(ostream& out) const
 {
-    out << get_phenotype() << "\t" << get_fitness() << endl;
+    out << "Pheno:";
+    phenotype.write_simple(out);
+    out << "\tFitness: " << get_fitness() << endl;
 }

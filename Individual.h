@@ -5,6 +5,7 @@
 #include "Architecture.h"
 #include "Genotype.h"
 #include "Population.h"
+#include "Phenotype.h"
 
 #include <iostream>
 #include <vector>
@@ -35,8 +36,8 @@ public :
     void update_fitness(const Population &);
     void update_fitness(const double);
     double get_fitness() const;
-    double get_phenotype() const;
-    double get_genot_value() const;
+    Phenotype get_phenotype() const;
+    Phenotype get_genot_value() const;
     
     Haplotype produce_gamete() const;
     static Individual mate(const Individual&, const Individual&);
@@ -51,8 +52,8 @@ public :
 
 public :
     Genotype genotype;
-    double genot_value;
-    double phenotype;
+    Phenotype genot_value; // a bit counterintutive, and problematic for the future. 
+    Phenotype phenotype;
     double fitness;
 
 };

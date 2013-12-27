@@ -37,7 +37,7 @@ public :
     //functions
     Population reproduce(long int offspr_number = 0) const;
     void update(void);
-    std::vector<double> phenotypes() const;
+    //~ std::vector<double> phenotypes() const;
     double mean_phenotype() const;
     long int size() const;
     std::vector<double> cumul_fitness() const;

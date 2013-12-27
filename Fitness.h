@@ -4,6 +4,7 @@
 #include "Parameters.h"
 #include "Random.h"
 #include "Population.h"
+#include "Phenotype.h"
 
 #include <iostream>
 #include <string>
@@ -26,8 +27,8 @@ class Fitness
         // fonctions
         static void update_generation(const long unsigned int);
         static void update_extra(double strength);
-        static double compute(double phenotype, const Population & population);
-        static double compute(double phenotype, double population_value);
+        static double compute(const Phenotype& phenotype, const Population & population);
+        static double compute(const Phenotype& phenotype, double population_value);
         static double GetPopulationValue(const Population &);
         static double current_optimum() {return(instance->optimum);}
 

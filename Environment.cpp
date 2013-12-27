@@ -31,10 +31,16 @@ void Environment::initialize(const ParameterSet & param)
 
 // functions
 
-double Environment::rand_effect()
-{
+Phenotype Environment::rand_effect(const Phenotype& genot_values)
+{ // Probably not very efficient, but this will probably not be used for complex architectures
+  // in which the environmental effect is correlated to the genotype	 
     assert (Environment::instance != NULL);
-    return(Environment::instance->sd*Random::randgauss());
+    vector<double> updated;
+    for (unsigned int i = 0; i < genot_values.dimensionality(); i++) {
+		updated.push_back(genot_values[i]+Environment::instance->sd*Random::randgauss());
+	}
+	Phenotype newphen(updated);
+    return(newphen);
 }
 
 

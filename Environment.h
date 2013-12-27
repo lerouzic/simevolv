@@ -4,6 +4,7 @@
 
 #include "Parameters.h"
 #include "Random.h"
+#include "Phenotype.h"
 
 #include <iostream>
 #include <string>
@@ -22,7 +23,7 @@ public:
     static void initialize(const ParameterSet&);
 
     // functions
-    static double rand_effect();
+    static Phenotype rand_effect(const Phenotype &);
     static double get_sd();
 
 private:

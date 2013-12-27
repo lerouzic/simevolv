@@ -110,15 +110,17 @@ void Fitness::update_extra(double strength)
 }
 
 
-double Fitness::compute(double phenotype, const Population & population)
+double Fitness::compute(const Phenotype & phenotype, const Population & population)
 {
     double population_value = Fitness::GetPopulationValue(population);
     return(compute(phenotype, population_value));
 }
 
 
-double Fitness::compute(double phenotype, double population_value)
+double Fitness::compute(const Phenotype & phenotype, double population_value)
 {
+	int focal_phen = 0; // This will have to change for multivariate selection
+	
     assert (instance != NULL);
     double fit = 0.0;
 
@@ -126,41 +128,41 @@ double Fitness::compute(double phenotype, double population_value)
 	if (type == FT_nosel) {
 		fit = 1.0;
 	} else if (type == FT_linear) {
-        fit = 1.0 + instance->strength*(phenotype - population_value);
+        fit = 1.0 + instance->strength*(phenotype[focal_phen] - population_value);
         if (fit < 0)
         {
             fit = 0;
         }		
 	} else if (type == FT_expo) {
-		fit = exp(instance->strength*(phenotype - population_value));
+		fit = exp(instance->strength*(phenotype[focal_phen] - population_value));
 	} else if (type == FT_gauss) {
 		fit = exp(-instance->strength*
-			(phenotype - instance->optimum)*
-            (phenotype - instance->optimum));		
+			(phenotype[focal_phen] - instance->optimum)*
+            (phenotype[focal_phen] - instance->optimum));		
 	} else if (type == FT_quad) {
         fit = 1.0 - instance->strength*
-              (phenotype - instance->optimum)*
-              (phenotype - instance->optimum);
+              (phenotype[focal_phen] - instance->optimum)*
+              (phenotype[focal_phen] - instance->optimum);
         if (fit < 0)
         {
             fit = 0;
         }		
 	} else if (type == FT_truncup) {
         fit = 0.0;
-        if (phenotype > population_value)
+        if (phenotype[focal_phen] > population_value)
             fit = 1.0;		
 	} else if (type == FT_truncdown) {
         fit = 0.0;
-        if (phenotype < population_value)
+        if (phenotype[focal_phen] < population_value)
             fit = 1.0;		
 	} else if (type == FT_concave) {
-        fit = 1.0 + 0.5*log(1.0+2.0*instance->strength*(phenotype - population_value));
+        fit = 1.0 + 0.5*log(1.0+2.0*instance->strength*(phenotype[focal_phen] - population_value));
         if (fit < 0.0)
             fit = 0.0;		
 	} else if (type == FT_convex) {
         fit = exp(-sqrt(instance->strength*
-            (phenotype - instance->optimum)*
-            (phenotype - instance->optimum)));		
+            (phenotype[focal_phen] - instance->optimum)*
+            (phenotype[focal_phen] - instance->optimum)));		
 	} else {
 		assert("Fitness type unknown.");
 	}
@@ -171,7 +173,7 @@ double Fitness::compute(double phenotype, double population_value)
 
 double Fitness::GetPopulationValue(const Population& popul)
 {
-    vector<double> pheno = popul.phenotypes();
+    //~ vector<double> pheno = popul.phenotypes();
 
 	string type = instance->type;
 	if (type == FT_linear || type == FT_expo) 
@@ -180,13 +182,16 @@ double Fitness::GetPopulationValue(const Population& popul)
 	} 
 	else if (type == FT_truncup) 
 	{
-        sort(pheno.begin(), pheno.end());
-        return(pheno[int(instance->strength*pheno.size())]);
+		// Broken
+		assert("This option is broken");
+        //~ sort(pheno.begin(), pheno.end());
+        //~ return(pheno[int(instance->strength*pheno.size())]);
      } 
      else if (type == FT_truncdown) 
      {
-		sort(pheno.begin(), pheno.end());
-        return(pheno[int((1-instance->strength)*pheno.size())]);
+		 assert("This option is broken");
+		//~ sort(pheno.begin(), pheno.end());
+        //~ return(pheno[int((1-instance->strength)*pheno.size())]);
      }
      return(0.0);
 }
