@@ -40,9 +40,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/Simul_Prog
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/Random.o $(OBJDIR_DEBUG)/Population.o $(OBJDIR_DEBUG)/Parameters.o $(OBJDIR_DEBUG)/OutputFormat.o $(OBJDIR_DEBUG)/Individual.o $(OBJDIR_DEBUG)/Haplotype.o $(OBJDIR_DEBUG)/Allele.o $(OBJDIR_DEBUG)/Genotype.o $(OBJDIR_DEBUG)/GeneticMap.o $(OBJDIR_DEBUG)/Fitness.o $(OBJDIR_DEBUG)/Environment.o $(OBJDIR_DEBUG)/Architecture.o $(OBJDIR_DEBUG)/ArchiMultilinear.o $(OBJDIR_DEBUG)/ArchiAdditive.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/Random.o $(OBJDIR_DEBUG)/Population.o $(OBJDIR_DEBUG)/Parameters.o $(OBJDIR_DEBUG)/OutputFormat.o $(OBJDIR_DEBUG)/Individual.o $(OBJDIR_DEBUG)/Haplotype.o $(OBJDIR_DEBUG)/Allele.o $(OBJDIR_DEBUG)/Genotype.o $(OBJDIR_DEBUG)/GeneticMap.o $(OBJDIR_DEBUG)/Fitness.o $(OBJDIR_DEBUG)/Environment.o $(OBJDIR_DEBUG)/Statistics.o $(OBJDIR_DEBUG)/Architecture.o $(OBJDIR_DEBUG)/ArchiMultilinear.o $(OBJDIR_DEBUG)/ArchiAdditive.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Random.o $(OBJDIR_RELEASE)/Population.o $(OBJDIR_RELEASE)/Parameters.o $(OBJDIR_RELEASE)/OutputFormat.o $(OBJDIR_RELEASE)/Individual.o $(OBJDIR_RELEASE)/Haplotype.o $(OBJDIR_RELEASE)/Allele.o $(OBJDIR_RELEASE)/Genotype.o $(OBJDIR_RELEASE)/GeneticMap.o $(OBJDIR_RELEASE)/Fitness.o $(OBJDIR_RELEASE)/Environment.o $(OBJDIR_RELEASE)/Architecture.o $(OBJDIR_RELEASE)/ArchiMultilinear.o $(OBJDIR_RELEASE)/ArchiAdditive.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Random.o $(OBJDIR_RELEASE)/Population.o $(OBJDIR_RELEASE)/Parameters.o $(OBJDIR_RELEASE)/OutputFormat.o $(OBJDIR_RELEASE)/Individual.o $(OBJDIR_RELEASE)/Haplotype.o $(OBJDIR_RELEASE)/Allele.o $(OBJDIR_RELEASE)/Genotype.o $(OBJDIR_RELEASE)/GeneticMap.o $(OBJDIR_RELEASE)/Fitness.o $(OBJDIR_RELEASE)/Environment.o $(OBJDIR_RELEASE)/Statistics.o $(OBJDIR_RELEASE)/Architecture.o $(OBJDIR_RELEASE)/ArchiMultilinear.o $(OBJDIR_RELEASE)/ArchiAdditive.o
 
 all: debug release
 
@@ -94,6 +94,9 @@ $(OBJDIR_DEBUG)/Fitness.o: Fitness.cpp
 
 $(OBJDIR_DEBUG)/Environment.o: Environment.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Environment.cpp -o $(OBJDIR_DEBUG)/Environment.o
+
+$(OBJDIR_DEBUG)/Statistics.o: Statistics.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Statistics.cpp -o $(OBJDIR_DEBUG)/Statistics.o
 
 $(OBJDIR_DEBUG)/Architecture.o: Architecture.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Architecture.cpp -o $(OBJDIR_DEBUG)/Architecture.o
@@ -155,6 +158,9 @@ $(OBJDIR_RELEASE)/Fitness.o: Fitness.cpp
 
 $(OBJDIR_RELEASE)/Environment.o: Environment.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Environment.cpp -o $(OBJDIR_RELEASE)/Environment.o
+
+$(OBJDIR_RELEASE)/Statistics.o: Statistics.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Statistics.cpp -o $(OBJDIR_RELEASE)/Statistics.o
 
 $(OBJDIR_RELEASE)/Architecture.o: Architecture.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Architecture.cpp -o $(OBJDIR_RELEASE)/Architecture.o
