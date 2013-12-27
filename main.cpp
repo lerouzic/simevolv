@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 {	
 	string input_file;
 	string output_file;	
+	long int seed;
 	
 	// Option parser
     namespace po = boost::program_options; 
@@ -21,39 +22,49 @@ int main(int argc, char *argv[])
     desc.add_options() 
       ("help,h", "Print help messages") 
       ("parameter,p", po::value<string>(&input_file), "Parameter file") 
-      ("output,o", po::value<string>(&output_file), "Output file");
+      ("output,o", po::value<string>(&output_file), "Output file")
+      ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
+      ("template,t", "Print a template for the parameter file");
       
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm); //read the command line options
 	notify(vm);
-	    
+
+	// First thing to do: set the output
+	ostream* pt_output = &cout; // Default: the output goes to std::cout
+	ofstream file_out;
+	if (vm.count("output")) {
+		file_out.open(output_file.c_str());
+		pt_output = &file_out;
+	} 
+	OutputFormat::SetSummary(*pt_output);	    
     
     if (vm.count("help")) {
-		cout << "Command line help" << endl;
-		cout << desc << endl;
+		*pt_output << "Command line help" << endl;
+		*pt_output << desc << endl;
 		return(0); // The program ends here
+	}
+	
+	if (vm.count("template")) {
+		ParameterSet pp;
+		pp.write(*pt_output);
+		return(0);
 	}
 	
 	if (!vm.count("parameter")) {
 		cerr << "A parameter file must be provided" << endl;
 		cerr << desc << endl;
 		return(1);
-	}
-	
-	ostream* pt_output = &cout; // Default: the output goes to std::cout
-	ofstream file_out;
-	
-	if (vm.count("output")) {
-		file_out.open(output_file.c_str());
-		pt_output = &file_out;
-	} 
-	
-	OutputFormat::SetSummary(*pt_output);
-	
-	cerr << input_file << endl;
+	}	
+
 	ParameterSet param(input_file);
     
-    Random::initialize();
+    if (vm.count("seed")) {
+		Random::initialize(seed);
+	} else {
+		Random::initialize();
+	}
+	
     Architecture::initialize(param);
     Fitness::initialize(param);
     Environment::initialize(param);
