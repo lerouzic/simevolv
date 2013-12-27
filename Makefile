@@ -16,7 +16,7 @@ CFLAGS = -Wall
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = /usr/lib/libgsl.a /usr/lib/libgslcblas.a
-LDFLAGS = 
+LDFLAGS = -lboost_program_options
 
 INC_DEBUG = $(INC)
 CFLAGS_DEBUG = $(CFLAGS) -g
