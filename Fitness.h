@@ -33,7 +33,7 @@ class Fitness
 
     protected:
         const ParameterSet & param;
-        int type;
+        std::string type;
         double strength;
         double optimum;
 };

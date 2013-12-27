@@ -9,7 +9,7 @@ using namespace std;
 
 Fitness::Fitness(const ParameterSet& param)
     : param(param)
-    , type(param.getpar(FITNESS_TYPE)->GetInt())
+    , type(param.getpar(FITNESS_TYPE)->GetString())
     , strength(param.getpar(FITNESS_STRENGTH)->GetDouble())
     , optimum(param.getpar(FITNESS_OPTIMUM)->GetDouble())
 {
@@ -42,17 +42,19 @@ void Fitness::update_generation(const long unsigned int generation_number)
     double o1 = instance->param.getpar(FITNESS_OPTIMUM)->GetDouble();
     double o2 = instance->param.getpar(FITNESS_OPTIMUM2)->GetDouble();
 
-    switch(instance->param.getpar(FITNESS_FLUCT)->GetInt())
-    {
-    case 0: // No fluctuations
+	string fluct_type = instance->param.getpar(FITNESS_FLUCT)->GetString();
+	if (fluct_type == FF_nofluct) 
+	{
         instance->strength = s1;
-        instance->optimum = o1;
-        break;
-    case 1: // Smooth fluctuations
+        instance->optimum = o1;		
+	} 
+	else if (fluct_type == FF_smooth) 
+	{
         instance->strength = s2+(s1-s2)*(1.0+cos(2.0*generation_number*M_PI/double(T)))/2.0;
-        instance->optimum = o2+(o1-o2)*(1.0+cos(2.0*generation_number*M_PI/double(T)))/2.0;
-        break;
-    case 2: // Periodic flips
+        instance->optimum = o2+(o1-o2)*(1.0+cos(2.0*generation_number*M_PI/double(T)))/2.0;		
+	} 
+	else if (fluct_type == FF_pflips) 
+	{
         if (int(generation_number / double(T/2)) % 2 == 0)
         {
             instance->strength = s1;
@@ -62,9 +64,10 @@ void Fitness::update_generation(const long unsigned int generation_number)
         {
             instance->strength = s2;
             instance->optimum  = o2;
-        }
-        break;
-    case 3: // Stochastic flips
+        }		
+	} 
+	else if (fluct_type == FF_sflips) 
+	{
         // It's simpler to ignore the current values and to switch independently:
         if (Random::randnum() < 1.0 / double(T) / 2.0)
         {
@@ -75,26 +78,28 @@ void Fitness::update_generation(const long unsigned int generation_number)
         {
             instance->strength = s2;
             instance->optimum  = o2;
-        }
-        break;
-    case 4: // Brownian motion
+        }		
+	} 
+	else if (fluct_type == FF_brown) 
+	{
         if ((generation_number % T) == 0)
         {
             instance->strength = instance->strength + Random::randgauss()*s2;
             instance->optimum = instance->optimum +  Random::randgauss()*o2;
-        }
-        break;
-    case 5: // White noise
+        }		
+	} 
+	else if (fluct_type == FF_white) 
+	{
         if ((generation_number % T) == 0)
         {
             instance->strength = s1 + Random::randgauss()*s2;
             instance->optimum = o1 + Random::randgauss()*o2;
-        }
-        break;
-    default:
-        assert("Fluctuating selection type unknown.");
-        break;
-    }
+        }		
+	} 
+	else 
+	{
+        assert("Fluctuating selection type unknown.");		
+	}
 }
 
 
@@ -117,60 +122,49 @@ double Fitness::compute(double phenotype, double population_value)
     assert (instance != NULL);
     double fit = 0.0;
 
-    //switch(instance->param.getpar(FITNESS_TYPE)->GetInt())
-    switch(instance->type)
-    {
-    case 0 : // NoSel
-        fit = 1.0;
-        break;
-    case 1 : // Linear
+	string type = instance->type;
+	if (type == FT_nosel) {
+		fit = 1.0;
+	} else if (type == FT_linear) {
         fit = 1.0 + instance->strength*(phenotype - population_value);
         if (fit < 0)
         {
             fit = 0;
-        }
-        break;
-    case 2 : // Exponential
-        fit = exp(instance->strength*(phenotype - population_value));
-        break;
-    case 7 : // concave // take care, unordered!
-        fit = 1.0 + 0.5*log(1.0+2.0*instance->strength*(phenotype - population_value));
-        if (fit < 0.0)
-            fit = 0.0;
-        break;
-    case 3 : // Gaussian
-        fit = exp(-instance->strength*
-                  (phenotype - instance->optimum)*
-                  (phenotype - instance->optimum));
-        break;
-    case 4 : // Quadratic
+        }		
+	} else if (type == FT_expo) {
+		fit = exp(instance->strength*(phenotype - population_value));
+	} else if (type == FT_gauss) {
+		fit = exp(-instance->strength*
+			(phenotype - instance->optimum)*
+            (phenotype - instance->optimum));		
+	} else if (type == FT_quad) {
         fit = 1.0 - instance->strength*
               (phenotype - instance->optimum)*
               (phenotype - instance->optimum);
         if (fit < 0)
         {
             fit = 0;
-        }
-        break;
-    case 8 : // convex bilateral -- take care, unordered!
-        fit = exp(-sqrt(instance->strength*
-                        (phenotype - instance->optimum)*
-                        (phenotype - instance->optimum)));
-        break;
-    case 5 : // Truncation Up
+        }		
+	} else if (type == FT_truncup) {
         fit = 0.0;
         if (phenotype > population_value)
-            fit = 1.0;
-        break;
-    case 6 : // Truncation Down
+            fit = 1.0;		
+	} else if (type == FT_truncdown) {
         fit = 0.0;
         if (phenotype < population_value)
-            fit = 1.0;
-        break;
-    default :
-        assert("Fitness type unknown.");
-        break;
-    }
+            fit = 1.0;		
+	} else if (type == FT_concave) {
+        fit = 1.0 + 0.5*log(1.0+2.0*instance->strength*(phenotype - population_value));
+        if (fit < 0.0)
+            fit = 0.0;		
+	} else if (type == FT_convex) {
+        fit = exp(-sqrt(instance->strength*
+            (phenotype - instance->optimum)*
+            (phenotype - instance->optimum)));		
+	} else {
+		assert("Fitness type unknown.");
+	}
+
     return(fit);
 }
 
@@ -179,22 +173,20 @@ double Fitness::GetPopulationValue(const Population& popul)
 {
     vector<double> pheno = popul.phenotypes();
 
-    switch(instance->param.getpar(FITNESS_TYPE)->GetInt())
-    {
-    case 1 :
-    case 2 :
-        return(popul.mean_phenotype());
-        break;
-    case 5 :
+	string type = instance->type;
+	if (type == FT_linear || type == FT_expo) 
+	{
+		return(popul.mean_phenotype());
+	} 
+	else if (type == FT_truncup) 
+	{
         sort(pheno.begin(), pheno.end());
         return(pheno[int(instance->strength*pheno.size())]);
-        break;
-    case 6 :
-        sort(pheno.begin(), pheno.end());
+     } 
+     else if (type == FT_truncdown) 
+     {
+		sort(pheno.begin(), pheno.end());
         return(pheno[int((1-instance->strength)*pheno.size())]);
-        break;
-    default:
-        break;
-    }
-    return(0);
+     }
+     return(0.0);
 }

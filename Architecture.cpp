@@ -52,18 +52,18 @@ void Architecture::initialize(const ParameterSet& param)
     }
     //Architecture::instance = new Architecture(param);
 
-    int type_archi = param.getpar(TYPE_ARCHI)->GetInt();
-    if (type_archi==1)
+    string type_archi = param.getpar(TYPE_ARCHI)->GetString();
+    if (type_archi==AR_add)
     {
         Architecture::instance = new ArchiAdditive(param);
     }
-    else if (type_archi==2)
+    else if (type_archi==AR_mult)
     {
         Architecture::instance = new ArchiMultilinear(param);
     }
     else
     {
-        assert(false);
+        assert("Wrong architecture type");
     }
 }
 

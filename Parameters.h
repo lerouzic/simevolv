@@ -27,6 +27,7 @@ public:
     virtual long int GetInt() const {assert(false && "function unavailable");}
     virtual double GetDouble() const {assert(false && "function unavailable");}
     virtual double GetDouble(int) const {assert(false && "function unavailable");}
+    virtual std::string GetString() const {assert(false && "function unavailable");}
     virtual bool is_nil() const {assert(false && "function unavailable");}
 };
 
@@ -131,6 +132,29 @@ protected:
     Parameter_double mean;
     Parameter_double sd;
 };
+
+
+class Parameter_string: public Parameter 
+{
+public:
+    //constructors/destructor
+    Parameter_string(const std::vector<std::string>);
+    ~Parameter_string();
+    
+    //input/output
+    void read(std::istream&);
+    void write(std::ostream&) const;
+    
+    void Set(std::string);
+    std::string GetString() const;
+    
+protected:
+	std::vector<std::string> possible_values; 
+	std::string value;
+	bool initialized;
+};
+
+
 
 
 class ParameterSet

@@ -2,8 +2,9 @@
 #include "Parconst.h"
 #include "main.h"
 
-using namespace std;
+#include <algorithm> // for function std::find()
 
+using namespace std;
 
 // Parameter and daughter classes //
 
@@ -193,7 +194,61 @@ void Parameter_gaussian::write(ostream & out) const
 }
 
 
+// Parameter_string
 
+Parameter_string::Parameter_string(const vector<string> posval)
+	:possible_values(posval)
+	,initialized(false)
+{
+}
+
+Parameter_string::~Parameter_string() 
+{
+}
+
+
+
+void Parameter_string::read(istream & i)
+{
+    string val;
+    assert (i >> val && "Unable to read parameter");
+    Set(val);
+}
+
+void Parameter_string::write(ostream & out) const
+{
+    if (initialized)
+    {
+        out << value;
+    }
+    else
+    {
+        out << "String among: ";
+        for (unsigned int i = 0; i < possible_values.size(); i++) {
+			out << possible_values[i] << ",";
+		}
+		out << endl;
+    }
+}
+
+void Parameter_string::Set(string v) {
+	if (find(possible_values.begin(), possible_values.end(), v) != possible_values.end()) {
+		value = v;
+		initialized=true;
+	} else {
+		cerr << "Option " << v << " not recognized." << endl;
+		cerr << "Accetable options are :" << endl;
+		for (unsigned int i = 0; i < possible_values.size(); i++) {
+			cerr << "\t" << possible_values[i] << endl;
+		}
+		assert("Stopping."); // This is bad error handling!
+	}
+}
+
+string Parameter_string::GetString() const {
+    assert (initialized && "Parameter not initialized");
+	return(value);
+}
 
 
 
@@ -248,16 +303,17 @@ void ParameterSet::initialize()
     parameters[ENVIRO_SD] = new Parameter_double(0.0, 999.9);
 
     // Fitness parameters
-    parameters[FITNESS_TYPE] = new Parameter_int(0, 8);
+    
+    parameters[FITNESS_TYPE] = new Parameter_string(FT_options);
     parameters[FITNESS_STRENGTH] = new Parameter_double(-1000.*1000., 1000.*1000.);
     parameters[FITNESS_OPTIMUM] = new Parameter_double(-999.9, 999.9);
-    parameters[FITNESS_FLUCT] = new Parameter_int(0, 5);
+    parameters[FITNESS_FLUCT] = new Parameter_string(FF_options);
     parameters[FITNESS_OPTIMUM2] = new Parameter_double(-999.9, 999.9);
     parameters[FITNESS_STRENGTH2] = new Parameter_double(-999.9, 999.9);
     parameters[FITNESS_PERIOD] = new Parameter_int(0,1000*100);
 
     // Architecture type
-    parameters[TYPE_ARCHI] = new Parameter_int(0,10);
+    parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
 }
 
 
