@@ -1,6 +1,7 @@
 #include "Architecture.h"
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
+#include "Parconst.h"
 #include "main.h"
 #include "Random.h"
 

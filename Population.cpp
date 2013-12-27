@@ -2,6 +2,7 @@
 #include "main.h"
 #include "Fitness.h"
 #include "OutputFormat.h"
+#include "Parconst.h"
 
 using namespace std;
 

@@ -1,5 +1,6 @@
 #include "GeneticMap.h"
 #include "Architecture.h"
+#include "Parconst.h"
 #include "main.h"
 
 using namespace std;

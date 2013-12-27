@@ -6,6 +6,7 @@
 #include <boost/program_options.hpp>
 
 #include "main.h"
+#include "Parconst.h"
 
 using namespace std;
 

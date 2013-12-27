@@ -1,4 +1,5 @@
 #include "ArchiMultilinear.h"
+#include "Parconst.h"
 #include "main.h"
 
 using namespace std;
