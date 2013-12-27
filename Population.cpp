@@ -196,7 +196,7 @@ Individual Population::iterator_search_fit_table(double rnum, const vector<doubl
 
 void Population::draw_mutation()
 {
-    for (int i = 0; i < pop.size(); i++) {
+    for (unsigned int i = 0; i < pop.size(); i++) {
         pop[i].draw_mutation();
     }
     // population.pop.draw_mutation(population.pop);
