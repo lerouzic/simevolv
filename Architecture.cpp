@@ -2,10 +2,18 @@
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
 #include "Parconst.h"
-#include "main.h"
 #include "Random.h"
+#include "main.h"
+
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <cmath>
+#include <cassert>
+#include <algorithm>
 
 using namespace std;
+
 
 
 // constructors/destructor

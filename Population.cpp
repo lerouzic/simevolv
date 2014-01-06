@@ -4,8 +4,15 @@
 #include "OutputFormat.h"
 #include "Parconst.h"
 #include "Statistics.h"
+#include "Architecture.h"
+
+#include <algorithm>
+#include <numeric>
+#include <cmath>
+#include <cassert>
 
 using namespace std;
+
 
 
 // constructors and destructor

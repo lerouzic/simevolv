@@ -2,11 +2,15 @@
 #include "Architecture.h"
 #include "Random.h"
 
+#include <iostream>
+#include <string>
+#include <cmath>
+
 using namespace std;
 
 
 
-// constructors/destructor
+// constructors and destructor
 
 Allele::Allele(int sall)
 {

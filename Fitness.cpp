@@ -1,8 +1,16 @@
 #include "Fitness.h"
 #include "Parconst.h"
+#include "Random.h"
 #include "main.h"
 
+#include <iostream>
+#include <vector>
+#include <cassert>
+#include <cmath>
+#include <algorithm>
+
 using namespace std;
+
 
 
 // constructors and destructor

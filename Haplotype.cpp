@@ -1,7 +1,14 @@
 #include "Haplotype.h"
 #include "Architecture.h"
+#include "Parameters.h"
+#include "Random.h"
+
+#include <numeric>
+#include <string>
+#include <cmath>
 
 using namespace std;
+
 
 
 // constructors/destructor

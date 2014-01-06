@@ -2,8 +2,12 @@
 #include "main.h"
 #include "Fitness.h"
 #include "Environment.h"
+#include "Architecture.h"
+
+#include <vector>
 
 using namespace std;
+
 
 
 // constructors and destructor

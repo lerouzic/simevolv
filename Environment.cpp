@@ -1,8 +1,15 @@
 #include "Environment.h"
 #include "Parconst.h"
 #include "main.h"
+#include "Random.h"
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cassert>
 
 using namespace std;
+
 
 
 // constructors and destructor

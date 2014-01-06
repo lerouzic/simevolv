@@ -2,7 +2,15 @@
 #include "Parconst.h"
 #include "main.h"
 
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <cmath>
+#include <cassert>
+#include <algorithm>
+
 using namespace std;
+
 
 
 // constructors and destuctor

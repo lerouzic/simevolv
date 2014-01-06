@@ -1,9 +1,13 @@
+#include "Statistics.h"
+
 #include <cassert>
 #include <iostream>
 
-#include "Statistics.h"
-
 using namespace std;
+
+
+
+// constructors and destructors
 
 UnivariateStat::UnivariateStat(const vector<double> & vv)
 	: data(vv)
@@ -15,10 +19,14 @@ UnivariateStat::UnivariateStat(const vector<double> & vv)
 	initialize();
 }
 
+
 UnivariateStat::~UnivariateStat()
 {
 	
 }
+
+
+// initialisation
 
 void UnivariateStat::initialize()
 {
@@ -28,9 +36,13 @@ void UnivariateStat::initialize()
 	}
 }
 
+
+// functions
+
 double UnivariateStat::mean() const {
 	return(sum_i / static_cast<double>(data.size()));
 }
+
 
 double UnivariateStat::var() const {
 	double mm = mean();

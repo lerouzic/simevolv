@@ -1,6 +1,11 @@
 #include "Genotype.h"
 #include "Random.h"
 #include "Architecture.h"
+#include "Parameters.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 
 
 using namespace std;

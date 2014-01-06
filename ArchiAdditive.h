@@ -7,20 +7,20 @@
 
 class ArchiAdditive : public Architecture
 {
-public :
-    //constructors/destructor
-    ArchiAdditive();
-    ArchiAdditive(const Architecture&);
-    ArchiAdditive(const ParameterSet&);
-    ~ArchiAdditive() {}
-
-    // operator overload
-    friend std::ostream& operator << (std::ostream&, const Architecture&);
-
-    //functions
-    double phenotypic_value(const Genotype&) const;
-
-protected :
+	public :
+	    //constructors/destructor
+	    ArchiAdditive();
+	    ArchiAdditive(const Architecture&);
+	    ArchiAdditive(const ParameterSet&);
+	    ~ArchiAdditive() {}
+	
+	    // operator overload
+	    friend std::ostream& operator << (std::ostream&, const Architecture&);
+	
+	    //functions
+	    double phenotypic_value(const Genotype&) const;
+	
+	protected :
 
 };
 

@@ -4,6 +4,7 @@
 
 
 #include "Parameters.h"
+#include "Parconst.h"
 #include "OutputFormat.h"
 #include "Architecture.h"
 #include "ArchiAdditive.h"
@@ -16,8 +17,7 @@
 #include "Population.h"
 #include "Environment.h"
 #include "Fitness.h"
+#include "Random.h"
 
-#include <iostream>
-#include <string>
 
 #endif // MAIN_H_INCLUDED

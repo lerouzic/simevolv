@@ -1,13 +1,16 @@
-#include <iostream>
-
 #include "Phenotype.h"
 
 using namespace std;
+
+
+
+// constructors and destructors
 
 Phenotype::Phenotype()
 {
 	// Nothing yet.
 }
+
 
 Phenotype::Phenotype(double init) 
 {
@@ -17,20 +20,34 @@ Phenotype::Phenotype(double init)
 	initialize(vv);
 }
 
+
 Phenotype::Phenotype(const vector<double> & init) 
 {
 	initialize(init);
 }
+
 
 Phenotype::Phenotype(const Phenotype & templ)
 {
 	copy(templ);
 }
 
+
 Phenotype::~Phenotype() 
 {
 	
 }
+
+
+// initialize
+
+void Phenotype::initialize(const vector<double> & init) 
+{
+	pheno = init;
+}
+
+
+// operator overload 
 
 Phenotype & Phenotype::operator = (const Phenotype & templ) 
 {
@@ -40,26 +57,26 @@ Phenotype & Phenotype::operator = (const Phenotype & templ)
     return(*this);
 }
 
+
 void Phenotype::copy(const Phenotype & templ) 
 {
 	pheno = templ.pheno;
 }
 
-void Phenotype::initialize(const vector<double> & init) 
-{
-	pheno = init;
-}
 
+// functions
 
 double Phenotype::operator[] (const unsigned int index) const 
 {
 	return(pheno[index]);
 }
 
+
 unsigned int Phenotype::dimensionality() const 
 {
 	return(pheno.size());
 }
+
 
 void Phenotype::write_debug (ostream& out) const
 {
@@ -70,6 +87,7 @@ void Phenotype::write_debug (ostream& out) const
 	}
 	out << endl;
 }
+
 
 void Phenotype::write_simple (ostream& out) const
 {

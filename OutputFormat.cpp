@@ -3,6 +3,7 @@
 using namespace std;
 
 
+
 // constructors and destructor
 
 OutputFormat::OutputFormat()

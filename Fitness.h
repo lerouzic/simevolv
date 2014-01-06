@@ -2,16 +2,11 @@
 #define FITNESS_H_INCLUDED
 
 #include "Parameters.h"
-#include "Random.h"
 #include "Population.h"
 #include "Phenotype.h"
 
-#include <iostream>
 #include <string>
-#include <vector>
-#include <cassert>
-#include <cmath>
-#include <algorithm>
+
 
 
 class Fitness

@@ -1,10 +1,13 @@
 #include "Parameters.h"
 #include "Parconst.h"
+#include "Random.h"
 #include "main.h"
 
 #include <algorithm> // for function std::find()
 
 using namespace std;
+
+
 
 // Parameter and daughter classes //
 
@@ -14,11 +17,13 @@ Parameter_int::Parameter_int(long int minimum, long int maximum)
     , initialized(false)
 {}
 
+
 long int Parameter_int::Get() const
 {
     assert (initialized && "Parameter not initialized");
     return(value);
 }
+
 
 void Parameter_int::Set(long int v)
 {
@@ -27,12 +32,14 @@ void Parameter_int::Set(long int v)
     value = v;
 }
 
+
 void Parameter_int::read(istream & i)
 {
     long int val;
     assert(i >> val && "Unable to read parameter");
     Set(val);
 }
+
 
 void Parameter_int::write(ostream & out) const
 {
@@ -48,17 +55,20 @@ void Parameter_int::write(ostream & out) const
 
 
 
+
 Parameter_double::Parameter_double(double minimum, double maximum)
     : min(minimum)
     , max(maximum)
     , initialized(false)
 {}
 
+
 double Parameter_double::Get() const
 {
     assert (initialized && "Parameter not initialized");
     return(value);
 }
+
 
 void Parameter_double::Set(double v)
 {
@@ -67,12 +77,14 @@ void Parameter_double::Set(double v)
     value = v;
 }
 
+
 void Parameter_double::read(istream & i)
 {
     double val;
     assert (i >> val && "Unable to read parameter");
     Set(val);
 }
+
 
 void Parameter_double::write(ostream & out) const
 {
@@ -88,6 +100,7 @@ void Parameter_double::write(ostream & out) const
 
 
 
+
 Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
     : min(minimum)
     , max(maximum)
@@ -95,11 +108,13 @@ Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
 {
 }
 
+
 std::vector<double> Parameter_vector_double::Get() const
 {
     assert (initialized && "Parameter not initialized");
     return(value);
 }
+
 
 double Parameter_vector_double::Get_element(int elem) const
 {
@@ -109,6 +124,7 @@ double Parameter_vector_double::Get_element(int elem) const
     else
         return(value[0]); // A warning could be emitted there
 }
+
 
 void Parameter_vector_double::Set(const vector<double>& v)
 {
@@ -128,6 +144,7 @@ void Parameter_vector_double::Add(double e)
     value.push_back(e);
 }
 
+
 void Parameter_vector_double::read(istream & i)
 {
     double val;
@@ -136,6 +153,7 @@ void Parameter_vector_double::read(istream & i)
         Add(val);
     }
 }
+
 
 void Parameter_vector_double::write(ostream & out) const
 {
@@ -155,26 +173,31 @@ void Parameter_vector_double::write(ostream & out) const
 
 
 
+
 Parameter_gaussian::Parameter_gaussian(double minimum_mean, double maximum_mean, double maximum_sd)
     : mean(minimum_mean, maximum_mean)
     , sd(0.0, maximum_sd)
 {
 }
 
+
 void Parameter_gaussian::SetMean(double m)
 {
     mean.Set(m);
 }
+
 
 void Parameter_gaussian::SetSd(double s)
 {
     sd.Set(s);
 }
 
+
 double Parameter_gaussian::draw() const
 {
     return(mean.Get() + sd.Get()*Random::randgauss());
 }
+
 
 void Parameter_gaussian::read(istream & i)
 {
@@ -184,6 +207,7 @@ void Parameter_gaussian::read(istream & i)
     assert(i >> val &&  "Unable to read parameter");
     SetSd(val);
 }
+
 
 void Parameter_gaussian::write(ostream & out) const
 {
@@ -202,10 +226,10 @@ Parameter_string::Parameter_string(const vector<string> posval)
 {
 }
 
+
 Parameter_string::~Parameter_string() 
 {
 }
-
 
 
 void Parameter_string::read(istream & i)
@@ -214,6 +238,7 @@ void Parameter_string::read(istream & i)
     assert (i >> val && "Unable to read parameter");
     Set(val);
 }
+
 
 void Parameter_string::write(ostream & out) const
 {
@@ -231,6 +256,7 @@ void Parameter_string::write(ostream & out) const
     }
 }
 
+
 void Parameter_string::Set(string v) {
 	if (find(possible_values.begin(), possible_values.end(), v) != possible_values.end()) {
 		value = v;
@@ -244,6 +270,7 @@ void Parameter_string::Set(string v) {
 		assert("Stopping."); // This is bad error handling!
 	}
 }
+
 
 string Parameter_string::GetString() const {
     assert (initialized && "Parameter not initialized");
@@ -315,7 +342,6 @@ void ParameterSet::initialize()
     // Architecture type
     parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
 }
-
 
 
 void ParameterSet::write(ostream & out) const

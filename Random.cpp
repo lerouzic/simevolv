@@ -1,5 +1,10 @@
 #include "Random.h"
 
+#include <ctime>
+#include <unistd.h>
+#include <cassert>
+#include <iostream>
+
 using namespace std;
 
 
@@ -27,7 +32,6 @@ Random::~Random()
     gsl_rng_free(random_generator);
     random_generator = NULL;
 }
-
 
 
 

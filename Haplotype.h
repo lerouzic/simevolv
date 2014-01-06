@@ -1,14 +1,10 @@
 #ifndef HAPLOTYPE_H_INCLUDED
 #define HAPLOTYPE_H_INCLUDED
 
-
-#include "Parameters.h"
 #include "Allele.h"
 
 #include <iostream>
-#include <string>
 #include <vector>
-#include <numeric>
 
 
 
