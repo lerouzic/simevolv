@@ -29,6 +29,7 @@ const std::string FITNESS_STRENGTH2 = "FITNESS_STRENGTH2";
 const std::string FITNESS_OPTIMUM2 = "FITNESS_OPTIMUM2";
 const std::string FITNESS_PERIOD = "FITNESS_PERIOD";
 const std::string TYPE_ARCHI = "TYPE_ARCHI";
+const std::string OUT_CANAL_TESTS = "OUT_CANAL_TESTS";
 
 // Fitness types
 const std::string FT_nosel = "no_selection";

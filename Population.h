@@ -3,6 +3,7 @@
 
 #include "Parameters.h"
 #include "Individual.h"
+#include "Canalization.h"
 
 #include <iostream>
 #include <vector>
@@ -14,7 +15,7 @@ class Individual;
 
 
 class Population
-	{
+{
 	public :
 	    //constructors/destructors
 	    Population();
@@ -43,6 +44,8 @@ class Population
 	    Individual iterator_search_fit_table(double, const std::vector<double>&) const;
 	    void draw_mutation();
 	    void make_mutation();
+	    
+	    void canalization_test() const;
 	
 	    //output
 	    void write() const;
@@ -54,6 +57,7 @@ class Population
 	
 	protected :
 	    std::vector<Individual> pop;
+	    mutable Canalization canal_test;
 
 };
 

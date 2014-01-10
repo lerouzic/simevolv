@@ -1,10 +1,11 @@
-#include "Population.h"
 #include "main.h"
+#include "Population.h"
 #include "Fitness.h"
 #include "OutputFormat.h"
 #include "Parconst.h"
 #include "Statistics.h"
 #include "Architecture.h"
+#include "Canalization.h"
 
 #include <algorithm>
 #include <numeric>
@@ -34,6 +35,7 @@ Population::Population(long int size)
 
 Population::Population(const Population & copy)
     : pop(copy.pop)
+    , canal_test(copy.canal_test.nb_tests())
 {
 }
 
@@ -59,6 +61,7 @@ Population & Population::operator=(const Population& copy)
         return(*this);
 
     pop = copy.pop;
+    canal_test = copy.canal_test; // Not sure this is particularly clever...
     return(*this);
 }
 
@@ -66,7 +69,7 @@ Population & Population::operator=(const Population& copy)
 // instance and initialization
 
 void Population::initialize(const ParameterSet& param)
-{
+{	
     int popsize = param.getpar(INIT_PSIZE)->GetInt();
     //pop.resize(popsize);
     for (long int i = 0; i < popsize; i++)
@@ -75,13 +78,14 @@ void Population::initialize(const ParameterSet& param)
         pop.push_back(indiv);
         //cout << i << endl;
     }
+    canal_test = Canalization(param);
     update();
 }
 
 
 // functions
 
-double fun_sqrt(double x)
+double fun_sqrt(double x) // I don't remember why this stupid function was necessary???
 {
     return(std::sqrt(x));
 }
@@ -90,6 +94,8 @@ double fun_sqrt(double x)
 Population Population::reproduce(long int offspr_number) const
 {
     Population offspring;
+    Canalization tmp_canal(canal_test.nb_tests());
+    offspring.canal_test = tmp_canal; // Bad design, this kind of things should not happen
     vector<double> cumul_fit = cumul_fitness();
 
     if (offspr_number == 0)
@@ -218,6 +224,24 @@ void Population::make_mutation()
     pop[ind].make_mutation();
 }
 
+void Population::canalization_test() const
+// canal_test is mutable, it can thus be updated in this const function
+{
+	unsigned int nb_tests = canal_test.nb_tests();
+	if (nb_tests > 0) {
+		for (unsigned int i = 0; i < pop.size(); i++) {
+			const Individual & ref = pop[i];
+			canal_test.reference_indiv(ref);
+			for (unsigned int test = 0; test < nb_tests; test++) {
+					// the test needs to know the population (*this) to compute the fitness.
+					// not very elegant, but I don't know how to do otherwise for selection
+					// regimes that depend on the population
+				canal_test.mutant_indiv(ref.test_canalization(1, *this));
+			}
+		} 
+	} 
+	// this function does not return anything, it just fills the object canal_test. 
+}
 
 // output
 
@@ -262,27 +286,32 @@ void Population::write_simple(ostream & out) const
 
 void Population::write_summary(ostream & out) const
 {
-	int focal_phen = 0;
 	
-	vector<double> phen(pop.size());
-	vector<double> gen(pop.size());
-	vector<double> fit(pop.size());
+	vector<Phenotype> phen;
+	vector<Phenotype> gen;
+	vector<double> fit;
 	
 	for (unsigned int i = 0; i < pop.size(); i++) {
-		phen.push_back(pop[i].get_phenotype()[focal_phen]);
-		gen.push_back(pop[i].get_genot_value()[focal_phen]);
+		phen.push_back(pop[i].get_phenotype());
+		gen.push_back(pop[i].get_genot_value());
 		fit.push_back(pop[i].get_fitness());
 	}
 	
-	UnivariateStat phenstat(phen);
-	UnivariateStat genstat(gen);
+	PhenotypeStat phenstat(phen);
+	PhenotypeStat genstat(gen);
 	UnivariateStat fitstat(fit);
-	
-    out << "MeanPhen = " << phenstat.mean() << "\t";
-    out << "VarPhen = " << phenstat.var() << "\t";
-    out << "MeanFit = " << fitstat.mean() << "\t";
-    out << "VarFit = " << fitstat.var() << "\t";
-    out << "FitOpt = " << Fitness::current_optimum() << "\t";
+			
+    out << "MeanPhen= " << phenstat.means_phen() << "\t";
+    out << "VarPhen= " << phenstat.vars_phen() << "\t";
+    out << "MeanFit= " << fitstat.mean() << "\t";
+    out << "VarFit= " << fitstat.var() << "\t";
+    out << "FitOpt= " << Fitness::current_optimum() << "\t";
+    if (canal_test.nb_tests() > 0) {
+		canalization_test();
+		out << "Canalphen=" << canal_test.phen_canalization() << "\t";
+		out << "Canalfit=" << canal_test.fitness_canalization() << "\t";
+	}
+    
     out << endl;
 }
 

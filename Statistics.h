@@ -2,7 +2,7 @@
 #define STATISTICS_H_INCLUDED
 
 #include <vector>
-
+#include <iostream>
 
 class UnivariateStat
 {
@@ -45,6 +45,8 @@ class MultivariateStat
 		double cor(unsigned int, unsigned int) const;
 		double r2(unsigned int, unsigned int) const;
 		double regression_slope(unsigned int, unsigned int) const; //param 1 = a*param 2 + b
+		
+		friend std::ostream & operator << (std::ostream &, const MultivariateStat &);
 		
 	protected:
 		const std::vector<std::vector<double> > data;

@@ -337,10 +337,13 @@ void ParameterSet::initialize()
     parameters[FITNESS_FLUCT] = new Parameter_string(FF_options);
     parameters[FITNESS_OPTIMUM2] = new Parameter_double(-999.9, 999.9);
     parameters[FITNESS_STRENGTH2] = new Parameter_double(-999.9, 999.9);
-    parameters[FITNESS_PERIOD] = new Parameter_int(0,1000*100);
+    parameters[FITNESS_PERIOD] = new Parameter_int(0,100*1000);
 
     // Architecture type
     parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
+    
+    // Output measurements
+    parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 100*1000);
 }
 
 

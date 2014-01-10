@@ -9,11 +9,7 @@
 
 #include <iostream>
 
-
-
 class Population;
-
-
 
 class Individual
 {
@@ -43,6 +39,9 @@ class Individual
 	    static Individual mate(const Individual&, const Individual&);
 	    void draw_mutation();
 	    void make_mutation();
+	    
+	    		// the first parameter is the number of mutations
+	    Individual test_canalization(unsigned int, const Population &) const; 
 	
 	    //output
 	    void write_debug (std::ostream&) const;

@@ -1,5 +1,7 @@
 #include "Phenotype.h"
 
+#include <cassert>
+
 using namespace std;
 
 
@@ -15,21 +17,19 @@ Phenotype::Phenotype()
 Phenotype::Phenotype(double init) 
 {
 	// only one phenotypic dimension!
-	vector<double> vv;
-	vv.push_back(init);
-	initialize(vv);
+	pheno.push_back(init);
 }
 
 
 Phenotype::Phenotype(const vector<double> & init) 
 {
-	initialize(init);
+	pheno = init;
 }
 
 
 Phenotype::Phenotype(const Phenotype & templ)
 {
-	copy(templ);
+	pheno = templ.pheno;
 }
 
 
@@ -39,28 +39,14 @@ Phenotype::~Phenotype()
 }
 
 
-// initialize
-
-void Phenotype::initialize(const vector<double> & init) 
-{
-	pheno = init;
-}
-
-
 // operator overload 
 
 Phenotype & Phenotype::operator = (const Phenotype & templ) 
 {
 	if (this == &templ)
         return (*this);
-    copy(templ);
+    pheno = templ.pheno;
     return(*this);
-}
-
-
-void Phenotype::copy(const Phenotype & templ) 
-{
-	pheno = templ.pheno;
 }
 
 
@@ -68,6 +54,7 @@ void Phenotype::copy(const Phenotype & templ)
 
 double Phenotype::operator[] (const unsigned int index) const 
 {
+	assert(index < dimensionality());
 	return(pheno[index]);
 }
 
@@ -92,4 +79,38 @@ void Phenotype::write_debug (ostream& out) const
 void Phenotype::write_simple (ostream& out) const
 {
 	write_debug(out);
+}
+
+ostream& operator << (ostream& out, const Phenotype& phen)
+{
+	for (unsigned int k = 0; k < phen.dimensionality(); k++) {
+		out << phen[k] << "\t";
+	}
+	return(out);
+}
+
+/////////////////////// class PhenotypeStat
+
+PhenotypeStat::PhenotypeStat(const vector<Phenotype> & vec_phen)
+	: MultivariateStat(transpose_phen_matrix(vec_phen))
+{
+	
+}
+
+// static function called into the initialization list of the constructor
+vector<vector<double> > PhenotypeStat::transpose_phen_matrix(const vector<Phenotype> & vec_phen)
+{ // the vector of vectors has to be transposed in order to get means and variances of traits
+	assert(!vec_phen.empty());
+	
+	unsigned int dim = vec_phen[0].dimensionality();
+	vector<vector<double> > ans;
+	
+	for (unsigned int k = 0; k < dim; k++) {
+		vector<double> tmp;
+		for (unsigned int i = 0; i < vec_phen.size(); i++) {
+			tmp.push_back(vec_phen[i][k]);
+		}
+		ans.push_back(tmp);
+	}
+	return(ans);
 }

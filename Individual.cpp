@@ -29,7 +29,7 @@ Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
     , genot_value(copy.genot_value)
     , phenotype(copy.phenotype)
-    , fitness(0)
+    , fitness(0.0)
 {
 }
 
@@ -120,14 +120,27 @@ Haplotype Individual::produce_gamete() const
 void Individual::draw_mutation()
 {
     genotype.draw_mutation();
+    genot_value = Architecture::Get() -> phenotypic_value(genotype);
 }
 
 
 void Individual::make_mutation()
 {
     genotype.make_mutation();
+    genot_value = Architecture::Get() -> phenotypic_value(genotype);
+    // phenotype = Environment::rand_effect(genot_value); // This step is not obvious
+    // fitness = 0; // computing fitness requires additional information, call update_fitness with the proper argument
 }
 
+Individual Individual::test_canalization(unsigned int nb_mut, const Population & pop) const 
+{
+	Individual clone(*this);
+	for (unsigned int mut = 0; mut < nb_mut; mut++) {
+		clone.make_mutation();
+	}
+	clone.update_fitness(pop);
+	return(clone);		
+}
 
 // output
 
