@@ -62,11 +62,11 @@ class Population
 	    void canalization_test() const;
 	
 	    //output
-	    void write() const;
+	    void write(int) const;
 	    void write_debug(std::ostream&) const;
 	    void write_xml(std::ostream&) const;
 	    void write_simple(std::ostream&) const;
-	    void write_summary(std::ostream&) const;
+	    void write_summary(std::ostream&, int) const;
 	
 	
 	protected :

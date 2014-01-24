@@ -90,40 +90,13 @@ int main(int argc, char *argv[])
         Fitness::update_generation(generation);
         if ((generation == 1) || (generation == maxgen) || (generation % param.getpar(SIMUL_OUTPUT)->GetInt() == 0))
         {
-            pop.write();
+            pop.write(generation);
         }
         Population offsp = pop.reproduce();
         if (generation < maxgen)
             pop = offsp;
     }
-    int extragen = param.getpar(SIMUL_EXTRA)->GetInt();
-    if (extragen > 0)
-    {
-        Population orig = pop;
-        Fitness::update_extra(+1.0);
-        pop.update();
-
-        for (int generation = 1; generation <= extragen; generation++)
-        {
-            // No need to call Fitness::update_generation
-            Population offsp = pop.reproduce();
-            pop.write();
-            if (generation < extragen)
-                pop = offsp;
-        }
-        pop = orig;
-        Fitness::update_extra(-1.0);
-        pop.update();
-        for (int generation = 1; generation <= extragen; generation++)
-        {
-            // No need to call Fitness::update_generation
-            Population offsp = pop.reproduce();
-            pop.write();
-            if (generation < extragen)
-                pop = offsp;
-        }
-    }
-
+    
 	file_out.close(); // This probably does not harm if the file is not open
 	return(0);
 }

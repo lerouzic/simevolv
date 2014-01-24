@@ -259,7 +259,7 @@ void Population::canalization_test() const
 
 // output
 
-void Population::write() const
+void Population::write(int generation) const
 {
     if (!OutputFormat::isInitialized())
     {
@@ -268,7 +268,7 @@ void Population::write() const
     write_debug (OutputFormat::GetDebug());
     write_xml   (OutputFormat::GetXml());
     write_simple(OutputFormat::GetSimple());
-    write_summary(OutputFormat::GetSummary());
+    write_summary(OutputFormat::GetSummary(), generation);
 }
 
 
@@ -298,12 +298,28 @@ void Population::write_simple(ostream & out) const
 }
 
 
-void Population::write_summary(ostream & out) const
+void Population::write_summary(ostream & out, int generation) const
 {
 	
 	vector<Phenotype> phen;
 	vector<Phenotype> gen;
 	vector<double> fit;
+	
+	if (generation==1)
+	{
+	out << "Gen" << "\t";
+	out << "MeanPhen" << "\t";
+	out << "VarPhen" << "\t";
+    out << "MeanFit" << "\t";
+    out << "VarFit" << "\t";
+    out << "FitOpt" << "\t";
+    if (canal_test.nb_tests() > 0) 
+		{
+		out << "CanalPhen" << "\t";
+		out << "CanalFit" << "\t";
+		}
+	out << endl; 
+   	}
 	
 	for (unsigned int i = 0; i < pop.size(); i++) {
 		phen.push_back(pop[i].get_phenotype());
@@ -314,18 +330,18 @@ void Population::write_summary(ostream & out) const
 	PhenotypeStat phenstat(phen);
 	PhenotypeStat genstat(gen);
 	UnivariateStat fitstat(fit);
-			
-    out << "MeanPhen= " << phenstat.means_phen() << "\t";
-    out << "VarPhen= " << phenstat.vars_phen() << "\t";
-    out << "MeanFit= " << fitstat.mean() << "\t";
-    out << "VarFit= " << fitstat.var() << "\t";
-    out << "FitOpt= " << Fitness::current_optimum() << "\t";
+	
+	out << generation << "\t";
+    out << phenstat.means_phen() << "\t";
+    out << phenstat.vars_phen() << "\t";
+    out << fitstat.mean() << "\t";
+    out << fitstat.var() << "\t";
+    out << Fitness::current_optimum() << "\t";
     if (canal_test.nb_tests() > 0) {
 		canalization_test();
-		out << "Canalphen=" << canal_test.phen_canalization() << "\t";
-		out << "Canalfit=" << canal_test.fitness_canalization() << "\t";
-	}
-    
+		out << canal_test.phen_canalization() << "\t";
+		out << canal_test.fitness_canalization() << "\t";
+	}    
     out << endl;
 }
 

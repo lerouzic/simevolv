@@ -325,8 +325,7 @@ void ParameterSet::initialize()
     parameters[SIMUL_GENER] = new Parameter_int(1, 1000*1000);
     parameters[SIMUL_REPET] = new Parameter_int(1, 10*1000);
     parameters[SIMUL_OUTPUT] = new Parameter_int(1, 10*1000);
-    parameters[SIMUL_EXTRA] = new Parameter_int(0, 10*1000);
-
+    
     // General genetic parameters
     parameters[GENET_NBLOC] = new Parameter_int(1, 100);
     parameters[GENET_ALLSIZE] = new Parameter_int(1, 100);

@@ -23,7 +23,6 @@
 const std::string SIMUL_GENER = "SIMUL_GENER";
 const std::string SIMUL_REPET = "SIMUL_REPET";
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
-const std::string SIMUL_EXTRA = "SIMUL_EXTRA";
 const std::string GENET_NBLOC = "GENET_NBLOC";
 const std::string GENET_ALLSIZE = "GENET_ALLSIZE";
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
