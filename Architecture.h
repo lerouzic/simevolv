@@ -50,7 +50,6 @@ class Architecture
 	    //functions
 	    int nb_loc() const;
 	    int all_size() const;
-	    double init_all() const;
 	    double mutation_rate(int) const;
 	    double mutation_sd(int) const;
 	    double recombination_rate(int) const;
@@ -64,7 +63,6 @@ class Architecture
 	    GeneticMap gmap;
 	    int nloc;
 	    int sall;
-	    double iall;
 	    std::vector<double> mutrate;
 	    std::vector<double> mutsd;
 

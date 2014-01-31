@@ -16,6 +16,7 @@
 #define GENOTYPE_H_INCLUDED
 
 #include "Haplotype.h"
+#include "Parameters.h"
 
 #include <iostream>
 
@@ -32,6 +33,7 @@ class Genotype
 	    Genotype();
 	    Genotype(const Haplotype&, const Haplotype&);
 	    Genotype(const Genotype&);
+	    Genotype(const ParameterSet &);
 	
 	    //operator overload
 	    int operator == (const Genotype&) const;

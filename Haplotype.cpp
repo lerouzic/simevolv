@@ -37,6 +37,16 @@ Haplotype::Haplotype()
     }
 }
 
+Haplotype::Haplotype(const ParameterSet & param)
+{
+    int nloc = Haplotype::nb_loc();
+    
+    for(int i = 0; i < nloc; i++)
+    {
+        haplotype.push_back(Allele(param));
+    }
+}
+
 
 // operator overload
 

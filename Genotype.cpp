@@ -47,6 +47,12 @@ Genotype::Genotype(const Genotype& copy)
 {
 }
 
+Genotype::Genotype(const ParameterSet & param)
+	: gam_father(param)
+	, gam_mother(param)
+{
+}
+
 
 // operator overload
 

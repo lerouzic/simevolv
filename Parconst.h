@@ -17,6 +17,7 @@
 
 // Boost : makes vector initialization easier
 #include <boost/assign/list_of.hpp> 
+#include <vector>
 
 
 

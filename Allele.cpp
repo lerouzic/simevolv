@@ -11,7 +11,7 @@
  ***************************************************************************/
 
 
-
+#include "Parconst.h"
 #include "Allele.h"
 #include "Architecture.h"
 #include "Random.h"
@@ -28,16 +28,23 @@ using namespace std;
 
 Allele::Allele()
 {
-    Architecture * archi = Architecture::Get();
-
     int sall = Allele::all_size();
 
     for(int i = 0; i < sall; i++)
     {
-        allele.push_back(archi -> init_all());
+        allele.push_back(0.0);
     }
 }
 
+Allele::Allele(const ParameterSet & param)
+{
+    int sall = Allele::all_size();
+
+    for(int i = 0; i < sall; i++)
+    {
+        allele.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
+    }
+}
 
 // operator overload
 

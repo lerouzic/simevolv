@@ -49,6 +49,7 @@ Individual::Individual(const Individual& copy)
 
 
 Individual::Individual(const ParameterSet& param)
+	: genotype(param)
 {
     initialize();
 }

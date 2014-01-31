@@ -16,6 +16,7 @@
 #define HAPLOTYPE_H_INCLUDED
 
 #include "Allele.h"
+#include "Parameters.h"
 
 #include <iostream>
 #include <vector>
@@ -32,6 +33,7 @@ class Haplotype
 public :
     //constructors/destructor
     Haplotype();
+    Haplotype(const ParameterSet &);
 
     //operator overload
     int operator== (const Haplotype&) const;

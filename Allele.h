@@ -17,6 +17,7 @@
 
 #include <vector>
 
+#include "Parameters.h"
 
 
 class Allele
@@ -29,6 +30,7 @@ class Allele
 	public :
 	    //constructors/destructor
 	    Allele();
+	    Allele(const ParameterSet &);
 	
 	    //operator overload
 	    int operator== (const Allele&) const;
