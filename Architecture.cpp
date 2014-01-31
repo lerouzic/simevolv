@@ -49,6 +49,7 @@ Architecture::Architecture(const ParameterSet& param)
     : gmap (param)
     , nloc (param.getpar(GENET_NBLOC) -> GetInt())
     , sall (param.getpar(GENET_ALLSIZE) -> GetInt())
+    , iall (param.getpar(INIT_ALLELES) -> GetDouble())
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
 {
@@ -150,6 +151,12 @@ int Architecture::nb_loc() const
 int Architecture::all_size() const
 {
     return sall;
+}
+
+
+double Architecture::init_all() const
+{
+    return iall;
 }
 
 

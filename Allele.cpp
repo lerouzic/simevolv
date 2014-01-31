@@ -26,13 +26,15 @@ using namespace std;
 
 // constructors and destructor
 
-Allele::Allele(int sall)
+Allele::Allele()
 {
-    sall = Allele::all_size();
+    Architecture * archi = Architecture::Get();
+
+    int sall = Allele::all_size();
 
     for(int i = 0; i < sall; i++)
     {
-        allele.push_back(Random::randnum());
+        allele.push_back(archi -> init_all());
     }
 }
 
@@ -59,17 +61,6 @@ int Allele::all_size() const
     int sall = archi -> all_size();
 
     return sall;
-}
-
-
-void Allele::print() const
-{
-    //cout << "Allele :" << endl;
-    for(unsigned int i = 0; i < allele.size(); i++)
-    {
-        cout << allele[i] << " ";
-    }
-    cout << endl;
 }
 
 

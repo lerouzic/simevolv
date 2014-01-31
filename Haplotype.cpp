@@ -30,11 +30,10 @@ using namespace std;
 Haplotype::Haplotype()
 {
     int nloc = Haplotype::nb_loc();
-    int sall = Haplotype::all_size();
-
+    
     for(int i = 0; i < nloc; i++)
     {
-        haplotype.push_back(Allele(sall));
+        haplotype.push_back(Allele());
     }
 }
 
@@ -61,28 +60,6 @@ int Haplotype::nb_loc() const
     int nloc = archi -> nb_loc();
 
     return nloc;
-}
-
-
-int Haplotype::all_size() const
-{
-    Architecture * archi = Architecture::Get();
-    int sall = archi -> all_size();
-
-    return sall;
-}
-
-
-void Haplotype::print() const
-{
-    Allele nTemp(all_size());
-
-    cout << endl << "Haplotype : " << endl;
-    for(unsigned int i = 0; i < haplotype.size(); i++)
-    {
-        nTemp = haplotype[i];
-        nTemp.print();
-    }
 }
 
 

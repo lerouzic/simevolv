@@ -28,7 +28,7 @@ class Allele
 	
 	public :
 	    //constructors/destructor
-	    Allele(int nall);
+	    Allele();
 	
 	    //operator overload
 	    int operator== (const Allele&) const;
@@ -36,7 +36,6 @@ class Allele
 	
 	    //functions
 	    int all_size() const;
-	    void print() const;
 	    void make_mutation(int);
 	
 	protected :

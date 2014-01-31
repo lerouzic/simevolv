@@ -39,8 +39,6 @@ public :
 
     //functions
     int nb_loc() const;
-    int all_size() const;
-    void print() const;
     void draw_mutation();
     void make_mutation();
 

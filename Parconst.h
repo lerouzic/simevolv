@@ -21,7 +21,6 @@
 
 
 const std::string SIMUL_GENER = "SIMUL_GENER";
-const std::string SIMUL_REPET = "SIMUL_REPET";
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
 const std::string GENET_NBLOC = "GENET_NBLOC";
 const std::string GENET_ALLSIZE = "GENET_ALLSIZE";
@@ -32,7 +31,6 @@ const std::string GENET_EPSILON2 = "GENET_EPSILON2";
 const std::string GENET_EPSILON3 = "GENET_EPSILON3";
 const std::string INIT_PSIZE = "INIT_PSIZE";
 const std::string INIT_ALLELES = "INIT_ALLELES";
-const std::string INIT_ALL_FRQ = "INIT_ALL_FRQ";
 const std::string ENVIRO_SD = "ENVIRO_SD";
 const std::string FITNESS_TYPE = "FITNESS_TYPE";
 const std::string FITNESS_STRENGTH = "FITNESS_STRENGTH";
