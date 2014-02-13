@@ -70,6 +70,7 @@ void Architecture::initialize(const ParameterSet& param)
 {
     if (Architecture::instance != NULL)
     {
+		cerr << "Strange, the Architecture was already intialized. This should not happen." << endl;
         delete Architecture::instance;
         Architecture::instance = NULL;
     }

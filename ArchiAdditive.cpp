@@ -46,11 +46,8 @@ ArchiAdditive::ArchiAdditive(const Architecture& archi)
 ArchiAdditive::ArchiAdditive(const ParameterSet& param)
     : Architecture(param)
 {
-    for (int i = 0; i < nloc; i++)
-    {
-        mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
-        mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
-    }
+	// Nothing to do here.
+	// mutrate and mutsd are already intialized in the constructor of the parent class
 }
 
 

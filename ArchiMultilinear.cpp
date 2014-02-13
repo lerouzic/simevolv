@@ -46,10 +46,9 @@ ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     , epsilon2(vector<vector<double> >(0))
     , epsilon3(vector<vector<vector<double> > >(0))
 {
+	// mutrate and mutsd are already intialized in the constructor of the parent class
     for (int loc1 = 0; loc1 < nloc; loc1++)
     {
-        mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(loc1));
-        mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(loc1));
         if (nloc > 1)
         {
             for (int loc2 = loc1+1; loc2 < nloc; loc2++)
