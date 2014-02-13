@@ -202,7 +202,11 @@ const Individual & Population::pick_parent(const vector<double>& cumfit) const
 
 long int Population::search_fit_table(double rnum, const vector<double>& cumfit) const
 {
-    return(sequential_search_fit_table(rnum, cumfit));
+
+	long int i = stl_search_fit_table(rnum, cumfit);
+	// this assertion takes time, and it seems to work: no need to check by default
+	// assert(i == sequential_search_fit_table(rnum, cumfit));
+    return(i);
 }
 
 
@@ -215,11 +219,11 @@ long int Population::sequential_search_fit_table(double rnum, const vector<doubl
 }
 
 
-Individual Population::iterator_search_fit_table(double rnum, const vector<double>& cumfit) const
+long int Population::stl_search_fit_table(double rnum, const vector<double>& cumfit) const
 {
-    // Does not work!
-    // return(*(std::find_if(cumfit.begin(), cumfit.end(), std::bind2nd(std::less<double>(), rnum))));
-    return(Individual());
+    vector<double>::const_iterator solution = std::lower_bound(cumfit.begin(), cumfit.end(), rnum);
+    assert(solution != cumfit.end());
+    return(solution - cumfit.begin());
 }
 
 

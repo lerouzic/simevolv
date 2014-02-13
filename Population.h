@@ -55,7 +55,7 @@ class Population
 	    const Individual & pick_parent(const std::vector<double>&) const;
 	    long int search_fit_table(double, const std::vector<double>&) const;
 	    long int sequential_search_fit_table(double, const std::vector<double>&) const;
-	    Individual iterator_search_fit_table(double, const std::vector<double>&) const;
+	    long int stl_search_fit_table(double, const std::vector<double>&) const;
 	    void draw_mutation();
 	    void make_mutation();
 	    

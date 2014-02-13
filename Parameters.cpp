@@ -236,6 +236,7 @@ void Parameter_gaussian::write(ostream & out) const
 
 Parameter_string::Parameter_string(const vector<string> posval)
 	:possible_values(posval)
+	,value("NotInitialized")
 	,initialized(false)
 {
 }
@@ -382,7 +383,10 @@ void ParameterSet::read(const string & file)
         istringstream l(line);
         string name;
         l >> name;
-        assert(parameters.find(name)!=parameters.end() && "Parameter key unknown.");
+        if (parameters.find(name)==parameters.end() ) {
+			cerr << "Parameter " << name << " unknown." << endl;
+			assert(false && "Parameter key unknown."); // This is a very crappy way to deal with errors.
+		}
         parameters[name]->read(l);
     }
 }
