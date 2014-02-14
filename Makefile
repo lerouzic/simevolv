@@ -20,7 +20,7 @@ LIB =
 LDFLAGS = -lgsl -lgslcblas -lboost_program_options
 
 INC_DEBUG = $(INC)
-CFLAGS_DEBUG = $(CFLAGS) -g
+CFLAGS_DEBUG = $(CFLAGS) -g -pg
 RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
 LIBDIR_DEBUG = $(LIBDIR)
