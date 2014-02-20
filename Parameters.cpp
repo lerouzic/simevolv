@@ -282,7 +282,7 @@ void Parameter_string::Set(string v) {
 		for (unsigned int i = 0; i < possible_values.size(); i++) {
 			cerr << "\t" << possible_values[i] << endl;
 		}
-		assert("Stopping."); // This is bad error handling!
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -375,7 +375,10 @@ void ParameterSet::write(ostream & out) const
 void ParameterSet::read(const string & file)
 {
     ifstream paramfile(file.c_str());
-    assert(paramfile && "Problem opening the parameter file");
+    if (!paramfile) {
+		cerr << "Problem opening the parameter file" << endl;
+		exit(EXIT_FAILURE);
+	}
 
     string line;
     while(!getline(paramfile, line).eof())
@@ -385,7 +388,7 @@ void ParameterSet::read(const string & file)
         l >> name;
         if (parameters.find(name)==parameters.end() ) {
 			cerr << "Parameter " << name << " unknown." << endl;
-			assert(false && "Parameter key unknown."); // This is a very crappy way to deal with errors.
+			exit(EXIT_FAILURE); 			
 		}
         parameters[name]->read(l);
     }
@@ -394,6 +397,11 @@ void ParameterSet::read(const string & file)
 
 const Parameter * ParameterSet::getpar(const string & tag) const
 {
+	if (parameters.count(tag) == 0) {
+		cerr << "Parameter " << tag << " is missing." << endl;
+		exit(EXIT_FAILURE); 
+	}
     const Parameter * ans = parameters.find(tag)->second;
+    
     return(ans);
 }
