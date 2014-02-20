@@ -20,6 +20,7 @@
 #include "Statistics.h"
 #include "Architecture.h"
 #include "Canalization.h"
+#include "Heritability.h"
 
 #include <algorithm>
 #include <numeric>
@@ -50,6 +51,7 @@ Population::Population(long int size)
 Population::Population(const Population & copy)
     : pop(copy.pop)
     , nb_canal_test(copy.nb_canal_test)
+    , nb_herit_test(copy.nb_herit_test)
 {
 }
 
@@ -76,6 +78,7 @@ Population & Population::operator=(const Population& copy)
 
     pop = copy.pop;
     nb_canal_test = copy.nb_canal_test; 
+    nb_herit_test = copy.nb_herit_test;
     return(*this);
 }
 
@@ -93,6 +96,7 @@ void Population::initialize(const ParameterSet& param)
         //cout << i << endl;
     }
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
+    nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     update();
 }
 
@@ -109,6 +113,7 @@ Population Population::reproduce(long int offspr_number) const
 {
     Population offspring;
     offspring.nb_canal_test = nb_canal_test; // Strange design, but otherwise the information is lost
+    offspring.nb_herit_test = nb_herit_test;
     vector<double> cumul_fit = cumul_fitness();
 
     if (offspr_number == 0)
@@ -195,7 +200,8 @@ vector<double> Population::cumul_fitness() const
 const Individual & Population::pick_parent(const vector<double>& cumfit) const
 {
     // return(iterator_search_fit_table(rnum, cumfit));
-    return(pop[search_fit_table(Random::randnum(), cumfit)]);
+    int i = search_fit_table(Random::randnum(), cumfit);
+    return(pop[i]);
 }
 
 
@@ -290,19 +296,24 @@ void Population::write_summary(ostream & out, int generation) const
 	vector<double> fit;
 	
 	if (generation==1)
-	{
-	out << "Gen" << "\t";
-	out << "MeanPhen" << "\t";
-	out << "VarPhen" << "\t";
-    out << "MeanFit" << "\t";
-    out << "VarFit" << "\t";
-    out << "FitOpt" << "\t";
-    if (nb_canal_test > 0) 
+	{ // There is a potential bug here: only one header even if there are several phenotypes
+		out << "Gen" << "\t";
+		out << "MeanPhen" << "\t";
+		out << "VarPhen" << "\t";
+		out << "MeanFit" << "\t";
+		out << "VarFit" << "\t";
+		out << "FitOpt" << "\t";
+		if (nb_canal_test > 0) 
 		{
-		out << "CanalPhen" << "\t";
-		out << "CanalFit" << "\t";
+			out << "CanalPhen" << "\t";
+			out << "CanalFit" << "\t";
 		}
-	out << endl; 
+		if (nb_herit_test > 0)
+		{	
+			out << "HeritPhen" << "\t";
+			out << "HeritFit" << "\t";
+		}
+		out << endl; 
    	}
 	
 	for (unsigned int i = 0; i < pop.size(); i++) {
@@ -326,6 +337,11 @@ void Population::write_summary(ostream & out, int generation) const
 		out << can_test.phen_canalization() << "\t";
 		out << can_test.fitness_canalization() << "\t";
 	}    
+	if (nb_herit_test > 0) {
+		Heritability herit_test(nb_herit_test, *this);
+		out << herit_test.h2() << "\t";
+		out << herit_test.fit_h2() << "\t";
+	}
     out << endl;
 }
 

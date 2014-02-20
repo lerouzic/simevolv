@@ -17,7 +17,6 @@
 
 #include "Parameters.h"
 #include "Individual.h"
-#include "Canalization.h"
 
 #include <iostream>
 #include <vector>
@@ -28,6 +27,7 @@ class Individual;
 class Population
 {
 	friend class Canalization;
+	// friend class Heritability;
 
 	public :
 	    //constructors/destructors
@@ -69,6 +69,7 @@ class Population
 	protected :
 	    std::vector<Individual> pop;
 	    unsigned int nb_canal_test;
+	    unsigned int nb_herit_test;
 
 };
 

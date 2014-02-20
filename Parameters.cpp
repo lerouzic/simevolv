@@ -357,6 +357,7 @@ void ParameterSet::initialize()
     
     // Output measurements
     parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 100*1000);
+    parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 100*1000);
 }
 
 
