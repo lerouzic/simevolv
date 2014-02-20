@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -22,38 +21,28 @@
 
 #include <cassert>
 #include <vector>
+#include <iomanip>
 
 using namespace std;
 
-Canalization::Canalization()
+Canalization::Canalization(unsigned int nb_tests, const Population & pop)
 {
 	phen_ready = false;
 	fit_ready = false;
-	_nb_tests = 0; // So far, no way to know if this variable has been initialized or not. 
+	if (nb_tests > 0) {
+		for (unsigned int i = 0; i < pop.size(); i++) {
+			const Individual & ref = pop.pop[i];
+			reference_indiv(ref);
+			for (unsigned int test = 0; test < nb_tests; test++) {
+				mutant_indiv(ref.test_canalization(1, pop)); // So far: only one mutation per mutant
+			}
+		} 
+	}
 }
 
-Canalization::Canalization(const ParameterSet & param)
-{
-	phen_ready = false;
-	fit_ready = false;
-	_nb_tests = param.getpar(OUT_CANAL_TESTS)->GetInt();
-}
-
-Canalization::Canalization(unsigned int nb_tests)
-{
-	phen_ready = false;
-	fit_ready = false;
-	_nb_tests = nb_tests;
-}
-
-Canalization::~Canalization()
-{
-	
-}
 
 void Canalization::reference_indiv(Individual ind)
 {
-	assert(!(phen_ready || fit_ready));
 	reference.push_back(ind);
 	vector<Individual> tmp;
 	mutants.push_back(tmp);

@@ -23,13 +23,12 @@
 #include <vector>
 
 
-
 class Individual;
-
-
 
 class Population
 {
+	friend class Canalization;
+
 	public :
 	    //constructors/destructors
 	    Population();
@@ -58,9 +57,7 @@ class Population
 	    long int stl_search_fit_table(double, const std::vector<double>&) const;
 	    void draw_mutation();
 	    void make_mutation();
-	    
-	    void canalization_test() const;
-	
+	    	
 	    //output
 	    void write(int) const;
 	    void write_debug(std::ostream&) const;
@@ -71,7 +68,7 @@ class Population
 	
 	protected :
 	    std::vector<Individual> pop;
-	    mutable Canalization canal_test;
+	    unsigned int nb_canal_test;
 
 };
 

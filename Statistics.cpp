@@ -26,6 +26,8 @@ using namespace std;
 
 UnivariateStat::UnivariateStat(const vector<double> & vv)
 	: data(vv)
+	, sum_i(0.0)
+	, sum_i2(0.0)
 {
 	if (data.size() < 2) {
 		cerr << "A data set of size " << data.size() << " is not eligible for statistics." << endl;

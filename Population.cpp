@@ -49,7 +49,7 @@ Population::Population(long int size)
 
 Population::Population(const Population & copy)
     : pop(copy.pop)
-    , canal_test(copy.canal_test.nb_tests())
+    , nb_canal_test(copy.nb_canal_test)
 {
 }
 
@@ -75,7 +75,7 @@ Population & Population::operator=(const Population& copy)
         return(*this);
 
     pop = copy.pop;
-    canal_test = copy.canal_test; // Not sure this is particularly clever...
+    nb_canal_test = copy.nb_canal_test; 
     return(*this);
 }
 
@@ -92,7 +92,7 @@ void Population::initialize(const ParameterSet& param)
         pop.push_back(indiv);
         //cout << i << endl;
     }
-    canal_test = Canalization(param);
+    nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     update();
 }
 
@@ -108,8 +108,7 @@ double fun_sqrt(double x) // I don't remember why this stupid function was neces
 Population Population::reproduce(long int offspr_number) const
 {
     Population offspring;
-    Canalization tmp_canal(canal_test.nb_tests());
-    offspring.canal_test = tmp_canal; // Bad design, this kind of things should not happen
+    offspring.nb_canal_test = nb_canal_test; // Strange design, but otherwise the information is lost
     vector<double> cumul_fit = cumul_fitness();
 
     if (offspr_number == 0)
@@ -242,25 +241,6 @@ void Population::make_mutation()
     pop[ind].make_mutation();
 }
 
-void Population::canalization_test() const
-// canal_test is mutable, it can thus be updated in this const function
-{
-	unsigned int nb_tests = canal_test.nb_tests();
-	if (nb_tests > 0) {
-		for (unsigned int i = 0; i < pop.size(); i++) {
-			const Individual & ref = pop[i];
-			canal_test.reference_indiv(ref);
-			for (unsigned int test = 0; test < nb_tests; test++) {
-					// the test needs to know the population (*this) to compute the fitness.
-					// not very elegant, but I don't know how to do otherwise for selection
-					// regimes that depend on the population
-				canal_test.mutant_indiv(ref.test_canalization(1, *this));
-			}
-		} 
-	} 
-	// this function does not return anything, it just fills the object canal_test. 
-}
-
 // output
 
 void Population::write(int generation) const
@@ -317,7 +297,7 @@ void Population::write_summary(ostream & out, int generation) const
     out << "MeanFit" << "\t";
     out << "VarFit" << "\t";
     out << "FitOpt" << "\t";
-    if (canal_test.nb_tests() > 0) 
+    if (nb_canal_test > 0) 
 		{
 		out << "CanalPhen" << "\t";
 		out << "CanalFit" << "\t";
@@ -341,10 +321,10 @@ void Population::write_summary(ostream & out, int generation) const
     out << fitstat.mean() << "\t";
     out << fitstat.var() << "\t";
     out << Fitness::current_optimum() << "\t";
-    if (canal_test.nb_tests() > 0) {
-		canalization_test();
-		out << canal_test.phen_canalization() << "\t";
-		out << canal_test.fitness_canalization() << "\t";
+    if (nb_canal_test > 0) {
+		Canalization can_test(nb_canal_test, *this);
+		out << can_test.phen_canalization() << "\t";
+		out << can_test.fitness_canalization() << "\t";
 	}    
     out << endl;
 }

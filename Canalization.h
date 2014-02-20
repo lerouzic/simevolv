@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -27,22 +26,17 @@ class Population;
 class Canalization
 {
 	public:
-		Canalization();
-		Canalization(const ParameterSet &); // Allows to store a meaningful value for nb_tests
-		Canalization(unsigned int);
-		~Canalization();
-		
-		unsigned int nb_tests() const {return _nb_tests;}
-		
-		// fill the object
-		void reference_indiv(Individual);
-		void mutant_indiv (Individual);
-				
+		Canalization(unsigned int, const Population &);
+						
 		// get the results
 		Phenotype phen_canalization();
 		double fitness_canalization();
 				
 	protected:
+			// fill the object
+		void reference_indiv(Individual);
+		void mutant_indiv (Individual);
+		
 		void process();	
 		void process_phen();
 		void process_fit();
@@ -63,8 +57,6 @@ class Canalization
 		
 		bool phen_ready;
 		bool fit_ready;
-		unsigned int _nb_tests;
-	
 };
 
 
