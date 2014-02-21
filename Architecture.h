@@ -19,7 +19,6 @@
 
 #include "Parameters.h"
 #include "GeneticMap.h"
-#include "Allele.h"
 #include "Haplotype.h"
 #include "Genotype.h"
 
@@ -53,8 +52,6 @@ class Architecture
 	    double mutation_rate(int) const;
 	    double mutation_sd(int) const;
 	    double recombination_rate(int) const;
-	    void draw_mutation(const Haplotype&) const;
-	    double make_mutation(int, std::vector<Allele>) const;
 		
 		//inheritance
 	    virtual double phenotypic_value(const Genotype&) const;

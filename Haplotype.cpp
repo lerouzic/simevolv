@@ -31,9 +31,12 @@ Haplotype::Haplotype()
 {
     int nloc = Haplotype::nb_loc();
     
+    cerr << "Calling Haplotype default constructor: Should probably not happen."<< endl;
+    
     for(int i = 0; i < nloc; i++)
     {
-        haplotype.push_back(Allele());
+		shared_ptr<Allele> a (new Allele());
+        haplotype.push_back(a);
     }
 }
 
@@ -43,8 +46,15 @@ Haplotype::Haplotype(const ParameterSet & param)
     
     for(int i = 0; i < nloc; i++)
     {
-        haplotype.push_back(Allele(param));
+		shared_ptr<Allele> a (new Allele(param));
+        haplotype.push_back(a);
     }
+}
+
+Haplotype::Haplotype(const Haplotype & templ)
+	: haplotype(templ.haplotype)
+{
+	
 }
 
 
@@ -81,7 +91,7 @@ void Haplotype::draw_mutation()
         if (Random::randnum() < archi->mutation_rate(loc))
         // This is not really efficient (many drawings with low probabilities)
         {
-            haplotype[loc].make_mutation(loc);
+			make_mutation(loc);        
         }
     }
 }
@@ -90,7 +100,14 @@ void Haplotype::draw_mutation()
 void Haplotype::make_mutation()
 {
     int loc = floor(Random::randnum()*nb_loc()); // static_cast<double>(nb_loc())
-    haplotype[loc].make_mutation(loc);
+	make_mutation(loc);
+}
+
+void Haplotype::make_mutation(unsigned int loc)
+{
+	shared_ptr<Allele> a(new Allele(*haplotype[loc]));
+	a->make_mutation(loc);
+    haplotype[loc] = a;  
 }
 
 
@@ -98,10 +115,10 @@ void Haplotype::make_mutation()
 
 void Haplotype::write_debug(ostream & out) const
 {
-    for (vector<Allele>::const_iterator it = haplotype.begin(); it != haplotype.end(); it++)
-    {
-//        out << *it << "\t";
-    }
+    //~ for (vector<Allele>::const_iterator it = haplotype.begin(); it != haplotype.end(); it++)
+    //~ {
+//~ //        out << *it << "\t";
+    //~ }
     out << endl;
 }
 

@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <vector>
+#include <memory> // shared_ptr
 
 
 
@@ -34,6 +35,7 @@ public :
     //constructors/destructor
     Haplotype();
     Haplotype(const ParameterSet &);
+    Haplotype(const Haplotype &);
 
     //operator overload
     int operator== (const Haplotype&) const;
@@ -41,8 +43,9 @@ public :
 
     //functions
     int nb_loc() const;
-    void draw_mutation();
-    void make_mutation();
+    void draw_mutation();				// draws a mutation according to the mutation rate
+    void make_mutation(); 				// makes a mutation at a random locus
+    void make_mutation(unsigned int); 	// makes a mutation at a specific locus
 
     //output/debug
     void write_debug (std::ostream&) const;
@@ -50,7 +53,7 @@ public :
     void write_simple(std::ostream&) const;
 
 protected :
-    std::vector<Allele> haplotype;
+    std::vector<std::shared_ptr<Allele> > haplotype;
 };
 
 

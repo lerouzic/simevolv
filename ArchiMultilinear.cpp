@@ -268,8 +268,8 @@ double ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
     {
         for (int all = 0 ; all < sall ; all++)
         {
-            sumall_father[loc1] += genotype.gam_father.haplotype[loc1].allele[all];
-            sumall_mother[loc1] += genotype.gam_mother.haplotype[loc1].allele[all];
+            sumall_father[loc1] += genotype.gam_father.haplotype[loc1]->allele[all];
+            sumall_mother[loc1] += genotype.gam_mother.haplotype[loc1]->allele[all];
 
             sumloc[loc1] = sumall_father[loc1] + sumall_mother[loc1];
         }

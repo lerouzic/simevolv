@@ -99,33 +99,20 @@ Haplotype Genotype::recombine() const
 {
     Architecture * archi = Architecture::Get();
 
-    const Haplotype * current = NULL;
-    const Haplotype * other = NULL;
-    Haplotype result;
+    Haplotype result(gam_father);
+    bool copy_father = Random::randnum() < 0.5 ? true : false;
+    unsigned int nloc = nb_loc();
 
-    int nloc = nb_loc();
-
-    if (Random::randnum() < 0.5)
+    for (unsigned int locus = 0; locus < nloc; locus++)
     {
-        current = &gam_father;
-        other   = &gam_mother;
-    }
-    else
-    {
-        current = &gam_mother;
-        other   = &gam_father;
-    }
-
-    result.haplotype[0] = current->haplotype[0];
-
-    for (int locus = 1; locus < nloc; locus++)
-    {
-        if (Random::randnum() < archi -> recombination_rate(locus-1))
-        {
-            swap(current, other);
+		if (!copy_father) {
+			result.haplotype[locus] = gam_mother.haplotype[locus];
+		}
+		if ((locus < nloc - 1) && (Random::randnum() < archi -> recombination_rate(locus)))
+        { 
+            copy_father = !copy_father;
         }
-        result.haplotype[locus] = current->haplotype[locus];
-    }
+	}
 
     return(result);
 }

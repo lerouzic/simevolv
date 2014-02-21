@@ -91,8 +91,8 @@ double ArchiAdditive::phenotypic_value (const Genotype& genotype) const
     {
         for (int all = 0 ; all < sall ; all++)
         {
-            sumall_father[loc] += genotype.gam_father.haplotype[loc].allele[all];
-            sumall_mother[loc] += genotype.gam_mother.haplotype[loc].allele[all];
+            sumall_father[loc] += genotype.gam_father.haplotype[loc]->allele[all];
+            sumall_mother[loc] += genotype.gam_mother.haplotype[loc]->allele[all];
 
             sumloc[loc] = sumall_father[loc] + sumall_mother[loc];
         }

@@ -29,6 +29,8 @@ using namespace std;
 Allele::Allele()
 {
     int sall = Allele::all_size();
+    
+    cerr << "Calling Allele default constructor: should probably not happen." << endl;
 
     for(int i = 0; i < sall; i++)
     {

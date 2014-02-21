@@ -121,13 +121,13 @@ Population Population::reproduce(long int offspr_number) const
         offspr_number = size();
     }
 
-    offspring.pop.resize(offspr_number);
+    // offspring.pop.resize(offspr_number);
 
     for (long int i = 0; i < offspr_number; i++)
     {
-        offspring.pop[i] = Individual::mate(
+        offspring.pop.push_back(Individual::mate(
                                this->pick_parent(cumul_fit),
-                               this->pick_parent(cumul_fit));
+                               this->pick_parent(cumul_fit)));
     }
     offspring.update();
     return(offspring);
