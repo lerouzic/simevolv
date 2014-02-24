@@ -58,6 +58,11 @@ Haplotype::Haplotype(const Haplotype & templ)
 	
 }
 
+Haplotype::Haplotype(const vector<shared_ptr<Allele> > & vectalleles)
+	: haplotype(vectalleles)
+{
+	
+}
 
 // operator overload
 

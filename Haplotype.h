@@ -36,6 +36,7 @@ public :
     Haplotype();
     Haplotype(const ParameterSet &);
     Haplotype(const Haplotype &);
+    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
 
     //operator overload
     int operator== (const Haplotype&) const;
