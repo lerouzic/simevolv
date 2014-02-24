@@ -61,6 +61,7 @@ class PhenotypeStat: public MultivariateStat
 		
 		Phenotype means_phen() const {return(Phenotype(means()));}
 		Phenotype vars_phen() const {return(Phenotype(vars()));}
+		unsigned int dimensionality() const {return(data.size());}
 	protected:
 		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
 };

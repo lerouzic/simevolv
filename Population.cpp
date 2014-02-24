@@ -295,27 +295,6 @@ void Population::write_summary(ostream & out, int generation) const
 	vector<Phenotype> gen;
 	vector<double> fit;
 	
-	if (generation==1)
-	{ // There is a potential bug here: only one header even if there are several phenotypes
-		out << "Gen" << "\t";
-		out << "MeanPhen" << "\t";
-		out << "VarPhen" << "\t";
-		out << "MeanFit" << "\t";
-		out << "VarFit" << "\t";
-		out << "FitOpt" << "\t";
-		if (nb_canal_test > 0) 
-		{
-			out << "CanalPhen" << "\t";
-			out << "CanalFit" << "\t";
-		}
-		if (nb_herit_test > 0)
-		{	
-			out << "HeritPhen" << "\t";
-			out << "HeritFit" << "\t";
-		}
-		out << endl; 
-   	}
-	
 	for (unsigned int i = 0; i < pop.size(); i++) {
 		phen.push_back(pop[i].get_phenotype());
 		gen.push_back(pop[i].get_genot_value());
@@ -324,7 +303,38 @@ void Population::write_summary(ostream & out, int generation) const
 	
 	PhenotypeStat phenstat(phen);
 	PhenotypeStat genstat(gen);
-	UnivariateStat fitstat(fit);
+	UnivariateStat fitstat(fit);	
+	
+	if (generation==1)
+	{ 
+		out << "Gen" << "\t";
+		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
+			out << "MPhen" << i + 1 << "\t";
+		}
+		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
+			out << "VPhen" << i + 1 << "\t";
+		}
+		out << "MFit" << "\t";
+		out << "VFit" << "\t";
+		out << "FitOpt" << "\t";
+		if (nb_canal_test > 0) 
+		{
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
+				out << "CanPhen" << i + 1 << "\t";
+			}
+			out << "CanalFit" << "\t";
+		}
+		if (nb_herit_test > 0)
+		{	
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {			
+				out << "HerPhen" << i + 1 << "\t";
+			}
+			out << "HeritFit" << "\t";
+		}
+		out << endl; 
+   	}
+	
+
 	
 	out << generation << "\t";
     out << phenstat.means_phen() << "\t";
