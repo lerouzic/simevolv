@@ -85,6 +85,10 @@ void Architecture::initialize(const ParameterSet& param)
     {
         Architecture::instance = new ArchiMultilinear(param);
     }
+    else if (type_archi==AR_reg)
+    {
+        Architecture::instance = new ArchiRegulatory(param);
+    }
     else
     {
         assert("Wrong architecture type");
@@ -169,6 +173,7 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param) const
     shared_ptr<Allele> a(new Allele(tmp));
     return(a);
 }
+
 
 shared_ptr<Allele> Architecture::allele_mutation(const Allele & templ, unsigned int loc /* = 0 */) const 
 {

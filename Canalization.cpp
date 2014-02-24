@@ -12,10 +12,8 @@
 
 
 #include "Canalization.h"
-
 #include "Statistics.h"
 #include "Parconst.h"
-
 #include "Individual.h"
 #include "Population.h"
 

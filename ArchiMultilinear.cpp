@@ -255,7 +255,7 @@ string ArchiMultilinear::print_epsilon3() const
 }
 
 
-double ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
 {
     int nloc = nb_loc();
     int sall = all_size();
@@ -294,6 +294,6 @@ double ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
             }
         }
     }
-    return(phenotype);
+    return(Phenotype(phenotype));
 }
 

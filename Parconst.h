@@ -24,7 +24,6 @@
 const std::string SIMUL_GENER = "SIMUL_GENER";
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
 const std::string GENET_NBLOC = "GENET_NBLOC";
-const std::string GENET_ALLSIZE = "GENET_ALLSIZE";
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
@@ -68,6 +67,7 @@ const std::vector<std::string> FF_options = boost::assign::list_of (FF_nofluct)(
 // Architecture types
 const std::string AR_add = "additive";
 const std::string AR_mult = "multilinear";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult);
+const std::string AR_reg = "regulatory";
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_reg);
 
 #endif // PARCONST_H_INCLUDED

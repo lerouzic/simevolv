@@ -23,6 +23,7 @@
 #include "Architecture.h"
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
+#include "ArchiRegulatory.h"
 #include "GeneticMap.h"
 #include "Allele.h"
 #include "Haplotype.h"

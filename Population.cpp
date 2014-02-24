@@ -247,6 +247,7 @@ void Population::make_mutation()
     pop[ind].make_mutation();
 }
 
+
 // output
 
 void Population::write(int generation) const

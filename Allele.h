@@ -26,6 +26,7 @@ class Allele
     friend class Architecture; 
     friend class ArchiAdditive;
     friend class ArchiMultilinear;
+    friend class ArchiRegulatory;
 	
 	public :
 	    //constructors/destructor

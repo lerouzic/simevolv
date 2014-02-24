@@ -43,7 +43,7 @@ class ArchiMultilinear : public Architecture
 	    bool is_epistasis2() const {return(flag_epistasis2);}
 	    bool is_epistasis3() const {return(flag_epistasis3);}
 	
-	    double phenotypic_value(const Genotype&) const;
+	    Phenotype phenotypic_value(const Genotype&) const;
 	
 	protected :
 	    std::vector<std::vector<double> > epsilon2;

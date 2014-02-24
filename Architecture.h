@@ -21,6 +21,7 @@
 #include "GeneticMap.h"
 #include "Haplotype.h"
 #include "Genotype.h"
+#include "Phenotype.h"
 
 #include <iostream>
 #include <vector>
@@ -53,7 +54,7 @@ class Architecture // Pure virtual class
 	    double recombination_rate(int) const;
 	    		
 		//inheritance
-	    virtual double phenotypic_value(const Genotype&) const = 0;
+	    virtual Phenotype phenotypic_value(const Genotype&) const = 0;
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &) const;
 	    virtual std::shared_ptr<Allele> allele_mutation(const Allele &, unsigned int loc = 0) const;
 

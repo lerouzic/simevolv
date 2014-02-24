@@ -78,7 +78,7 @@ ostream& operator << (ostream& out, const ArchiAdditive& archi)
 
 // functions
 
-double ArchiAdditive::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
 {
     int nloc = nb_loc();
     int sall = all_size();
@@ -103,6 +103,6 @@ double ArchiAdditive::phenotypic_value (const Genotype& genotype) const
         phenotype += sumloc[loc];
     }
 
-    return(phenotype);
+    return(Phenotype(phenotype));
 }
 

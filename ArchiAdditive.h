@@ -34,7 +34,7 @@ class ArchiAdditive : public Architecture
 	    friend std::ostream& operator << (std::ostream&, const Architecture&);
 	
 	    //functions
-	    double phenotypic_value(const Genotype&) const;
+	    Phenotype phenotypic_value(const Genotype&) const;
 	
 	protected :
 
