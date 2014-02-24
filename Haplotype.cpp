@@ -43,10 +43,11 @@ Haplotype::Haplotype()
 Haplotype::Haplotype(const ParameterSet & param)
 {
     int nloc = Haplotype::nb_loc();
+    Architecture * archi = Architecture::Get();
     
     for(int i = 0; i < nloc; i++)
     {
-		shared_ptr<Allele> a (new Allele(param));
+		shared_ptr<Allele> a = archi->allele_init(param);
         haplotype.push_back(a);
     }
 }
@@ -105,9 +106,9 @@ void Haplotype::make_mutation()
 
 void Haplotype::make_mutation(unsigned int loc)
 {
-	shared_ptr<Allele> a(new Allele(*haplotype[loc]));
-	a->make_mutation(loc);
-    haplotype[loc] = a;  
+	Architecture * archi = Architecture::Get();
+	shared_ptr<Allele> a = archi->allele_mutation(*haplotype[loc], loc);
+    haplotype[loc] = a;
 }
 
 

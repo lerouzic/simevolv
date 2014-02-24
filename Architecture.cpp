@@ -48,7 +48,7 @@ Architecture::Architecture(const Architecture& archi)
 Architecture::Architecture(const ParameterSet& param)
     : gmap (param)
     , nloc (param.getpar(GENET_NBLOC) -> GetInt())
-    , sall (param.getpar(GENET_ALLSIZE) -> GetInt())
+    , sall (1)
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
 {
@@ -94,32 +94,11 @@ void Architecture::initialize(const ParameterSet& param)
 
 Architecture* Architecture::Get()
 {
-    assert(Architecture::instance != NULL);
+    assert(Architecture::instance != NULL && "Attempt to access Architecture::Get() before initialization.");
     return(Architecture::instance);
 }
 
 
-Architecture* Architecture::Get(const ParameterSet* param)
-{
-    if (param == NULL)
-    {
-        return(Architecture::Get());
-    }
-    else
-    {
-        return(Architecture::Get(*param));
-    }
-}
-
-
-Architecture* Architecture::Get(const ParameterSet& param)
-{
-    if (Architecture::instance == NULL)
-    {
-        Architecture::instance = new Architecture(param);
-    }
-    return(Architecture::instance);
-}
 
 
 // operator overload
@@ -178,10 +157,27 @@ double Architecture::recombination_rate(int locus) const
 }
 
 
-// for inheritance
+// for inheritance (virtual function)
 
-double Architecture::phenotypic_value(const Genotype&) const
+shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param) const 
 {
-    assert(false);
+	vector<double> tmp;
+	for(int i = 0; i < sall; i++)
+    {
+        tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
+    }
+    shared_ptr<Allele> a(new Allele(tmp));
+    return(a);
+}
+
+shared_ptr<Allele> Architecture::allele_mutation(const Allele & templ, unsigned int loc /* = 0 */) const 
+{
+	// A mutation affects randomly one of the "sites" of the allele (?)
+
+    int mutated_site = floor(sall*Random::randnum());
+    double modifier = mutation_sd(loc) * Random::randgauss();
+    shared_ptr<Allele> a(new Allele(templ));
+    a->allele[mutated_site] += modifier;
+    return(a);
 }
 

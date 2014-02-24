@@ -24,10 +24,11 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
 
 
 
-class Architecture
+class Architecture // Pure virtual class
 {
 	public :
 	    //constructors/destructor
@@ -43,8 +44,6 @@ class Architecture
 	    static Architecture* instance;
 	    static void initialize(const ParameterSet&);
 	    static Architecture* Get();
-	    static Architecture* Get(const ParameterSet*);
-	    static Architecture* Get(const ParameterSet&);
 	
 	    //functions
 	    int nb_loc() const;
@@ -52,9 +51,12 @@ class Architecture
 	    double mutation_rate(int) const;
 	    double mutation_sd(int) const;
 	    double recombination_rate(int) const;
-		
+	    		
 		//inheritance
-	    virtual double phenotypic_value(const Genotype&) const;
+	    virtual double phenotypic_value(const Genotype&) const = 0;
+	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &) const;
+	    virtual std::shared_ptr<Allele> allele_mutation(const Allele &, unsigned int loc = 0) const;
+
 	
 	protected :
 	    GeneticMap gmap;

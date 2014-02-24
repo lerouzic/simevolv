@@ -38,14 +38,10 @@ Allele::Allele()
     }
 }
 
-Allele::Allele(const ParameterSet & param)
+Allele::Allele(const vector<double> content)
+	: allele(content)
 {
-    int sall = Allele::all_size();
-
-    for(int i = 0; i < sall; i++)
-    {
-        allele.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
-    }
+	
 }
 
 // operator overload
@@ -72,15 +68,4 @@ int Allele::all_size() const
     return sall;
 }
 
-
-void Allele::make_mutation(int loc)
-{
-    // A mutation affects randomly one of the "sites" of the allele
-
-    Architecture * archi = Architecture::Get();
-
-    int mutated_site = floor(all_size()*Random::randnum());
-    double modifier = archi->mutation_sd(loc) * Random::randgauss();
-    allele[mutated_site] += modifier;
-}
 

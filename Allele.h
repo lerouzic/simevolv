@@ -23,14 +23,14 @@
 class Allele
 {
     friend class Haplotype;
-    friend class Architecture;
+    friend class Architecture; 
     friend class ArchiAdditive;
     friend class ArchiMultilinear;
 	
 	public :
 	    //constructors/destructor
 	    Allele();
-	    Allele(const ParameterSet &);
+	    Allele(const std::vector<double>);
 	
 	    //operator overload
 	    int operator== (const Allele&) const;
@@ -38,7 +38,6 @@ class Allele
 	
 	    //functions
 	    int all_size() const;
-	    void make_mutation(int);
 	
 	protected :
 	    std::vector<double> allele;
