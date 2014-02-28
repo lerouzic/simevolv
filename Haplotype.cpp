@@ -40,6 +40,7 @@ Haplotype::Haplotype()
     }
 }
 
+
 Haplotype::Haplotype(const ParameterSet & param)
 {
     int nloc = Haplotype::nb_loc();
@@ -52,17 +53,20 @@ Haplotype::Haplotype(const ParameterSet & param)
     }
 }
 
+
 Haplotype::Haplotype(const Haplotype & templ)
 	: haplotype(templ.haplotype)
 {
 	
 }
 
+
 Haplotype::Haplotype(const vector<shared_ptr<Allele> > & vectalleles)
 	: haplotype(vectalleles)
 {
 	
 }
+
 
 // operator overload
 

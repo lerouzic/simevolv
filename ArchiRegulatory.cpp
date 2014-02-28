@@ -60,11 +60,6 @@ ArchiRegulatory::ArchiRegulatory(const ParameterSet& param)
 }
 
 
-// operator overload
- 
-
-
-
 // functions
 
 double ArchiRegulatory::init_value() const
@@ -72,46 +67,62 @@ double ArchiRegulatory::init_value() const
 	return init;
 }
 
+
 static unsigned int count_init = 0;
 
-vector<double> ArchiRegulatory::create_pattern() const
+vector<double> ArchiRegulatory::init_pattern() const
 {
 	count_init++;
-	vector<double> pattern;
+	vector<double> allele;
 	
 	for (int n=0 ; n<sall ; n++)
 	{
 		double value = Random::randnum();
 		if (value < connectivity)
 		{
-			pattern.push_back(1);
+			allele.push_back(1);
 		}
 		else
 		{
-			pattern.push_back(0);
+			allele.push_back(0);
 		}
 	}
-	
-	for (unsigned int i=0 ; i<pattern.size() ; i++)
-	{
-		pattern[i] *= Random::randgauss();
-	}
-	
-	for (unsigned int i = 0 ; i < pattern.size() ; i++) 
-	{
-		std::cout << pattern[i] << "\t";
-	}
-	std::cout << "\n";
-	
+		
 	std::cout << count_init << "\n";
-	return pattern;
+	return(allele);
 }
 
 
 Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 {
-	vector<double> truc	= create_pattern();
-	return Phenotype(truc);
+	ParameterSet param;
+	
+	//~ vector<vector<double> > matrix;
+	//~ for (int i=0 ; i<nb_loc() ; i++)
+	//~ {
+		//~ matrix.push_back(init_pattern());
+	//~ }
+	
+	vector<shared_ptr<Allele> > pmatrix;
+	for (int i=0 ; i<nb_loc() ; i++)
+	{
+		pmatrix.push_back(Allele(init_pattern()));
+	}
+
+
+	Haplotype haplotype;
+	for (int i=0 ; i<(param.getpar(INIT_PSIZE)->GetInt()) ; i++)
+	{
+		for (int g=0 ; g<2 ; g++)
+		{
+			for (int n=0 ; n<nb_loc() ; n++)
+			{
+				haplotype.push_back(pmatrix[n]);
+			} 
+		}
+	}
+	
+	return (haplotype[1]);
 	
 	
 	

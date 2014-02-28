@@ -30,11 +30,9 @@ class ArchiRegulatory : public Architecture
 	    ArchiRegulatory(const ParameterSet&);
 	    ~ArchiRegulatory() {}
 		
-		//operator overload
-
 	    //functions
 	    double init_value() const;
-	    std::vector<double> create_pattern() const;
+		std::vector<double> init_pattern() const;
 	    Phenotype phenotypic_value(const Genotype&) const;
 	
 	protected :
