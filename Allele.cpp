@@ -60,12 +60,23 @@ int Allele::operator!=(const Allele& other) const
 
 // functions
 
-int Allele::all_size() const
+unsigned int Allele::all_size() const
 {
     Architecture * archi = Architecture::Get();
     int sall = archi -> all_size();
 
     return sall;
+}
+
+vector<double> Allele::combine_add(const Allele & a1, const Allele & a2) 
+// Static function
+{
+	vector<double> ans;
+	unsigned int all_size =  a1.allele.size();
+	for (unsigned int sa = 0; sa < all_size; sa++) {
+		ans.push_back(0.5*(a1.allele[sa] + a2.allele[sa]));
+	}
+	return(ans);
 }
 
 

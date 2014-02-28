@@ -116,6 +116,14 @@ void ArchiRegulatory::init_connectivity_matrix(const ParameterSet & param)
 
 Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 {
+	vector<vector<double> > matrix;
+	
+	for (unsigned int loc = 0; loc < nb_loc(); loc++) {
+		matrix.push_back(Allele::combine_add(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
+	}
+	
+	
+	
 	//~ ParameterSet param;
 	//~ 
 	//~ vector<vector<double> > matrix;

@@ -38,7 +38,8 @@ class Allele
 	    int operator!= (const Allele&) const;
 	
 	    //functions
-	    int all_size() const;
+	    unsigned int all_size() const;
+		static std::vector<double> combine_add(const Allele &, const Allele &);
 	
 	protected :
 	    std::vector<double> allele;
