@@ -32,10 +32,10 @@ class ArchiMultilinear : public Architecture
 	    friend std::ostream& operator << (std::ostream&, const Architecture&);
 	
 	    //functions
-	    double get_epsilon2(int, int) const;
-	    double get_epsilon3(int, int, int) const;
-	    void set_epsilon2(int, int, double);
-	    void set_epsilon3(int, int, int, double);
+	    double get_epsilon2(unsigned int, unsigned int) const;
+	    double get_epsilon3(unsigned int, unsigned int, unsigned int) const;
+	    void set_epsilon2(unsigned int, unsigned int, double);
+	    void set_epsilon3(unsigned int, unsigned int, unsigned int, double);
 	    std::string print_epsilon2() const;
 	    std::string print_epsilon3() const;
 	

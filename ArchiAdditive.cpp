@@ -80,16 +80,16 @@ ostream& operator << (ostream& out, const ArchiAdditive& archi)
 
 Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
 {
-    int nloc = nb_loc();
-    int sall = all_size();
+    unsigned int nloc = nb_loc();
+    unsigned int sall = all_size();
     vector<double> sumall_father(nloc);
     vector<double> sumall_mother(nloc);
     vector<double> sumloc(nloc);
     double phenotype=0.0;
 
-    for (int loc = 0 ; loc < nloc ; loc++)
+    for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
-        for (int all = 0 ; all < sall ; all++)
+        for (unsigned int all = 0 ; all < sall ; all++)
         {
             sumall_father[loc] += genotype.gam_father.haplotype[loc]->allele[all];
             sumall_mother[loc] += genotype.gam_mother.haplotype[loc]->allele[all];
@@ -98,7 +98,7 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
         }
     }
 
-    for (int loc = 0; loc < nloc; loc++)
+    for (unsigned int loc = 0; loc < nloc; loc++)
     {
         phenotype += sumloc[loc];
     }

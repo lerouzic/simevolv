@@ -52,7 +52,7 @@ Architecture::Architecture(const ParameterSet& param)
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
 {
-    for (int i = 0; i < nloc; i++)
+    for (unsigned int i = 0; i < nloc; i++)
     {
         mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
@@ -125,19 +125,19 @@ ostream& operator << (ostream& out, const Architecture& archi)
 
 // functions
 
-int Architecture::nb_loc() const
+unsigned int Architecture::nb_loc() const
 {
     return nloc;
 }
 
 
-int Architecture::all_size() const
+unsigned int Architecture::all_size() const
 {
     return sall;
 }
 
 
-double Architecture::mutation_rate(int locus) const
+double Architecture::mutation_rate(unsigned int locus) const
 {
     assert (locus >= 0);
     assert (locus < nloc);
@@ -145,7 +145,7 @@ double Architecture::mutation_rate(int locus) const
 }
 
 
-double Architecture::mutation_sd(int locus) const
+double Architecture::mutation_sd(unsigned int locus) const
 {
     assert(locus >= 0);
     assert(locus < nloc);
@@ -153,7 +153,7 @@ double Architecture::mutation_sd(int locus) const
 }
 
 
-double Architecture::recombination_rate(int locus) const
+double Architecture::recombination_rate(unsigned int locus) const
 {
     assert(locus >=0);
     assert(locus < nloc-1);
@@ -163,10 +163,11 @@ double Architecture::recombination_rate(int locus) const
 
 // for inheritance (virtual function)
 
-shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param) const 
+shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigned int loc /* = 0 */) const 
 {
+	// Here we don't need to know the locus, but inherited classes may.
 	vector<double> tmp;
-	for(int i = 0; i < sall; i++)
+	for(unsigned int i = 0; i < sall; i++)
     {
         tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
     }

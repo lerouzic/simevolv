@@ -26,22 +26,22 @@ class ArchiRegulatory : public Architecture
 	public :
 	    //constructors/destructor
 	    ArchiRegulatory();
-	    ArchiRegulatory(const Architecture&);
 	    ArchiRegulatory(const ParameterSet&);
 	    ~ArchiRegulatory() {}
 		
-	    //functions
-	    double init_value() const;
-		std::vector<double> init_pattern() const;
+		// Inherited functions
 	    Phenotype phenotypic_value(const Genotype&) const;
+		std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
 	
 	protected :
-		int sall;
-		int init;
+		unsigned int sall;
 		std::vector<double> so;
-		int timesteps;
+		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
+		unsigned int timesteps;
 		double basal;
-		double connectivity;
+		
+	    //functions
+		void init_connectivity_matrix(const ParameterSet &);		
 
 };
 

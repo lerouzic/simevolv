@@ -37,98 +37,119 @@ ArchiRegulatory::ArchiRegulatory()
     assert(false); // The default constructor should never be used.
 }
 
-
-ArchiRegulatory::ArchiRegulatory(const Architecture& archi)
-{
-    assert(false); // The copy constructor should never be used.
-}
-
-
 ArchiRegulatory::ArchiRegulatory(const ParameterSet& param) 
     : Architecture(param)
     , sall(nb_loc())
-    , init(5)
-    , so(vector<double>(0))
     , timesteps(4)
     , basal(0.1)
-    , connectivity(0.1)
 {
-	for (int n=0; n<nb_loc(); n++)
+	/* Update when the parameter file will be OK */
+	
+	init_connectivity_matrix(param); // creates connectivity_matrix
+
+	for (unsigned int n=0; n<nb_loc(); n++)
 	{
-		so.push_back(init_value());
+		so.push_back(basal);
 	}	
 }
 
-
-// functions
-
-double ArchiRegulatory::init_value() const
+shared_ptr<Allele> ArchiRegulatory::allele_init(const ParameterSet & param, unsigned int loc) const
 {
-	return init;
-}
-
-
-static unsigned int count_init = 0;
-
-vector<double> ArchiRegulatory::init_pattern() const
-{
-	count_init++;
-	vector<double> allele;
-	
-	for (int n=0 ; n<sall ; n++)
-	{
-		double value = Random::randnum();
-		if (value < connectivity)
-		{
-			allele.push_back(1);
-		}
-		else
-		{
-			allele.push_back(0);
+	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
+	vector<double> temp_allele;
+	for (unsigned int i = 0; i < sall; i++) {
+		assert(connectivity_matrix.size() > loc);
+		assert(connectivity_matrix[loc].size() > i);
+		if (connectivity_matrix[loc][i] == 0.0) {
+			temp_allele.push_back(0.0);
+		} else {
+			double value;
+			if (clonal) {
+				value = connectivity_matrix[loc][i];
+			} else {
+				value = param.getpar(INIT_ALLELES) -> GetDouble();
+			}
+			temp_allele.push_back(value);
 		}
 	}
-		
-	std::cout << count_init << "\n";
-	return(allele);
+	shared_ptr<Allele> a (new Allele(temp_allele));
+	return(a);
 }
+
+
+// (protected) functions
+
+static unsigned int count_init = 0; // debug instruction
+
+void ArchiRegulatory::init_connectivity_matrix(const ParameterSet & param)
+{
+	count_init++; // debug instruction;
+	
+	double connectivity = 0.5;
+	//  = param.getpar(INIT_CONNECT)->GetDouble();
+	// bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
+	
+	for (unsigned int loc = 0; loc < nb_loc(); loc++) {
+		vector<double> allele_pattern;
+		for (unsigned int n=0 ; n<sall ; n++)
+		{
+			if (Random::randnum() < connectivity)
+			{
+				// This has some interest only in clonal populations.
+				// In non-clonal pops, this value will be overwritten anyway.
+				// double value = 1.0 // in non-clonal, this would be enough.
+				double value = param.getpar(INIT_ALLELES) -> GetDouble();
+				allele_pattern.push_back(value);
+
+			}
+			else
+			{
+				allele_pattern.push_back(0);
+			}
+		}
+		connectivity_matrix.push_back(allele_pattern);		
+	}
+	std::cout << count_init << "\n";
+}
+
 
 
 Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 {
-	ParameterSet param;
-	
+	//~ ParameterSet param;
+	//~ 
 	//~ vector<vector<double> > matrix;
 	//~ for (int i=0 ; i<nb_loc() ; i++)
 	//~ {
 		//~ matrix.push_back(init_pattern());
 	//~ }
-	
-	vector<shared_ptr<Allele> > pmatrix;
-	for (int i=0 ; i<nb_loc() ; i++)
-	{
-		pmatrix.push_back(Allele(init_pattern()));
-	}
-
-
-	Haplotype haplotype;
-	for (int i=0 ; i<(param.getpar(INIT_PSIZE)->GetInt()) ; i++)
-	{
-		for (int g=0 ; g<2 ; g++)
-		{
-			for (int n=0 ; n<nb_loc() ; n++)
-			{
-				haplotype.push_back(pmatrix[n]);
-			} 
-		}
-	}
-	
-	return (haplotype[1]);
-	
-	
-	
-	
-	
-	
+	//~ 
+	//~ vector<shared_ptr<Allele> > pmatrix;
+	//~ for (int i=0 ; i<nb_loc() ; i++)
+	//~ {
+		//~ pmatrix.push_back(Allele(init_pattern()));
+	//~ }
+//~ 
+//~ 
+	//~ Haplotype haplotype;
+	//~ for (int i=0 ; i<(param.getpar(INIT_PSIZE)->GetInt()) ; i++)
+	//~ {
+		//~ for (int g=0 ; g<2 ; g++)
+		//~ {
+			//~ for (int n=0 ; n<nb_loc() ; n++)
+			//~ {
+				//~ haplotype.push_back(pmatrix[n]);
+			//~ } 
+		//~ }
+	//~ }
+	//~ 
+	//~ return (haplotype[1]);
+	//~ 
+	//~ 
+	//~ 
+	//~ 
+	//~ 
+	//~ 
 	//~ vector<int> st;
 	//~ vector<int> h;
 	//~ for (int t=0 ; t<timesteps ;t++)

@@ -43,7 +43,7 @@ public :
     int operator!= (const Haplotype&) const;
 
     //functions
-    int nb_loc() const;
+    unsigned int nb_loc() const;
     void draw_mutation();				// draws a mutation according to the mutation rate
     void make_mutation(); 				// makes a mutation at a random locus
     void make_mutation(unsigned int); 	// makes a mutation at a specific locus

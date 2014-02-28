@@ -46,9 +46,9 @@ Haplotype::Haplotype(const ParameterSet & param)
     int nloc = Haplotype::nb_loc();
     Architecture * archi = Architecture::Get();
     
-    for(int i = 0; i < nloc; i++)
+    for(int loc = 0; loc < nloc; loc++)
     {
-		shared_ptr<Allele> a = archi->allele_init(param);
+		shared_ptr<Allele> a = archi->allele_init(param, loc);
         haplotype.push_back(a);
     }
 }
@@ -84,10 +84,10 @@ int Haplotype::operator!=(const Haplotype& other) const
 
 // functions
 
-int Haplotype::nb_loc() const
+unsigned int Haplotype::nb_loc() const
 {
     Architecture * archi = Architecture::Get();
-    int nloc = archi -> nb_loc();
+    unsigned int nloc = archi -> nb_loc();
 
     return nloc;
 }
@@ -96,7 +96,7 @@ int Haplotype::nb_loc() const
 void Haplotype::draw_mutation()
 {
     Architecture * archi = Architecture::Get();
-    for (int loc = 0; loc < nb_loc(); loc++)
+    for (unsigned int loc = 0; loc < nb_loc(); loc++)
     {
         if (Random::randnum() < archi->mutation_rate(loc))
         // This is not really efficient (many drawings with low probabilities)

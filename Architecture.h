@@ -47,22 +47,22 @@ class Architecture // Pure virtual class
 	    static Architecture* Get();
 	
 	    //functions
-	    int nb_loc() const;
-	    int all_size() const;
-	    double mutation_rate(int) const;
-	    double mutation_sd(int) const;
-	    double recombination_rate(int) const;
+	    unsigned int nb_loc() const;
+	    unsigned int all_size() const;
+	    double mutation_rate(unsigned int) const;
+	    double mutation_sd(unsigned int) const;
+	    double recombination_rate(unsigned int) const;
 	    		
 		//inheritance
 	    virtual Phenotype phenotypic_value(const Genotype&) const = 0;
-	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &) const;
+	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
 	    virtual std::shared_ptr<Allele> allele_mutation(const Allele &, unsigned int loc = 0) const;
 
 	
 	protected :
 	    GeneticMap gmap;
-	    int nloc;
-	    int sall;
+	    unsigned int nloc;
+	    unsigned int sall;
 	    std::vector<double> mutrate;
 	    std::vector<double> mutsd;
 
