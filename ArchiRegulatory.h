@@ -35,7 +35,7 @@ class ArchiRegulatory : public Architecture
 	
 	protected :
 		unsigned int sall;
-		std::vector<double> so;
+		std::vector<double> So;
 		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
 		double basal;

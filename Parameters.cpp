@@ -331,9 +331,7 @@ void ParameterSet::initialize()
     parameters[GENET_MUTRATES] = new Parameter_vector_double(0.0, 1.0);
     parameters[GENET_MUTSD] = new Parameter_vector_double(0.0, 999.9);
     parameters[GENET_RECRATES] = new Parameter_vector_double(0.0, 0.5);
-    parameters[GENET_EPSILON2] = new Parameter_gaussian(-999.9, 999.9, 999.9);
-    parameters[GENET_EPSILON3] = new Parameter_gaussian(-999.9, 999.9, 999.9);
-
+    
     // Initial population parameters
     parameters[INIT_PSIZE] = new Parameter_int(1, 1000*1000);
     parameters[INIT_ALLELES] = new Parameter_gaussian(-999.9,999.9,999.9);
@@ -343,7 +341,6 @@ void ParameterSet::initialize()
     parameters[ENVIRO_SD] = new Parameter_double(0.0, 999.9);
 
     // Fitness parameters
-    
     parameters[FITNESS_TYPE] = new Parameter_string(FT_options);
     parameters[FITNESS_STRENGTH] = new Parameter_double(-1000.*1000., 1000.*1000.);
     parameters[FITNESS_OPTIMUM] = new Parameter_double(-999.9, 999.9);
@@ -358,6 +355,16 @@ void ParameterSet::initialize()
     // Output measurements
     parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 100*1000);
     parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 100*1000);
+    
+    // Multilinear architecture
+    parameters[GENET_EPSILON2] = new Parameter_gaussian(-999.9, 999.9, 999.9);
+    parameters[GENET_EPSILON3] = new Parameter_gaussian(-999.9, 999.9, 999.9);
+    
+    // Regulatory architecture
+    parameters[INIT_CONNECT] = new Parameter_double(0.0, 1.0);
+	parameters[INIT_BASAL] = new Parameter_double(-1.0, 1.0);
+	parameters[DEV_TIMESTEPS] = new Parameter_int(0, 100*1000);
+
 }
 
 

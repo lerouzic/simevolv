@@ -27,6 +27,10 @@
 #include <cassert>
 #include <algorithm>
 
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
 using namespace std;
 
 
@@ -37,21 +41,21 @@ ArchiRegulatory::ArchiRegulatory()
     assert(false); // The default constructor should never be used.
 }
 
+
 ArchiRegulatory::ArchiRegulatory(const ParameterSet& param) 
     : Architecture(param)
     , sall(nb_loc())
-    , timesteps(4)
-    , basal(0.1)
+    , timesteps(param.getpar(DEV_TIMESTEPS)->GetDouble())
+    , basal(param.getpar(INIT_BASAL)->GetDouble())
 {
-	/* Update when the parameter file will be OK */
-	
 	init_connectivity_matrix(param); // creates connectivity_matrix
 
 	for (unsigned int n=0; n<nb_loc(); n++)
 	{
-		so.push_back(basal);
+		So.push_back(basal);
 	}	
 }
+
 
 shared_ptr<Allele> ArchiRegulatory::allele_init(const ParameterSet & param, unsigned int loc) const
 {
@@ -79,28 +83,27 @@ shared_ptr<Allele> ArchiRegulatory::allele_init(const ParameterSet & param, unsi
 
 // (protected) functions
 
-static unsigned int count_init = 0; // debug instruction
+//static unsigned int count_init = 0; // debug instruction
+
 
 void ArchiRegulatory::init_connectivity_matrix(const ParameterSet & param)
 {
-	count_init++; // debug instruction;
+	//count_init++; // debug instruction;
 	
-	double connectivity = 0.5;
-	//  = param.getpar(INIT_CONNECT)->GetDouble();
-	// bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
+	double connectivity = param.getpar(INIT_CONNECT)->GetDouble();
+	//bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
 	
-	for (unsigned int loc = 0; loc < nb_loc(); loc++) {
+	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
+	{
 		vector<double> allele_pattern;
 		for (unsigned int n=0 ; n<sall ; n++)
 		{
 			if (Random::randnum() < connectivity)
 			{
-				// This has some interest only in clonal populations.
-				// In non-clonal pops, this value will be overwritten anyway.
-				// double value = 1.0 // in non-clonal, this would be enough.
+				// This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
+				// double value = 1.0 		// in non-clonal, this would be enough.
 				double value = param.getpar(INIT_ALLELES) -> GetDouble();
 				allele_pattern.push_back(value);
-
 			}
 			else
 			{
@@ -109,74 +112,70 @@ void ArchiRegulatory::init_connectivity_matrix(const ParameterSet & param)
 		}
 		connectivity_matrix.push_back(allele_pattern);		
 	}
-	std::cout << count_init << "\n";
+	//std::cout << count_init << "\n";
 }
-
 
 
 Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 {
+	// creation of the W matrix;
 	vector<vector<double> > matrix;
-	
-	for (unsigned int loc = 0; loc < nb_loc(); loc++) {
+	for (unsigned int loc=0; loc < nb_loc(); loc++) 
+	{
 		matrix.push_back(Allele::combine_add(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
 	}
 	
+	// creation of the w_matrix and st_vector for using ublas 
+	using namespace boost::numeric::ublas;
 	
+	unsigned int nloc = nb_loc();
+	boost::numeric::ublas::vector<double> St(nloc);
+	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
+		
+	for (unsigned int i=0 ; i<nloc ; i++)
+	{
+		St(i) = So[i];
+	}
 	
-	//~ ParameterSet param;
-	//~ 
-	//~ vector<vector<double> > matrix;
-	//~ for (int i=0 ; i<nb_loc() ; i++)
-	//~ {
-		//~ matrix.push_back(init_pattern());
-	//~ }
-	//~ 
-	//~ vector<shared_ptr<Allele> > pmatrix;
-	//~ for (int i=0 ; i<nb_loc() ; i++)
-	//~ {
-		//~ pmatrix.push_back(Allele(init_pattern()));
-	//~ }
-//~ 
-//~ 
-	//~ Haplotype haplotype;
-	//~ for (int i=0 ; i<(param.getpar(INIT_PSIZE)->GetInt()) ; i++)
-	//~ {
-		//~ for (int g=0 ; g<2 ; g++)
-		//~ {
-			//~ for (int n=0 ; n<nb_loc() ; n++)
-			//~ {
-				//~ haplotype.push_back(pmatrix[n]);
-			//~ } 
-		//~ }
-	//~ }
-	//~ 
-	//~ return (haplotype[1]);
-	//~ 
-	//~ 
-	//~ 
-	//~ 
-	//~ 
-	//~ 
-	//~ vector<int> st;
-	//~ vector<int> h;
-	//~ for (int t=0 ; t<timesteps ;t++)
-	//~ {
-		//~ if (t==0)
-		//~ {
-			//~ h = so * w;
-			//~ if (h<0) {st = -1 * h;}
-			//~ else if (h>0) {st = 1 * h;}
-			//~ else {st = O * h;}
-		//~ }
-		//~ else
-		//~ {
-			//~ h = st * w;
-			//~ if (h<0) {st = -1 * h;}
-			//~ else if (h>0) {st = 1 * h;}
-			//~ else {st = O * h;}
-		//~ }
-	//~ }
-	//~ return st;
-
+	for (unsigned int i=0; i<nloc; i++) 
+	{
+        for (unsigned int j=0; j<nloc; j++) 
+        {
+            W(i,j) = matrix[i][j];
+        }
+	}
+		
+	// simulation
+	boost::numeric::ublas::vector<double> h(nloc);
+	double hsum =0;
+	
+	for (unsigned int t=0 ; t<timesteps ;t++)
+	{
+		h = prod(St,W);
+		for (unsigned int i=0 ; i<h.size() ; i++)
+		{
+			hsum += h(i);
+			if (hsum<0) 
+			{
+				St(i) = -1*h(i);
+			}
+			else if (hsum>0) 
+			{
+				St(i) = 1*h(i);
+			}
+			else 
+			{
+				St(i) = 0*h(i);
+			}
+		}
+	}
+	
+	// output
+	std::vector<double> Sf;
+	for (unsigned int i=0 ; i<nloc ; i++)
+	{
+		Sf[i] = St(i);
+	}
+	
+	return Phenotype(Sf);
 }
