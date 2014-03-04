@@ -126,7 +126,7 @@ Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 	}
 	
 	// creation of the w_matrix and st_vector for using ublas 
-	using namespace boost::numeric::ublas;
+	//using namespace boost::numeric::ublas;
 	
 	unsigned int nloc = nb_loc();
 	boost::numeric::ublas::vector<double> St(nloc);
@@ -147,25 +147,23 @@ Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 		
 	// simulation
 	boost::numeric::ublas::vector<double> h(nloc);
-	double hsum =0;
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
 		h = prod(St,W);
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			hsum += h(i);
-			if (hsum<0) 
+			if (h(i)<0) 
 			{
-				St(i) = -1*h(i);
+				St(i) = -1.;
 			}
-			else if (hsum>0) 
+			else if (h(i)>0) 
 			{
-				St(i) = 1*h(i);
+				St(i) = 1.;
 			}
 			else 
 			{
-				St(i) = 0*h(i);
+				St(i) = 0.;
 			}
 		}
 	}
@@ -174,7 +172,7 @@ Phenotype ArchiRegulatory::phenotypic_value (const Genotype& genotype) const
 	std::vector<double> Sf;
 	for (unsigned int i=0 ; i<nloc ; i++)
 	{
-		Sf[i] = St(i);
+		Sf.push_back(St(i));
 	}
 	
 	return Phenotype(Sf);
