@@ -117,7 +117,7 @@ $(OBJDIR_DEBUG)/ArchiMultilinear.o: ArchiMultilinear.cpp
 $(OBJDIR_DEBUG)/ArchiAdditive.o: ArchiAdditive.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiAdditive.cpp -o $(OBJDIR_DEBUG)/ArchiAdditive.o
 
-$(OBJDIR_DEBUG)/ArchiRegulatoryWagner.o: ArchiRegulatoryMatrix.cpp
+$(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o
 
 
@@ -194,7 +194,7 @@ $(OBJDIR_RELEASE)/ArchiMultilinear.o: ArchiMultilinear.cpp
 $(OBJDIR_RELEASE)/ArchiAdditive.o: ArchiAdditive.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiAdditive.cpp -o $(OBJDIR_RELEASE)/ArchiAdditive.o
 
-$(OBJDIR_RELEASE)/ArchiRegulatoryWagner.o: ArchiRegulatoryMatrix.cpp
+$(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o
 
 clean_release: 

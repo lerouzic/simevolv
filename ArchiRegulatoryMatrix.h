@@ -52,7 +52,7 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	public :
 	    //constructors/destructor
 	    ArchiWagner() {assert(false);}
-	    ArchiWagner(const ParameterSet&) : ArchiRegulatoryMatrix(param) {}
+	    ArchiWagner(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
 	    ~ArchiWagner() {}
 		
 		// Inherited functions
@@ -69,7 +69,7 @@ class ArchiMasel : public ArchiRegulatoryMatrix
 	public :
 	    //constructors/destructor
 	    ArchiMasel() {assert(false);}
-	    ArchiMasel(const ParameterSet&) : ArchiRegulatoryMatrix(param) {}
+	    ArchiMasel(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
 	    ~ArchiMasel() {}
 		
 		// Inherited functions
