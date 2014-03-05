@@ -1,5 +1,7 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
+
 
 /***************************************************************************
  *                                                                         *
@@ -12,29 +14,26 @@
 
 
 
-#ifndef MAIN_H_INCLUDED
-#define MAIN_H_INCLUDED
+#ifndef ARCHIWAGNER_H_INCLUDED
+#define ARCHIWAGNER_H_INCLUDED
 
-
-
-#include "Parameters.h"
-#include "Parconst.h"
-#include "OutputFormat.h"
-#include "Architecture.h"
-#include "ArchiAdditive.h"
-#include "ArchiMultilinear.h"
 #include "ArchiRegulatoryWagner.h"
-#include "ArchiWagner.h"
-#include "ArchiMasel.h"
-#include "GeneticMap.h"
-#include "Allele.h"
-#include "Haplotype.h"
-#include "Genotype.h"
-#include "Individual.h"
-#include "Population.h"
-#include "Environment.h"
-#include "Fitness.h"
-#include "Random.h"
 
 
-#endif // MAIN_H_INCLUDED
+
+class ArchiWagner : public ArchiRegulatoryWagner
+{
+	public :
+	    //constructors/destructor
+	    ArchiWagner();
+	    ArchiWagner(const ParameterSet&);
+	    ~ArchiWagner() {}
+		
+		// Inherited functions
+	    Phenotype phenotypic_value(const Genotype&) const;
+			
+	protected :
+		
+};
+
+#endif // ARCHIWAGNER_H_INCLUDED

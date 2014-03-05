@@ -14,35 +14,26 @@
 
 
 
-#ifndef ARCHIREGULATORY_H_INCLUDED
-#define ARCHIREGULATORY_H_INCLUDED
+#ifndef ARCHIMASEL_H_INCLUDED
+#define ARCHIMASEL_H_INCLUDED
 
-#include "Architecture.h"
+#include "ArchiRegulatoryWagner.h"
 
 
 
-class ArchiRegulatory : public Architecture
+class ArchiMasel : public ArchiRegulatoryWagner
 {
 	public :
 	    //constructors/destructor
-	    ArchiRegulatory();
-	    ArchiRegulatory(const ParameterSet&);
-	    ~ArchiRegulatory() {}
+	    ArchiMasel();
+	    ArchiMasel(const ParameterSet&);
+	    ~ArchiMasel() {}
 		
 		// Inherited functions
 	    Phenotype phenotypic_value(const Genotype&) const;
-		std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
-	
+			
 	protected :
-		unsigned int sall;
-		std::vector<double> So;
-		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
-		unsigned int timesteps;
-		double basal;
 		
-	    //functions
-		void init_connectivity_matrix(const ParameterSet &);		
-
 };
 
-#endif // ARCHIREGULATORY_H_INCLUDED
+#endif // ARCHIMASEL_H_INCLUDED

@@ -16,6 +16,9 @@
 #include "Architecture.h"
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
+#include "ArchiRegulatoryWagner.h"
+#include "ArchiWagner.h"
+#include "ArchiMasel.h"
 #include "Parconst.h"
 #include "Random.h"
 #include "main.h"
@@ -85,9 +88,13 @@ void Architecture::initialize(const ParameterSet& param)
     {
         Architecture::instance = new ArchiMultilinear(param);
     }
-    else if (type_archi==AR_reg)
+    else if (type_archi==AR_regwag)
     {
-        Architecture::instance = new ArchiRegulatory(param);
+        Architecture::instance = new ArchiWagner(param);
+    }
+    else if (type_archi==AR_regmas)
+    {
+        Architecture::instance = new ArchiMasel(param);
     }
     else
     {

@@ -83,8 +83,9 @@ const std::vector<std::string> FF_options = boost::assign::list_of (FF_nofluct)(
 // Architecture types
 const std::string AR_add = "additive";
 const std::string AR_mult = "multilinear";
-const std::string AR_reg = "regulatory";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_reg);
+const std::string AR_regwag = "regwagner";
+const std::string AR_regmas = "regmasel";
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_regwag)(AR_regmas);
 
 
 #endif // PARCONST_H_INCLUDED
