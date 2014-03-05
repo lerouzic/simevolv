@@ -30,7 +30,7 @@ class Haplotype
     friend class Architecture;
     friend class ArchiAdditive;
     friend class ArchiMultilinear;
-    friend class ArchiRegulatoryWagner;
+    friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
     friend class ArchiMasel;  
 
