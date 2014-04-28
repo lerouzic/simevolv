@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -15,6 +15,7 @@
 
 #include "main.h"
 #include "Population.h"
+#include "Individual.h"
 #include "Fitness.h"
 #include "OutputFormat.h"
 #include "Parconst.h"
@@ -32,15 +33,15 @@ using namespace std;
 
 
 
-// constructors and destructor
+// constructors (note: most are useless)
 
-/* default constructor */
+/* default constructor (necessary a build a population individual by individual, but might reflect a design error) */ 
 Population::Population()
 {
 }
 
 
-/* constructor using the population size */
+/* constructor using the population size (full of default individuals) */
 Population::Population(long int size)
 {
     for (long int i = 0; i <= size; i++)
@@ -51,7 +52,7 @@ Population::Population(long int size)
 }
 
 
-/* copy constructor */
+/* copy constructor. Warning: it should be updated when the class changes, along with the assignement operator */ 
 Population::Population(const Population & copy)
     : pop(copy.pop)
     , nb_canal_test(copy.nb_canal_test)
@@ -67,7 +68,7 @@ Population::Population(const std::vector<Individual>& vecindiv)
 }
 
 
-/* constructor using the parameters from the Paramers files */
+/* constructor using the parameters from the Parameters files -- the only useful one, probably*/
 Population::Population(const ParameterSet& param)
 {
     initialize(param);
@@ -75,7 +76,7 @@ Population::Population(const ParameterSet& param)
 
 
 
-// operator overload
+// assigment operator overload. Should be updated as the same time as the copy constructor. 
 
 Population & Population::operator=(const Population& copy)
 {
@@ -91,16 +92,14 @@ Population & Population::operator=(const Population& copy)
 
 // instance and initialization
 
-/* initialization of the population system and parameters */
+/* initialization of the population from parameters */
 void Population::initialize(const ParameterSet& param)
 {	
     int popsize = param.getpar(INIT_PSIZE)->GetInt();
-    //pop.resize(popsize);
     for (long int i = 0; i < popsize; i++)
     {
         Individual indiv(param);
         pop.push_back(indiv);
-        //cout << i << endl;
     }
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
@@ -110,29 +109,31 @@ void Population::initialize(const ParameterSet& param)
 
 // functions
 
-double fun_sqrt(double x) // I don't remember why this stupid function was necessary???
-{
-    return(std::sqrt(x));
-}
-
-
-/* reproduction of the population to give a new one */
-Population Population::reproduce(long int offspr_number) const
+/* Sexual reproduction of the population 
+     returns the offspring population (of size offspr_number) */
+Population Population::reproduce(long int offspr_number /* = 0 */) const
 {
     Population offspring;
-    offspring.nb_canal_test = nb_canal_test; // Strange design, but otherwise the information is lost
+    
+    // Information about the number of canalization and heritability tests
+    // is transmitted to the offspring. Strange design, but the Population
+    // class does not save a copy of the parameter set. 
+    offspring.nb_canal_test = nb_canal_test; 
     offspring.nb_herit_test = nb_herit_test;
+    
+    // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<double> cumul_fit = cumul_fitness();
 
     if (offspr_number == 0)
-    {
-        offspr_number = size();
+    {	// When the population size is not provided, it is expected to be
+		// the same as in the parental population.
+        offspr_number = this->size();
     }
-
-    // offspring.pop.resize(offspr_number);
 
     for (long int i = 0; i < offspr_number; i++)
     {
+		// Each offspring results from a cross between two random parents.
+		// (Hermaphrodite, sexual individuals)
         offspring.pop.push_back(Individual::mate(
                                this->pick_parent(cumul_fit),
                                this->pick_parent(cumul_fit)));
@@ -142,10 +143,21 @@ Population Population::reproduce(long int offspr_number) const
 }
 
 
-/* ???? */
+/* Updates the status of the population. 
+   So far, the only variables that change are individual fitnesses.
+   For some fitness functions, the fitness can only be computed once the
+   population is fully known */
+/* Note: there would be a way to make this more elegant: disallow the
+   default constructor, and initialize the population in one step from
+   a vector of individuals. This may generate several minor issues, and
+   is probably not necessary */
 void Population::update(void)
 {
     double popvalue = Fitness::GetPopulationValue(*this);
+    // "population value" is a bit abstract and depends on
+    // the fitness function. Most of the time, this is the 
+    // population mean (but for truncation selection, this is
+    // the truncation point.
     for (vector<Individual>::iterator indiv = pop.begin();
             indiv != pop.end(); indiv++)
     {
@@ -154,22 +166,13 @@ void Population::update(void)
 }
 
 
-//~ vector<double> Population::phenotypes() const
-//~ {
-    //~ vector<double> pheno;
-    //~ for (vector<Individual>::const_iterator indiv = pop.begin();
-            //~ indiv != pop.end(); indiv++)
-    //~ {
-        //~ pheno.push_back(indiv->get_phenotype());
-    //~ }
-    //~ return(pheno);
-//~ }
 
-
-/* calculate and return the phenotypic mean value */
+/* calculates and returns the phenotypic mean value for the first phenotype */
+/* Note: so far, this function is unidimensional, which is quite
+   stupid in the new framework. There will be a bug here sooner or later! */
 double Population::mean_phenotype() const
 {
-	int focal_phen = 0; // Dirty, needs to be fixed at one point
+	int focal_phen = 0; // Dirty, needs to be fixed at one point.
 	vector<double> phen(pop.size());
 	for (unsigned int i = 0; i < pop.size(); i++) {
 		phen.push_back(pop[i].get_phenotype()[focal_phen]);
@@ -186,21 +189,26 @@ long int Population::size() const
 }
 
 
-/* ?????? */ 
+/* Generates a vector containing the cumulated sum of individual
+   fitnesses, in the same order as in the pop vector.
+   The purpose of this function is to fasten the reproduction algotrithm.
+   The function scales fitnesses such as the sum is 1.0 */ 
 vector<double> Population::cumul_fitness() const
 {
     vector<double> cum_fit(this->size());
-    double cumul = 0;
+    double cumul = 0.0;
 
-    vector<double>::iterator cc = cum_fit.begin();
-    for (vector<Individual>::const_iterator indiv = pop.begin();
+	// Warning, double loop over both individuals and cum_fit
+	// This is a bit overcomplicated. Why using iterators at all? 
+    auto cc = cum_fit.begin();
+    for (auto indiv = pop.begin();
             indiv != pop.end();
             indiv++, cc++)
     {
         cumul += indiv->get_fitness();
         *cc = cumul;
     }
-    for (vector<double>::iterator i = cum_fit.begin();
+    for (auto i = cum_fit.begin();
             i != cum_fit.end(); i++)
     {
         *i = *i/cumul;
@@ -209,16 +217,18 @@ vector<double> Population::cumul_fitness() const
 }
 
 
-/* ???? */
+/* Picks a parent randomly, proportionally to individual fitnesses. Requires a vector
+   of cumulated fitnesses. This function is just a wrapper for search_fit_table
+   (just in case several algorithms should be compared) */
 const Individual & Population::pick_parent(const vector<double>& cumfit) const
 {
-    // return(iterator_search_fit_table(rnum, cumfit));
     int i = search_fit_table(Random::randnum(), cumfit);
     return(pop[i]);
 }
 
 
-/* ???? */
+/* Returns the index of the individuals matching the random number 0 < rnum < 1, from the cumulated 
+   fitness vector. Several algorithms can be used here. */
 long int Population::search_fit_table(double rnum, const vector<double>& cumfit) const
 {
 	long int i = stl_search_fit_table(rnum, cumfit);
@@ -228,7 +238,8 @@ long int Population::search_fit_table(double rnum, const vector<double>& cumfit)
 }
 
 
-/* ???? */
+/* Old (and not efficient) search algorithm (sequential search: tries all sorted values until 
+   finding the proper one.  */
 long int Population::sequential_search_fit_table(double rnum, const vector<double>& cumfit) const
 {
     long int i = 0;
@@ -238,26 +249,28 @@ long int Population::sequential_search_fit_table(double rnum, const vector<doubl
 }
 
 
-/* ???? */
+/* New (and efficient) search algorithm based on a binary search (using the STL library). */
 long int Population::stl_search_fit_table(double rnum, const vector<double>& cumfit) const
 {
-    vector<double>::const_iterator solution = std::lower_bound(cumfit.begin(), cumfit.end(), rnum);
+    auto solution = std::lower_bound(cumfit.begin(), cumfit.end(), rnum);
     assert(solution != cumfit.end());
-    return(solution - cumfit.begin());
+    return(solution - cumfit.begin());  // Warning: this works with vector, but probably not with other STL containers. 
 }
 
 
 /* determines if there will be a mutation in the population */
+/* (just calls draw_mutation() on every single individual, not very original) */
 void Population::draw_mutation()
 {
     for (unsigned int i = 0; i < pop.size(); i++) {
         pop[i].draw_mutation();
     }
-    // population.pop.draw_mutation(population.pop);
 }
 
 
-/* force to make a mutation in the population */
+/* forces a mutation in the population */
+/* contrary to draw_mutation(), here there is no mutation rate involved: 
+   a mutation MUST occur in a random individual */
 void Population::make_mutation()
 {
     int ind = floor(Random::randnum()*pop.size());
@@ -306,23 +319,36 @@ void Population::write_simple(ostream & out) const
 }
 
 
-/* final summary of an analysis */
+/* Final summary of an analysis */
+/* This is the function that will generate the output file */
+/* Note that it is not only a display function: some potentially heavy calculation is run here */
 void Population::write_summary(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
 	vector<Phenotype> gen;
 	vector<double> fit;
 	
+	// stores vectors of phenotypic values, genotypic values, and fitnesses. 
 	for (unsigned int i = 0; i < pop.size(); i++) {
 		phen.push_back(pop[i].get_phenotype());
 		gen.push_back(pop[i].get_genot_value());
 		fit.push_back(pop[i].get_fitness());
 	}
 	
+	// Calls the multidimensional statistical routines for phenotypic and genotypic values
+	// Calls the unidimensional routine for fitnesses. 
 	PhenotypeStat phenstat(phen);
 	PhenotypeStat genstat(gen);
 	UnivariateStat fitstat(fit);	
 	
+	/* First generation: need to write the headers. 
+	   This is not extremely clean. 
+       * No warranty that the function is called all the time at the first
+         generation. If not, there will be no headers.
+       * This cannot be disabled, which can be annoying. 
+       * There is no double check that the headers actually match with the
+         content of the columns. This part of the code needs to be carefully
+         synchronized with the rest of the function! */
 	if (generation==1)
 	{ 
 		out << "Gen" << "\t";
@@ -352,6 +378,19 @@ void Population::write_summary(ostream & out, int generation) const
 		out << endl; 
    	}
 		
+  /* The real results are written now. For a n-dimensional phenotype:
+	 * Col 1: generation number
+	 * n following columns: phenotypic means
+	 * n following columns: phenotypic variances
+	 * following column: fitness mean
+	 * following column: fitness variance
+	 * following column: fitness optimum. If not relevant, something meaningless will be written anyway
+	 * n following columns: phenotype canalization score (if enabled)
+	 * following column: fitness canalization score (if enabled)
+	 * n following columns: heritability for the n phenotypes (if enabled)
+	 * following column: heritability for fitness (if enabled)
+  */
+		
 	out << generation << "\t";
     out << phenstat.means_phen() << "\t";
     out << phenstat.vars_phen() << "\t";
@@ -359,11 +398,13 @@ void Population::write_summary(ostream & out, int generation) const
     out << fitstat.var() << "\t";
     out << Fitness::current_optimum() << "\t";
     if (nb_canal_test > 0) {
+		// Runs the canalization tests
 		Canalization can_test(nb_canal_test, *this);
 		out << can_test.phen_canalization() << "\t";
 		out << can_test.fitness_canalization() << "\t";
 	}    
 	if (nb_herit_test > 0) {
+		// Runs the heritability tests
 		Heritability herit_test(nb_herit_test, *this);
 		out << herit_test.h2() << "\t";
 		out << herit_test.fit_h2() << "\t";
