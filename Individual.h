@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -23,12 +24,15 @@
 
 #include <iostream>
 
+
+
 class Population;
+
 
 class Individual
 {
 	public :
-	    //constructors/destructor
+	    // constructors/destructor
 	    Individual();
 	    Individual(const Haplotype&, const Haplotype&);
 	    Individual(const Individual&);
@@ -42,7 +46,7 @@ class Individual
 	    // instance/initialization
 	    void initialize();
 	
-	    //functions
+	    // functions
 	    void update_fitness(const Population &);
 	    void update_fitness(const double);
 	    double get_fitness() const;
@@ -53,9 +57,8 @@ class Individual
 	    static Individual mate(const Individual&, const Individual&);
 	    void draw_mutation();
 	    void make_mutation();
-	    
-	    		// the first parameter is the number of mutations
-	    Individual test_canalization(unsigned int, const Population &) const; 
+	    	    		
+	    Individual test_canalization(unsigned int, const Population &) const;  /* the first parameter is the number of mutations */
 	
 	    //output
 	    void write_debug (std::ostream&) const;

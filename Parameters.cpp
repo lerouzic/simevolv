@@ -23,7 +23,7 @@ using namespace std;
 
 
 
-// Parameter and daughter classes //
+///// Parameter and daughter classes /////
 
 Parameter_int::Parameter_int(long int minimum, long int maximum)
     : min(minimum)
@@ -295,7 +295,7 @@ string Parameter_string::GetString() const {
 
 
 
-// ParameterSet //
+///// ParameterSet /////
 
 ParameterSet::ParameterSet()
 {

@@ -18,6 +18,8 @@
 #include <vector>
 #include <iostream>
 
+
+
 class UnivariateStat
 {
 	public:
@@ -31,13 +33,14 @@ class UnivariateStat
 		//functions
 		double mean() const;
 		double var() const;
-	
-	
+		
 	protected:
 		const std::vector<double> data;
 		double sum_i;
 		double sum_i2;
 };
+
+
 
 class MultivariateStat
 {
@@ -46,6 +49,7 @@ class MultivariateStat
 		MultivariateStat(const std::vector<std::vector<double> > &);
 		~MultivariateStat();
 		
+		// initilization
 		void initialize();
 		
 		// functions
@@ -60,6 +64,7 @@ class MultivariateStat
 		double r2(unsigned int, unsigned int) const;
 		double regression_slope(unsigned int, unsigned int) const; //param 1 = a*param 2 + b
 		
+		// output
 		friend std::ostream & operator << (std::ostream &, const MultivariateStat &);
 		
 	protected:
@@ -67,7 +72,5 @@ class MultivariateStat
 		std::vector<std::vector<double> > sum_ij;
 		std::vector<double> sum_i;
 };
-
-
 
 #endif

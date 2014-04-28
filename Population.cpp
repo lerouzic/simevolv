@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -33,11 +34,13 @@ using namespace std;
 
 // constructors and destructor
 
+/* default constructor */
 Population::Population()
 {
 }
 
 
+/* constructor using the population size */
 Population::Population(long int size)
 {
     for (long int i = 0; i <= size; i++)
@@ -48,6 +51,7 @@ Population::Population(long int size)
 }
 
 
+/* copy constructor */
 Population::Population(const Population & copy)
     : pop(copy.pop)
     , nb_canal_test(copy.nb_canal_test)
@@ -56,12 +60,14 @@ Population::Population(const Population & copy)
 }
 
 
+/* constructor using a vector of individuals */
 Population::Population(const std::vector<Individual>& vecindiv)
     : pop(vecindiv)
 {
 }
 
 
+/* constructor using the parameters from the Paramers files */
 Population::Population(const ParameterSet& param)
 {
     initialize(param);
@@ -85,6 +91,7 @@ Population & Population::operator=(const Population& copy)
 
 // instance and initialization
 
+/* initialization of the population system and parameters */
 void Population::initialize(const ParameterSet& param)
 {	
     int popsize = param.getpar(INIT_PSIZE)->GetInt();
@@ -109,6 +116,7 @@ double fun_sqrt(double x) // I don't remember why this stupid function was neces
 }
 
 
+/* reproduction of the population to give a new one */
 Population Population::reproduce(long int offspr_number) const
 {
     Population offspring;
@@ -134,6 +142,7 @@ Population Population::reproduce(long int offspr_number) const
 }
 
 
+/* ???? */
 void Population::update(void)
 {
     double popvalue = Fitness::GetPopulationValue(*this);
@@ -157,6 +166,7 @@ void Population::update(void)
 //~ }
 
 
+/* calculate and return the phenotypic mean value */
 double Population::mean_phenotype() const
 {
 	int focal_phen = 0; // Dirty, needs to be fixed at one point
@@ -169,12 +179,14 @@ double Population::mean_phenotype() const
 }
 
 
+/* return the size of the population */
 long int Population::size() const
 {
     return(pop.size());
 }
 
 
+/* ?????? */ 
 vector<double> Population::cumul_fitness() const
 {
     vector<double> cum_fit(this->size());
@@ -197,6 +209,7 @@ vector<double> Population::cumul_fitness() const
 }
 
 
+/* ???? */
 const Individual & Population::pick_parent(const vector<double>& cumfit) const
 {
     // return(iterator_search_fit_table(rnum, cumfit));
@@ -205,9 +218,9 @@ const Individual & Population::pick_parent(const vector<double>& cumfit) const
 }
 
 
+/* ???? */
 long int Population::search_fit_table(double rnum, const vector<double>& cumfit) const
 {
-
 	long int i = stl_search_fit_table(rnum, cumfit);
 	// this assertion takes time, and it seems to work: no need to check by default
 	// assert(i == sequential_search_fit_table(rnum, cumfit));
@@ -215,6 +228,7 @@ long int Population::search_fit_table(double rnum, const vector<double>& cumfit)
 }
 
 
+/* ???? */
 long int Population::sequential_search_fit_table(double rnum, const vector<double>& cumfit) const
 {
     long int i = 0;
@@ -224,6 +238,7 @@ long int Population::sequential_search_fit_table(double rnum, const vector<doubl
 }
 
 
+/* ???? */
 long int Population::stl_search_fit_table(double rnum, const vector<double>& cumfit) const
 {
     vector<double>::const_iterator solution = std::lower_bound(cumfit.begin(), cumfit.end(), rnum);
@@ -232,6 +247,7 @@ long int Population::stl_search_fit_table(double rnum, const vector<double>& cum
 }
 
 
+/* determines if there will be a mutation in the population */
 void Population::draw_mutation()
 {
     for (unsigned int i = 0; i < pop.size(); i++) {
@@ -241,6 +257,7 @@ void Population::draw_mutation()
 }
 
 
+/* force to make a mutation in the population */
 void Population::make_mutation()
 {
     int ind = floor(Random::randnum()*pop.size());
@@ -289,9 +306,9 @@ void Population::write_simple(ostream & out) const
 }
 
 
+/* final summary of an analysis */
 void Population::write_summary(ostream & out, int generation) const
 {
-	
 	vector<Phenotype> phen;
 	vector<Phenotype> gen;
 	vector<double> fit;
@@ -334,9 +351,7 @@ void Population::write_summary(ostream & out, int generation) const
 		}
 		out << endl; 
    	}
-	
-
-	
+		
 	out << generation << "\t";
     out << phenstat.means_phen() << "\t";
     out << phenstat.vars_phen() << "\t";

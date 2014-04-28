@@ -26,11 +26,10 @@ std::ostream
 };
 
 
-
 class OutputFormat
 	{
 	public:
-	    //constructors/deconstructor
+	    // constructors/deconstructor
 	    OutputFormat();
 	    ~OutputFormat();
 	
@@ -38,7 +37,7 @@ class OutputFormat
 	    static OutputFormat * instance;
 	    static bool isInitialized();
 	
-	    //functions(output)
+	    // output
 	    static void SetDebug (std::ostream&);
 	    static void SetXml   (std::ostream&);
 	    static void SetSimple(std::ostream&);

@@ -1,5 +1,6 @@
 // Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,8 +21,11 @@
 
 #include <vector>
 
+
+
 class Individual; // crossed references: Population.h -> Canalization.h -> Individual.h -> Population.h
 class Population;
+
 
 class Canalization
 {
@@ -33,7 +37,7 @@ class Canalization
 		double fitness_canalization();
 				
 	protected:
-			// fill the object
+		// fill the object
 		void reference_indiv(Individual);
 		void mutant_indiv (Individual);
 		

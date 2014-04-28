@@ -2,7 +2,6 @@
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,12 +35,14 @@ using namespace std;
 
 // constructors and destuctor
 
+/* default constructor  -  should never be used */
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix()
 {
     assert(false); // The default constructor should never be used.
 }
 
 
+/* constructor using the paramater given in Architecture and the parameters files */
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param) 
     : Architecture(param)
     , sall(nb_loc())
@@ -59,6 +60,8 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
 
 // functions
 
+/* initialization of the alleles (1 allele = 1 vector of value) 
+ * depend on the connectivity matrix */
 shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param, unsigned int loc) const
 {
 	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
@@ -85,13 +88,13 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 
 //static unsigned int count_init = 0; // debug instruction
 
-
+/* initialization of the connectivity matrix
+ * depend off tne connectivity value */
 void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 {
 	//count_init++; // debug instruction;
 	
-	double connectivity = param.getpar(INIT_CONNECT)->GetDouble();
-	//bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
+	double connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
 	
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
@@ -100,8 +103,8 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 		{
 			if (Random::randnum() < connectivity)
 			{
-				// This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
-				// double value = 1.0 		// in non-clonal, this would be enough.
+				/* This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
+				 * double value = 1.0  - in non-clonal, this would be enough */
 				double value = param.getpar(INIT_ALLELES) -> GetDouble();
 				allele_pattern.push_back(value);
 			}
@@ -112,10 +115,12 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 		}
 		connectivity_matrix.push_back(allele_pattern);		
 	}
-	//std::cout << count_init << "\n";
+	//std::cout << count_init << "\n";  // debug instruction
 }
 
 
+/* calculate the phenotypic function depending on the genotype 
+ * here : depend of the initial vector, and the connectivity matrix */
 Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) const
 {
 	// creation of the W matrix;

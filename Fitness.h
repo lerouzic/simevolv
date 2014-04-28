@@ -1,6 +1,7 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -34,11 +35,11 @@ class Fitness
         static void initialize(const ParameterSet&);
 
         // fonctions
+        static double GetPopulationValue(const Population &);
         static void update_generation(const long unsigned int);
         static void update_extra(double strength);
         static double compute(const Phenotype& phenotype, const Population & population);
         static double compute(const Phenotype& phenotype, double population_value);
-        static double GetPopulationValue(const Population &);
         static double current_optimum() {return(instance->optimum);}
 
     protected:

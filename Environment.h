@@ -1,6 +1,7 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -38,7 +39,6 @@ class Environment
 	    double sd;
 	
 };
-
 
 
 #endif // ENVIRONMENT_H_INCLUDED

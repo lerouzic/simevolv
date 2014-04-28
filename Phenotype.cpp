@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -22,31 +23,36 @@ using namespace std;
 
 // constructors and destructors
 
+/* default constructor */
 Phenotype::Phenotype()
 {
-	// Nothing yet.
 }
 
 
+/* constructor using an initialization value 
+ * for uni-dimension phentotype */
 Phenotype::Phenotype(double init) 
 {
-	// only one phenotypic dimension!
 	pheno.push_back(init);
 }
 
 
+/* constructor using a vector of initialization value 
+ * for multi-dimension phenotype */
 Phenotype::Phenotype(const vector<double> & init) 
 {
 	pheno = init;
 }
 
 
+/* constructor using a previous phenotype as pattern */
 Phenotype::Phenotype(const Phenotype & templ)
 {
 	pheno = templ.pheno;
 }
 
 
+/* destructor */
 Phenotype::~Phenotype() 
 {
 	
@@ -64,8 +70,6 @@ Phenotype & Phenotype::operator = (const Phenotype & templ)
 }
 
 
-// functions
-
 double Phenotype::operator[] (const unsigned int index) const 
 {
 	assert(index < dimensionality());
@@ -73,6 +77,9 @@ double Phenotype::operator[] (const unsigned int index) const
 }
 
 
+// functions
+
+/* return the dimensionnality of the phenotype (number of phenotypes observed) */
 unsigned int Phenotype::dimensionality() const 
 {
 	return(pheno.size());
@@ -90,6 +97,8 @@ void Phenotype::write_debug (ostream& out) const
 }
 
 
+// Output
+
 void Phenotype::write_simple (ostream& out) const
 {
 	write_debug(out);
@@ -103,17 +112,27 @@ ostream& operator << (ostream& out, const Phenotype& phen)
 	return(out);
 }
 
+
+
+
+
 /////////////////////// class PhenotypeStat
 
+// constructors and destructors
+
+/* constructor using a vector of phenotype */
 PhenotypeStat::PhenotypeStat(const vector<Phenotype> & vec_phen)
 	: MultivariateStat(transpose_phen_matrix(vec_phen))
 {
-	
 }
 
-// static function called into the initialization list of the constructor
+
+// functions
+
+/* transpose the phen_matrix (vector of vector) to get means and variances of traits
+ * static function called into the initialization list of the constructor */
 vector<vector<double> > PhenotypeStat::transpose_phen_matrix(const vector<Phenotype> & vec_phen)
-{ // the vector of vectors has to be transposed in order to get means and variances of traits
+{ 
 	assert(!vec_phen.empty());
 	
 	unsigned int dim = vec_phen[0].dimensionality();

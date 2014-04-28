@@ -25,6 +25,7 @@ using namespace std;
 
 // constructors/destructor
 
+/* default constructor */
 Random::Random()
 {
     random_generator = gsl_rng_alloc(gsl_rng_mt19937);
@@ -34,6 +35,7 @@ Random::Random()
 }
 
 
+/* constructor with seed (for repetability) */
 Random::Random(long int s) : seed(s)
 {
     random_generator = gsl_rng_alloc(gsl_rng_mt19937);
@@ -41,6 +43,7 @@ Random::Random(long int s) : seed(s)
 }
 
 
+/* destructor */
 Random::~Random()
 {
     gsl_rng_free(random_generator);
@@ -51,15 +54,18 @@ Random::~Random()
 
 // initialization
 
+/* put the existence of the random number system to non-existent */
 Random* Random::instance = NULL;
 
 
+/* verify if the random system number is initialized */
 bool Random::is_initialized()
 {
     return(!(Random::instance == NULL));
 }
 
 
+/* initialize the random number system */
 void Random::initialize()
 {
     if (Random::instance != NULL)
@@ -71,6 +77,7 @@ void Random::initialize()
 }
 
 
+/* initialize the random number system with a given seed */
 void Random::initialize(long int s)
 {
     if (Random::instance != NULL)
@@ -85,6 +92,7 @@ void Random::initialize(long int s)
 
 // functions
 
+/* get the seed */
 long int Random::get_seed()
 {
     assert(Random::instance != NULL);
@@ -92,6 +100,8 @@ long int Random::get_seed()
 }
 
 
+/* return a random number 
+ * from a numeric distribution */
 double Random::randnum()
 {
     if (!Random::is_initialized())
@@ -106,6 +116,8 @@ double Random::randnum()
 }
 
 
+/* return a random number 
+ * from a gaussian distribution */
 double Random::randgauss()
 {
     if (!Random::is_initialized())

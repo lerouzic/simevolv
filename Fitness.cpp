@@ -29,6 +29,7 @@ using namespace std;
 
 // constructors and destructor
 
+/* constructor using the parameters from the Pameters files */
 Fitness::Fitness(const ParameterSet& param)
     : param(param)
     , type(param.getpar(FITNESS_TYPE)->GetString())
@@ -40,9 +41,11 @@ Fitness::Fitness(const ParameterSet& param)
 
 // instance and initialization
 
+/* put the existence of the fitness to non-existent */
 Fitness * Fitness::instance = NULL;
 
 
+/* initialization of the fitness system */
 void Fitness::initialize(const ParameterSet& param)
 {
     if (Fitness::instance != NULL)
@@ -56,6 +59,32 @@ void Fitness::initialize(const ParameterSet& param)
 
 // functions
 
+/* get and return the mean phenotypic value of the population */
+double Fitness::GetPopulationValue(const Population& popul)
+{
+    string type = instance->type;
+	if (type == FT_linear || type == FT_expo) 
+	{
+		return(popul.mean_phenotype());
+	} 
+	else if (type == FT_truncup) 
+	{
+		// Broken
+		assert("This option is broken");
+        //~ sort(pheno.begin(), pheno.end());
+        //~ return(pheno[int(instance->strength*pheno.size())]);
+     } 
+     else if (type == FT_truncdown) 
+     {
+		 assert("This option is broken");
+		//~ sort(pheno.begin(), pheno.end());
+        //~ return(pheno[int((1-instance->strength)*pheno.size())]);
+     }
+     return(0.0);
+}
+
+
+/* ??? */
 void Fitness::update_generation(const long unsigned int generation_number)
 {
     long int T = instance->param.getpar(FITNESS_PERIOD)->GetInt();
@@ -125,6 +154,7 @@ void Fitness::update_generation(const long unsigned int generation_number)
 }
 
 
+/* ??? */
 void Fitness::update_extra(double strength)
 {
     instance->strength = strength;
@@ -132,6 +162,7 @@ void Fitness::update_extra(double strength)
 }
 
 
+/* ???? */
 double Fitness::compute(const Phenotype & phenotype, const Population & population)
 {
     double population_value = Fitness::GetPopulationValue(population);
@@ -139,6 +170,7 @@ double Fitness::compute(const Phenotype & phenotype, const Population & populati
 }
 
 
+/* ???? */
 double Fitness::compute(const Phenotype & phenotype, double population_value)
 {
 	int focal_phen = 0; // This will have to change for multivariate selection
@@ -192,28 +224,3 @@ double Fitness::compute(const Phenotype & phenotype, double population_value)
     return(fit);
 }
 
-
-double Fitness::GetPopulationValue(const Population& popul)
-{
-    //~ vector<double> pheno = popul.phenotypes();
-
-	string type = instance->type;
-	if (type == FT_linear || type == FT_expo) 
-	{
-		return(popul.mean_phenotype());
-	} 
-	else if (type == FT_truncup) 
-	{
-		// Broken
-		assert("This option is broken");
-        //~ sort(pheno.begin(), pheno.end());
-        //~ return(pheno[int(instance->strength*pheno.size())]);
-     } 
-     else if (type == FT_truncdown) 
-     {
-		 assert("This option is broken");
-		//~ sort(pheno.begin(), pheno.end());
-        //~ return(pheno[int((1-instance->strength)*pheno.size())]);
-     }
-     return(0.0);
-}

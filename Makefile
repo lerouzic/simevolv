@@ -13,7 +13,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++11
+CFLAGS = -Wall -std=c++0x
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = 
@@ -31,7 +31,7 @@ DEP_DEBUG =
 OUT_DEBUG = bin/Debug/Simul_Prog
 
 INC_RELEASE = $(INC)
-CFLAGS_RELEASE = $(CFLAGS) -O2
+CFLAGS_RELEASE = $(CFLAGS) -O3
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)

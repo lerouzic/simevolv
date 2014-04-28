@@ -20,6 +20,7 @@
 #include <vector>
 
 
+
 // COMMON PARAMETERS
 const std::string TYPE_ARCHI = "TYPE_ARCHI";				/* Architecture types */
 const std::string SIMUL_GENER = "SIMUL_GENER"; 
@@ -85,7 +86,8 @@ const std::string AR_add = "additive";
 const std::string AR_mult = "multilinear";
 const std::string AR_wagner = "wagner";
 const std::string AR_masel = "masel";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_masel);
+const std::string AR_siegal = "siegal";
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_masel)(AR_siegal);
 
 
 #endif // PARCONST_H_INCLUDED

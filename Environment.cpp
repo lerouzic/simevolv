@@ -28,6 +28,7 @@ using namespace std;
 
 // constructors and destructor
 
+/* constructor using the parameters from the parameters files */
 Environment::Environment(const ParameterSet & param)
     : sd(param.getpar(ENVIRO_SD)->GetDouble())
 {
@@ -36,9 +37,11 @@ Environment::Environment(const ParameterSet & param)
 
 // instance and initialization
 
+/* put the existence of the environmental values to non-existent */
 Environment * Environment::instance = NULL;
 
 
+/* initialization of the environmental values system */
 void Environment::initialize(const ParameterSet & param)
 {
     if (instance != NULL)
@@ -52,9 +55,11 @@ void Environment::initialize(const ParameterSet & param)
 
 // functions
 
+/* modify the genotypic value by adding an environmental effect 
+ * (Probably not very efficient, but this will probably not be used for complex 
+ * architectures in which the environmental effect is correlated to the genotype) */
 Phenotype Environment::rand_effect(const Phenotype& genot_values)
-{ // Probably not very efficient, but this will probably not be used for complex architectures
-  // in which the environmental effect is correlated to the genotype	 
+{	 
     assert (Environment::instance != NULL);
     vector<double> updated;
     for (unsigned int i = 0; i < genot_values.dimensionality(); i++) {
@@ -65,6 +70,7 @@ Phenotype Environment::rand_effect(const Phenotype& genot_values)
 }
 
 
+/* return the effect of environmental modification */
 double Environment::get_sd()
 {
     assert (Environment::instance != NULL);

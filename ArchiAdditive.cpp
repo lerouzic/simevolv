@@ -2,7 +2,6 @@
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -31,18 +30,19 @@ using namespace std;
 
 // constructors and destuctor
 
+/* default constructor  -  should never be used */
 ArchiAdditive::ArchiAdditive()
 {
-    assert(false); // The default constructor should never be used.
+    assert(false); 
 }
 
-
+/* copy constructor  -  should never be used */
 ArchiAdditive::ArchiAdditive(const Architecture& archi)
 {
-    assert(false); // The copy constructor should never be used.
+    assert(false);
 }
 
-
+/* constructor using the paramater given in Architecture and the parameters files */
 ArchiAdditive::ArchiAdditive(const ParameterSet& param)
     : Architecture(param)
 {
@@ -51,33 +51,10 @@ ArchiAdditive::ArchiAdditive(const ParameterSet& param)
 }
 
 
-// operator overload
-/*
-ostream& operator << (ostream& out, const ArchiAdditive& archi)
-{
-    out << "=== Type of model ===" << endl;
-    out << endl << "Addititive model" << endl;
-    out << endl;
-    out << endl;
-
-    out << "=== Genetic map ===" << endl;
-    out << archi.gmap;
-    out << endl;
-
-    out << "=== Mutation rates ===" << endl;
-    out << endl;
-    for (int i = 0; i < archi.nb_loc(); i++)
-    {
-        out << "Loc" << i+1 << "\t" << archi.mutation_rate(i) << endl;
-    }
-    out << endl;
-    return(out);
-}
-*/
-
-
 // functions
 
+/* calculate the phenotypic function depending on the genotype 
+ * here : sum of the genotypic values */
 Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
 {
     unsigned int nloc = nb_loc();

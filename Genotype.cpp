@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -27,6 +28,7 @@ using namespace std;
 
 // constructors and destuctor
 
+/* default constructor */
 Genotype::Genotype()
     : gam_father(Haplotype())
     , gam_mother(Haplotype())
@@ -34,6 +36,7 @@ Genotype::Genotype()
 }
 
 
+/* constructor using two haplotypes */
 Genotype::Genotype(const Haplotype& father, const Haplotype& mother)
     : gam_father(father)
     , gam_mother(mother)
@@ -41,12 +44,15 @@ Genotype::Genotype(const Haplotype& father, const Haplotype& mother)
 }
 
 
+/* copy constructor */
 Genotype::Genotype(const Genotype& copy)
     : gam_father(copy.gam_father)
     , gam_mother(copy.gam_mother)
 {
 }
-
+ 
+ 
+/* constructor using the parameters for building the two haplotypes */
 Genotype::Genotype(const ParameterSet & param)
 	: gam_father(param)
 	, gam_mother(param)
@@ -77,15 +83,16 @@ int Genotype::operator!= (const Genotype& other) const
 
 // functions
 
+/* collect the number of loci from the Architecture and return it */
 int Genotype::nb_loc() const
 {
     Architecture * archi = Architecture::Get();
     int nloc = archi -> nb_loc();
-
     return nloc;
 }
 
 
+/* collect the size of the allele from the Architecture and return it */
 int Genotype::all_size() const
 {
     Architecture * archi = Architecture::Get();
@@ -95,6 +102,7 @@ int Genotype::all_size() const
 }
 
 
+/* perform the recombination between the the father and the mother haplotype */
 Haplotype Genotype::recombine() const
 {
     Architecture * archi = Architecture::Get();
@@ -118,6 +126,8 @@ Haplotype Genotype::recombine() const
 }
 
 
+/* determine if a mutation will occur in one of the haplotype 
+ * (depending on the mutation rate) */
 void Genotype::draw_mutation()
 {
     gam_father.draw_mutation();
@@ -125,6 +135,7 @@ void Genotype::draw_mutation()
 }
 
 
+/* force to make a mutation in one of the haplotype */
 void Genotype::make_mutation()
 {
     int gen = floor(2*Random::randnum()+1);

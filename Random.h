@@ -39,8 +39,7 @@ class Random
 	    static long int get_seed();
 	    static double randnum();
 	    static double randgauss();
-	
-	
+		
 	protected :
 	    long int seed;
 	    gsl_rng * random_generator;

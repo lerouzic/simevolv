@@ -34,22 +34,24 @@ using namespace std;
 
 // constructors/destructor
 
+/* default constructor  -  should never be used */
 Architecture::Architecture()
 {
-    assert(false); // The default constructor should never be used.
+    assert(false);
 }
 
 
+/* copy constructor  -  should never be used */
 Architecture::Architecture(const Architecture& archi)
 {
-    assert(false); // The copy constructor should never be used.
+    assert(false); 
 }
 
-
+/* constructor using the paramater given by ParameterSet */
 Architecture::Architecture(const ParameterSet& param)
     : gmap (param)
     , nloc (param.getpar(GENET_NBLOC) -> GetInt())
-    , sall (1)
+    , sall (1) // by default, change for the architecture that needed a vector as allele
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
 {
@@ -64,9 +66,12 @@ Architecture::Architecture(const ParameterSet& param)
 
 // instance and initialization
 
+/* put the existence of the architecture to non-existent */
 Architecture* Architecture::instance = NULL;
 
 
+/* initialization of the global architecture of the genetic system,
+ * depending on the architecture type */
 void Architecture::initialize(const ParameterSet& param)
 {
     if (Architecture::instance != NULL)
@@ -75,7 +80,6 @@ void Architecture::initialize(const ParameterSet& param)
         delete Architecture::instance;
         Architecture::instance = NULL;
     }
-    //Architecture::instance = new Architecture(param);
 
     string type_archi = param.getpar(TYPE_ARCHI)->GetString();
     if (type_archi==AR_add)
@@ -94,6 +98,10 @@ void Architecture::initialize(const ParameterSet& param)
     {
         Architecture::instance = new ArchiMasel(param);
     }
+    else if (type_archi==AR_siegal)
+    {
+        Architecture::instance = new ArchiSiegal(param);
+    }
     else
     {
         assert("Wrong architecture type");
@@ -108,40 +116,23 @@ Architecture* Architecture::Get()
 }
 
 
-
-
-// operator overload
-/*
-ostream& operator << (ostream& out, const Architecture& archi)
-{
-    out << "=== Genetic map ===" << endl;
-    out << archi.gmap;
-    out << endl;
-
-    out << "=== Mutation rates ===" << endl;
-    for (int i = 0; i < archi.nb_loc(); i++)
-    {
-        out << "Loc" << i+1 << "\t" << archi.mutation_rate(i) << endl;
-    }
-    out << endl;
-    return(out);
-}
-*/
-
 // functions
 
+/* return the number of loci */
 unsigned int Architecture::nb_loc() const
 {
     return nloc;
 }
 
 
+/* return the size of the allele */
 unsigned int Architecture::all_size() const
 {
     return sall;
 }
 
 
+/* return the mutation rate at a given locus */
 double Architecture::mutation_rate(unsigned int locus) const
 {
     assert (locus >= 0);
@@ -150,6 +141,7 @@ double Architecture::mutation_rate(unsigned int locus) const
 }
 
 
+/* return the mutation effect at a given locus */
 double Architecture::mutation_sd(unsigned int locus) const
 {
     assert(locus >= 0);
@@ -158,6 +150,7 @@ double Architecture::mutation_sd(unsigned int locus) const
 }
 
 
+/* return the recombination rate at a given locus */
 double Architecture::recombination_rate(unsigned int locus) const
 {
     assert(locus >=0);
@@ -168,6 +161,7 @@ double Architecture::recombination_rate(unsigned int locus) const
 
 // for inheritance (virtual function)
 
+/* initialization of the alleles (1 allele = 1 vector of value) */
 shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigned int loc /* = 0 */) const 
 {
 	// Here we don't need to know the locus, but inherited classes may.
@@ -181,10 +175,10 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
 }
 
 
+/* force to make a mutation at one position of the allele :
+ * replace the value at the mutated site by a new value */
 shared_ptr<Allele> Architecture::allele_mutation(const Allele & templ, unsigned int loc /* = 0 */) const 
 {
-	// A mutation affects randomly one of the "sites" of the allele (?)
-
     int mutated_site = floor(sall*Random::randnum());
     double modifier = mutation_sd(loc) * Random::randgauss();
     shared_ptr<Allele> a(new Allele(templ));

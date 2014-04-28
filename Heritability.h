@@ -14,25 +14,30 @@
 #ifndef HERITABILITY_H_INCLUDED
 #define HERITABILITY_H_INCLUDED
 
-// #include "Population.h"  // circular reference
+
 #include "Phenotype.h" 
 
 #include <vector>
 
+
+
 class Population;
+
 
 class Heritability 
 {
 	public:
+		// constructors
 		Heritability(unsigned int, const Population &);
 		
-		// get the results
+		// functions
 		Phenotype h2() const;
 		Phenotype H2() const;
 		double fit_h2() const;
 		
 	protected:
-		struct ParentOffspring {
+		struct ParentOffspring 
+		{
 			Phenotype mother_phen;
 			Phenotype mother_gen;
 			double mother_fit;
@@ -43,8 +48,7 @@ class Heritability
 			Phenotype offspring_gen;
 			double offspring_fit;
 		};
-		std::vector<ParentOffspring> parentoffspring;
-			
+		std::vector<ParentOffspring> parentoffspring;	
 };
 
 #endif // HERITABILITY_H_INCLUDED

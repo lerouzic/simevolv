@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -25,6 +26,8 @@ using namespace std;
 
 
 // constructors and destructor
+
+/* default constructor using a genotype */
 Individual::Individual()
     : genotype()
 {
@@ -32,6 +35,7 @@ Individual::Individual()
 }
 
 
+/* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
     : genotype(gam_father, gam_mother)
 {
@@ -39,6 +43,7 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
 }
 
 
+/* copy constructor */
 Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
     , genot_value(copy.genot_value)
@@ -48,6 +53,7 @@ Individual::Individual(const Individual& copy)
 }
 
 
+/* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
 	: genotype(param)
 {
@@ -55,6 +61,7 @@ Individual::Individual(const ParameterSet& param)
 }
 
 
+/* destructor */
 Individual::~Individual()
 {
 }
@@ -78,6 +85,7 @@ Individual & Individual::operator= (const Individual& copy)
 
 // instance and initialization
 
+/* initialize the individual, with genotypic, phenotypic and environmental values */
 void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
@@ -89,34 +97,42 @@ void Individual::initialize()
 
 // functions
 
+/* ??? */
 void Individual::update_fitness(const Population & pop)
 {
     fitness = Fitness::compute(phenotype, pop);
 }
 
 
+/*  ???? */
 void Individual::update_fitness(const double population_value)
 {
     fitness = Fitness::compute(phenotype, population_value);
 }
 
 
+/* return the fitness value */
 double Individual::get_fitness() const
 {
     return(fitness);
 }
 
+
+/* return the genotypic value */
 Phenotype Individual::get_genot_value() const
 {
 	return(genot_value);
 }
 
+
+/* return the phenotypic value */
 Phenotype Individual::get_phenotype() const
 {
     return(phenotype);
 }
 
 
+/* create a new individual from the paternal and maternal gametes */
 Individual Individual::mate(const Individual& father, const Individual& mother)
 {
     Individual offspring(father.produce_gamete(), mother.produce_gamete());
@@ -124,6 +140,7 @@ Individual Individual::mate(const Individual& father, const Individual& mother)
 }
 
 
+/* produce the gametes of an individual : recombination and mutation */
 Haplotype Individual::produce_gamete() const
 {
     Haplotype gamete(genotype.recombine());
@@ -132,6 +149,7 @@ Haplotype Individual::produce_gamete() const
 }
 
 
+/* determines if there will be a mutation in the individual */
 void Individual::draw_mutation()
 {
     genotype.draw_mutation();
@@ -139,6 +157,7 @@ void Individual::draw_mutation()
 }
 
 
+/* force to make a mutation in an individual */
 void Individual::make_mutation()
 {
     genotype.make_mutation();
@@ -148,6 +167,8 @@ void Individual::make_mutation()
     fitness = 0; // computing fitness requires additional information, call update_fitness with the proper argument
 }
 
+
+/* test the canalization : produce the clones used for the calculation */
 Individual Individual::test_canalization(unsigned int nb_mut, const Population & pop) const 
 {
 	Individual clone(*this);
@@ -157,6 +178,7 @@ Individual Individual::test_canalization(unsigned int nb_mut, const Population &
 	clone.update_fitness(pop);	
 	return(clone);		
 }
+
 
 // output
 

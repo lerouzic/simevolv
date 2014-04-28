@@ -2,7 +2,6 @@
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -35,9 +34,6 @@ class ArchiAdditive : public Architecture
 	
 	    //functions
 	    Phenotype phenotypic_value(const Genotype&) const;
-	
-	protected :
-
 };
 
 #endif // ARCHIADDITIVE_H_INCLUDED

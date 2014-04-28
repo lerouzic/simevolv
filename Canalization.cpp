@@ -1,4 +1,5 @@
 // Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -23,6 +24,10 @@
 
 using namespace std;
 
+
+
+// Constructors and destructor
+
 Canalization::Canalization(unsigned int nb_tests, const Population & pop)
 {
 	phen_ready = false;
@@ -38,6 +43,8 @@ Canalization::Canalization(unsigned int nb_tests, const Population & pop)
 	}
 }
 
+
+// Functions
 
 void Canalization::reference_indiv(Individual ind)
 {

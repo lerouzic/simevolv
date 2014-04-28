@@ -2,7 +2,6 @@
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,6 +17,9 @@
 #define ARCHIREGULATORYMATRIX_H_INCLUDED
 
 #include "Architecture.h"
+
+#include <math.h>
+
 
 
 class ArchiRegulatoryMatrix : public Architecture
@@ -42,9 +44,7 @@ class ArchiRegulatoryMatrix : public Architecture
 		
 	    //functions
 		void init_connectivity_matrix(const ParameterSet &);		
-
 };
-
 
 
 class ArchiWagner : public ArchiRegulatoryMatrix
@@ -56,10 +56,7 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	    ~ArchiWagner() {}
 		
 		// Inherited functions
-		double sigma(double h) const {if (h<0){return (-1.);} else if (h>0) {return (1.);} else {return (0.);}}
-			
-	protected :
-		
+		double sigma(double h) const {if (h<0){return (-1.);} else if (h>0) {return (1.);} else {return (0.);}}		
 };
 
 
@@ -73,10 +70,20 @@ class ArchiMasel : public ArchiRegulatoryMatrix
 	    ~ArchiMasel() {}
 		
 		// Inherited functions
-		double sigma(double h) const {if (h>=0){return (1.);} else {return (0.);}}
-			
-	protected :
+		double sigma(double h) const {if (h>=0){return (1.);} else {return (0.);}}	
+};
+
+
+class ArchiSiegal : public ArchiRegulatoryMatrix
+{
+	public : 
+		//constructors/destructor
+	    ArchiSiegal() {assert(false);}
+	    ArchiSiegal(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
+	    ~ArchiSiegal() {}
 		
+		// Inherited functions
+		double sigma(double h) const {return ((2/(1+exp(-basal*h)))-1);}
 };
 
 

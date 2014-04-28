@@ -24,6 +24,9 @@
 #include <map>
 
 
+
+////////////////////////////////// PARAMETER ////////////////////////////////////////
+
 class Parameter
 {
 	public:
@@ -46,15 +49,15 @@ class Parameter
 class Parameter_int: public Parameter
 {
 	public:
-	    //constructors/destructor
+	    // constructors/destructor
 	    Parameter_int(long int minimum=0, long int maximum=999);
 	    ~Parameter_int() {}
 	
-	    //input/output
+	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
 	
-	    //functions
+	    // functions
 	    long int Get() const;
 	    long int GetInt() const {return(Get());}
 	    double GetDouble() const {return(double(Get()));}
@@ -72,15 +75,15 @@ class Parameter_int: public Parameter
 class Parameter_double: public Parameter
 {
 	public:
-	    //constructors/destructor
+	    // constructors/destructor
 	    Parameter_double(double minimum=-999.9, double maximum=999.9);
 	    ~Parameter_double() {}
 	
-	    //input/output
+	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
 	
-	    //functions
+	    // functions
 	    double Get() const;
 	    long int GetInt() const {return(int(Get()));}
 	    double GetDouble() const {return(Get());}
@@ -98,15 +101,15 @@ class Parameter_double: public Parameter
 class Parameter_vector_double: public Parameter
 {
 	public:
-	    //constructors/destructor
+	    // constructors/destructor
 	    Parameter_vector_double(double minimum=-999.9, double maximum=999.9);
 	    ~Parameter_vector_double() {}
 	
-	    //input/output
+	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
 	
-	    //functions
+	    // functions
 	    std::vector<double> Get() const;
 	    double Get_element(int) const;
 	    double GetDouble(int el) const {return(Get_element(el));}
@@ -124,15 +127,15 @@ class Parameter_vector_double: public Parameter
 class Parameter_gaussian: public Parameter
 {
 	public:
-	    //constructors/destructor
+	    // constructors/destructor
 	    Parameter_gaussian(double minimum_mean=-999.9, double maximum_mean=999.9, double maximum_sd=999.9);
 	    ~Parameter_gaussian() {}
 	
-	    //input/output
+	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
 	
-	    //functions
+	    // functions
 	    void SetMean(double);
 	    void SetSd(double);
 	    double draw() const;
@@ -148,14 +151,15 @@ class Parameter_gaussian: public Parameter
 class Parameter_string: public Parameter 
 {
 	public:
-	    //constructors/destructor
+	    // constructors/destructor
 	    Parameter_string(const std::vector<std::string>);
 	    ~Parameter_string();
 	    
-	    //input/output
+	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
 	    
+	    // functions
 	    void Set(std::string);
 	    std::string GetString() const;
 	    
@@ -168,6 +172,9 @@ class Parameter_string: public Parameter
 
 
 
+
+////////////////////////////////// PARAMETER SET ////////////////////////////////////////
+
 class ParameterSet
 {
 	public:
@@ -179,11 +186,11 @@ class ParameterSet
 	    // initialization
 	    void initialize();
 	
-	    //input/output
+	    // input/output
 	    void read(const std::string&);
 	    void write(std::ostream&) const;
 	
-	    //function
+	    // function
 	    const Parameter * getpar(const std::string&) const;
 	
 	protected:

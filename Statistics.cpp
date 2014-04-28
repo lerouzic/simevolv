@@ -20,6 +20,8 @@
 
 using namespace std;
 
+
+
 ////////////////////////////////// UNIVARIATE ////////////////////////////////////////
 
 // constructors and destructors
@@ -65,6 +67,8 @@ double UnivariateStat::var() const {
 	double mm = mean();
 	return(sum_i2/static_cast<double>(data.size()) - mm*mm);
 }
+
+
 
 
 ////////////////////////////////// MULTIVARIATE /////////////////////////////////

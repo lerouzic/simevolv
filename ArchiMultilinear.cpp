@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -29,18 +30,21 @@ using namespace std;
 
 // constructors and destuctor
 
+/* default constructor  -  should never be used */
 ArchiMultilinear::ArchiMultilinear()
 {
-    assert(false); // The default constructor should never be used.
+    assert(false); 
 }
 
 
+/* copy constructor  -  should never be used */
 ArchiMultilinear::ArchiMultilinear(const Architecture& archi)
 {
-    assert(false); // The copy constructor should never be used.
+    assert(false);
 }
 
 
+/* constructor using the paramater given in Architecture and the parameters files */
 ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     : Architecture(param)
     , epsilon2(vector<vector<double> >(0))
@@ -68,39 +72,10 @@ ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     flag_epistasis3 = !param.getpar(GENET_EPSILON3)->is_nil();
 }
 
-//operator overload
-/*
-std::ostream& operator << (std::ostream& out, const ArchiMultilinear& archi)
-{
-    out << "=== Type of model ===" << endl;
-    out << endl << "Multilinear model" << endl;
-    out << endl;
-    out << endl;
-
-    out << "=== Genetic map ===" << endl;
-    out << archi.gmap;
-    out << endl;
-
-    out << "=== Mutation rates ===" << endl;
-    out << endl;
-    for (int i = 0; i < archi.nb_loc(); i++)
-    {
-        out << "Loc" << i+1 << "\t" << archi.mutation_rate(i) << endl;
-    }
-    out << endl;
-
-    out << "=== 2-order epistasis ===" << std::endl;
-    out << archi.print_epsilon2();
-    out << endl;
-    out << "=== 3-order epistasis ===" << std::endl;
-    out << archi.print_epsilon3();
-    out << endl;
-    return(out);
-}*/
-
 
 // functions
 
+/* return the value for 2nd-order epistasis */
 double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) const
 {
     if (loc1 > loc2)
@@ -116,6 +91,7 @@ double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) cons
 }
 
 
+/* return the value for 3rd-order epistasis */
 double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3) const
 {
     if (loc1 > loc2)
@@ -141,6 +117,7 @@ double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsi
 }
 
 
+/* calculate the value of 2nd-order epistasis */
 void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double value)
 {
     if (loc1 > loc2)
@@ -166,6 +143,7 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
 }
 
 
+/* calculate the value of 3rd-order epistasis */
 void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, double value)
 {
     if (loc1 > loc2)
@@ -206,6 +184,7 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
 }
 
 
+/* print the values of 2nd-order epistasis */
 string ArchiMultilinear::print_epsilon2() const
 {
     ostringstream out;
@@ -229,6 +208,7 @@ string ArchiMultilinear::print_epsilon2() const
 }
 
 
+/* print the values of 3nd-order epistasis */
 string ArchiMultilinear::print_epsilon3() const
 {
     ostringstream out;
@@ -255,6 +235,8 @@ string ArchiMultilinear::print_epsilon3() const
 }
 
 
+/* calculate the phenotypic function depending on the genotype 
+ * here : sum of the genotypic values, correlation with epistasis values */
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
 {
     unsigned int nloc = nb_loc();

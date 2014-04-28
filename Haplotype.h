@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -32,32 +33,33 @@ class Haplotype
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
-    friend class ArchiMasel;  
+    friend class ArchiMasel; 
+    friend class ArchiSiegal; 
 
-public :
-    //constructors/destructor
-    Haplotype();
-    Haplotype(const ParameterSet &);
-    Haplotype(const Haplotype &);
-    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
-
-    //operator overload
-    int operator== (const Haplotype&) const;
-    int operator!= (const Haplotype&) const;
-
-    //functions
-    unsigned int nb_loc() const;
-    void draw_mutation();				// draws a mutation according to the mutation rate
-    void make_mutation(); 				// makes a mutation at a random locus
-    void make_mutation(unsigned int); 	// makes a mutation at a specific locus
-
-    //output/debug
-    void write_debug (std::ostream&) const;
-    void write_xml   (std::ostream&) const;
-    void write_simple(std::ostream&) const;
-
-protected :
-    std::vector<std::shared_ptr<Allele> > haplotype;
+	public :
+	    //constructors/destructor
+	    Haplotype();
+	    Haplotype(const ParameterSet &);
+	    Haplotype(const Haplotype &);
+	    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
+	
+	    //operator overload
+	    int operator== (const Haplotype&) const;
+	    int operator!= (const Haplotype&) const;
+	
+	    //functions
+	    unsigned int nb_loc() const;
+	    void draw_mutation();				
+	    void make_mutation(); 				
+	    void make_mutation(unsigned int); 
+	
+	    //output/debug
+	    void write_debug (std::ostream&) const;
+	    void write_xml   (std::ostream&) const;
+	    void write_simple(std::ostream&) const;
+	
+	protected :
+	    std::vector<std::shared_ptr<Allele> > haplotype;
 };
 
 

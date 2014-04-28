@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -37,33 +38,40 @@ class Phenotype
 		
 		//operator overload
 		Phenotype& operator= (const Phenotype &);
-		void copy(const Phenotype &);
-		
-		//functions
 		double operator[] (const unsigned int index) const;
+				
+		//functions
+		void copy(const Phenotype &);
 		unsigned int dimensionality() const;
+		
+		//output
 		void write_debug (std::ostream&) const;	
 		void write_simple (std::ostream&) const;	
-
-		// Output
 	    friend std::ostream& operator << (std::ostream&, const Phenotype&); // probably doesn't need to be friend
-
 		
 	protected:
 		std::vector<double> pheno;
 };
 
+
+
+
 ///////////// Specific class to get multivariate statistics on phenotypes. 
+
 class PhenotypeStat: public MultivariateStat
 {
 	public:
+		//constructor
 		PhenotypeStat(const std::vector<Phenotype> &);
 		
+		//functions
 		Phenotype means_phen() const {return(Phenotype(means()));}
 		Phenotype vars_phen() const {return(Phenotype(vars()));}
 		unsigned int dimensionality() const {return(data.size());}
-	protected:
 		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
+		
+	protected:
+		
 };
 
 

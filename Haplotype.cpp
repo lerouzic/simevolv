@@ -1,5 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
  *                                                                         *
@@ -27,6 +28,7 @@ using namespace std;
 
 // constructors/destructor
 
+/* default constructor */
 Haplotype::Haplotype()
 {
     int nloc = Haplotype::nb_loc();
@@ -41,6 +43,7 @@ Haplotype::Haplotype()
 }
 
 
+/* constructor using the parameters given by the parameters file and the Architecture files*/
 Haplotype::Haplotype(const ParameterSet & param)
 {
     int nloc = Haplotype::nb_loc();
@@ -53,14 +56,14 @@ Haplotype::Haplotype(const ParameterSet & param)
     }
 }
 
-
+/* copy constructor */
 Haplotype::Haplotype(const Haplotype & templ)
 	: haplotype(templ.haplotype)
 {
 	
 }
 
-
+/* constructor using a vector of Alleles */
 Haplotype::Haplotype(const vector<shared_ptr<Allele> > & vectalleles)
 	: haplotype(vectalleles)
 {
@@ -84,15 +87,18 @@ int Haplotype::operator!=(const Haplotype& other) const
 
 // functions
 
+/* collect the number of loci from the Architecture and return it */
 unsigned int Haplotype::nb_loc() const
 {
     Architecture * archi = Architecture::Get();
     unsigned int nloc = archi -> nb_loc();
-
     return nloc;
 }
 
 
+/* determines if there will be a mutation, for each locus of the haplotype 
+ * (depending on the mutation rate) 
+ * then > make_mutation(loc) */
 void Haplotype::draw_mutation()
 {
     Architecture * archi = Architecture::Get();
@@ -107,12 +113,17 @@ void Haplotype::draw_mutation()
 }
 
 
+/* force to make a mutation at a random locus 
+ * then > make_mutation(loc) */
 void Haplotype::make_mutation()
 {
     int loc = floor(Random::randnum()*nb_loc()); // static_cast<double>(nb_loc())
 	make_mutation(loc);
 }
 
+
+/* force to make a mutation at a chosen locus :
+ * replace the locus (vector of allele) by a new one (<allele_mutation)*/
 void Haplotype::make_mutation(unsigned int loc)
 {
 	Architecture * archi = Architecture::Get();

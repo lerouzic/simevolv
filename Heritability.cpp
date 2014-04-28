@@ -9,14 +9,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <vector>
+
 
 #include "Heritability.h"
 #include "Phenotype.h"
 #include "Population.h"
 #include "Individual.h"
 
+#include <vector>
+
 using namespace std;
+
+
+// constructor
 
 Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
 	
@@ -51,6 +56,9 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
 		parentoffspring.push_back(result);
 	}
 }
+
+
+// functions
 
 Phenotype Heritability::h2() const {
 	vector<double> result;
