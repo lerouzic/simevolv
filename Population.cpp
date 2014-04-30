@@ -366,14 +366,14 @@ void Population::write_summary(ostream & out, int generation) const
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
 				out << "CanPhen" << i + 1 << "\t";
 			}
-			out << "CanalFit" << "\t";
+			out << "CanFit" << "\t";
 		}
 		if (nb_herit_test > 0)
 		{	
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {			
 				out << "HerPhen" << i + 1 << "\t";
 			}
-			out << "HeritFit" << "\t";
+			out << "HerFit" << "\t";
 		}
 		out << endl; 
    	}

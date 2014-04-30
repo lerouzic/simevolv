@@ -21,12 +21,16 @@
 #include <iostream>
 #include <vector>
 
+
+
 class Individual; // This is clearly a design bug. Population.h is called in Individual.h through another way. 
+
 
 class Population
 {
 	friend class Canalization;
-
+	friend class Heritability;
+	
 	public :
 	    //constructors
 	    Population();
