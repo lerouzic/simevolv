@@ -16,26 +16,25 @@
 
 
 #include "Phenotype.h" 
+#include "Population.h"
 
 #include <vector>
-
-
-
-class Population;
-
-
+ 
 class Heritability 
 {
 	public:
 		// constructors
+			// parameters are the number of parent/offspring pairs to be tested, and the population
 		Heritability(unsigned int, const Population &);
 		
 		// functions
+			// Narrow-sense heritability (VA/VP)
 		Phenotype h2() const;
-		Phenotype H2() const;
+			// Narrow-sense heritability in fitness
 		double fit_h2() const;
 		
 	protected:
+		// internal structure for parent - offspring pairs (no need to make this visible from outside)
 		struct ParentOffspring 
 		{
 			Phenotype mother_phen;

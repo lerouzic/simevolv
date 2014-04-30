@@ -21,18 +21,21 @@
 
 #include <vector>
 
-
-
-class Individual; // crossed references: Population.h -> Canalization.h -> Individual.h -> Population.h
-class Population;
-
+/* This class is devoted to the estimation of the canalization (or genetic robustness) of the 
+   genetic architecture in a population. 
+   This is achieved by computing the variance of the effect of random mutations in the population.
+   The smaller this variance, the more robustness the population displays. 
+*/
 
 class Canalization
 {
 	public:
+		// The constructor parameters are the number of canalization tests, and the current population
+		// The database is filled in the constructor, meaning that most of the computation time will be
+		// spent here. 
 		Canalization(unsigned int, const Population &);
 						
-		// get the results
+		// get the canalization scores
 		Phenotype phen_canalization();
 		double fitness_canalization();
 				
@@ -41,10 +44,12 @@ class Canalization
 		void reference_indiv(Individual);
 		void mutant_indiv (Individual);
 		
+		// run the calculation
 		void process();	
 		void process_phen();
 		void process_fit();
 		
+		// Storage of temporary information
 		std::vector<Individual> reference;
 		std::vector<std::vector<Individual> > mutants;
 		
