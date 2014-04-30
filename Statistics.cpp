@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014       Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -26,6 +25,7 @@ using namespace std;
 
 // constructors and destructors
 
+// Initialize from a vector<double>
 UnivariateStat::UnivariateStat(const vector<double> & vv)
 	: data(vv)
 	, sum_i(0.0)
@@ -39,14 +39,9 @@ UnivariateStat::UnivariateStat(const vector<double> & vv)
 }
 
 
-UnivariateStat::~UnivariateStat()
-{
-	
-}
-
-
 // initialisation
 
+// computes and stores intermediate results. 
 void UnivariateStat::initialize()
 {
 	for (unsigned int i = 0; i < data.size(); i++) {
@@ -75,13 +70,13 @@ double UnivariateStat::var() const {
 
 MultivariateStat::MultivariateStat(const vector<vector<double> > & v)
 	: data(v)
-{
+{ 
+	// It is a bit complicated to assert here whether the vector<vector<double> > is OK. 
+	// Temporary storage variables as well as checks on the dimensions will occur afterwards, 
+	// in initialize(), which computes the sums of x_i and x_i^2. 
 	initialize();
 }
 
-MultivariateStat::~MultivariateStat()
-{
-}
 
 void MultivariateStat::initialize()
 {

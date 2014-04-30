@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2014       Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -18,45 +17,43 @@
 #include <vector>
 #include <iostream>
 
-
-
+/* Univariate Statistics: provides the mean and variance of a vector of double */
 class UnivariateStat
 {
 	public:
 		// constructors/destructors
 		UnivariateStat(const std::vector<double> &);
-		~UnivariateStat();
 		
-		//initialization
-		void initialize();
-		
-		//functions
+		// get results
 		double mean() const;
 		double var() const;
 		
 	protected:
+		// initialization
+		void initialize();
+		
+		// data and 
 		const std::vector<double> data;
 		double sum_i;
 		double sum_i2;
 };
 
 
-
+/* Multivariate statistics. The input is a matrix of doubles (provided as a vector of vectors)
+   The function provides: the mean and variance for each entry, as well as pairwise covariances, 
+   correlations, and the slope of regressions between pairs of variables */
 class MultivariateStat
 {
 	public:
 		// constructors/destructors
 		MultivariateStat(const std::vector<std::vector<double> > &);
-		~MultivariateStat();
-		
-		// initilization
-		void initialize();
-		
-		// functions
+
+		// get results: vectorized
 		std::vector<double> means() const;
 		std::vector<double> vars() const;
 		std::vector<std::vector<double> > vcov() const;
 		
+		// ... or as scalars by providing the indexes.
 		double mean(unsigned int) const;
 		double var(unsigned int) const;
 		double cov(unsigned int, unsigned int) const;
@@ -68,9 +65,12 @@ class MultivariateStat
 		friend std::ostream & operator << (std::ostream &, const MultivariateStat &);
 		
 	protected:
+		// initilization
+		void initialize();
+	
 		const std::vector<std::vector<double> > data;
 		std::vector<std::vector<double> > sum_ij;
 		std::vector<double> sum_i;
 };
 
-#endif
+#endif // STATISTICS_H_INCLUDED
