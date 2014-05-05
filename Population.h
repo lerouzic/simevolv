@@ -30,7 +30,7 @@ class Population
 {
 	friend class Canalization;
 	friend class Heritability;
-	
+
 	public :
 	    //constructors
 	    Population();

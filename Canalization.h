@@ -18,6 +18,7 @@
 #include "Phenotype.h"
 #include "Statistics.h"
 #include "Parameters.h"
+#include "Population.h"
 
 #include <vector>
 
