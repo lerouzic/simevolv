@@ -362,7 +362,8 @@ void ParameterSet::initialize()
     
     // Regulatory architecture
     parameters[INIT_CONNECT] = new Parameter_double(0.0, 1.0);
-	parameters[INIT_BASAL] = new Parameter_double(-1.0, 1.0);
+	parameters[TYPE_SO] = new Parameter_string(SO_options);
+	parameters[INIT_BASAL] = new Parameter_double(0.0, 1.0);
 	parameters[DEV_TIMESTEPS] = new Parameter_int(0, 100*1000);
 
 }

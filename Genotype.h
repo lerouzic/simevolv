@@ -32,6 +32,7 @@ class Genotype
     friend class ArchiWagner;
     friend class ArchiMasel;
     friend class ArchiSiegal; 
+    friend class ArchiM2;
 
 	public:
 	    //constructors / destructors

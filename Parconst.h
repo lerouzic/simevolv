@@ -49,7 +49,8 @@ const std::string GENET_EPSILON3 = "GENET_EPSILON3";
 
 // REGULATORY ARCHITECTURE
 const std::string INIT_CONNECT = "INIT_CONNECT";
-const std::string INIT_BASAL = "INIT_BASAL";
+const std::string TYPE_SO = "TYPE_SO";	
+const std::string INIT_BASAL = "INIT_BASAL";				/* Initial vector (So) types */
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
 
 
@@ -87,7 +88,17 @@ const std::string AR_mult = "multilinear";
 const std::string AR_wagner = "wagner";
 const std::string AR_masel = "masel";
 const std::string AR_siegal = "siegal";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_masel)(AR_siegal);
+const std::string AR_m2 = "m2";
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_masel)(AR_siegal)(AR_m2);
+
+// Initial vector type
+const std::string SO_min = "minimum";
+const std::string SO_max = "maximum";
+const std::string SO_med = "median";
+const std::string SO_randbin = "random_binary";
+const std::string SO_rand = "random";
+const std::string SO_basal = "basal";
+const std::vector<std::string> SO_options = boost::assign::list_of (SO_min)(SO_max)(SO_med)(SO_randbin)(SO_rand)(SO_basal);
 
 
 #endif // PARCONST_H_INCLUDED

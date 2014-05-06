@@ -47,14 +47,8 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
     : Architecture(param)
     , sall(nb_loc())
     , timesteps(param.getpar(DEV_TIMESTEPS)->GetDouble())
-    , basal(param.getpar(INIT_BASAL)->GetDouble())
 {
 	init_connectivity_matrix(param); // creates connectivity_matrix
-
-	for (unsigned int n=0; n<nb_loc(); n++)
-	{
-		So.push_back(basal);
-	}	
 }
 
 
@@ -69,13 +63,19 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 	for (unsigned int i = 0; i < sall; i++) {
 		assert(connectivity_matrix.size() > loc);
 		assert(connectivity_matrix[loc].size() > i);
-		if (connectivity_matrix[loc][i] == 0.0) {
+		if (connectivity_matrix[loc][i] == 0.0) 
+		{
 			temp_allele.push_back(0.0);
-		} else {
+		} 
+		else 
+		{
 			double value;
-			if (clonal) {
+			if (clonal) 
+			{
 				value = connectivity_matrix[loc][i];
-			} else {
+			} 
+			else 
+			{
 				value = param.getpar(INIT_ALLELES) -> GetDouble();
 			}
 			temp_allele.push_back(value);
@@ -168,4 +168,240 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	}
 	
 	return Phenotype(Sf);
+}
+
+
+
+
+
+//////////////////////////// INHERITED CLASSES //////////////////////////////////
+
+// constructors 
+
+ArchiWagner::ArchiWagner(const ParameterSet& param) 
+	: ArchiRegulatoryMatrix(param)
+{ 
+	int min = -1;
+	int max = 1;
+	
+	string type_so = param.getpar(TYPE_SO)->GetString();
+    if (type_so==SO_min)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(min);
+		}	
+    }
+    else if (type_so==SO_max)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(max);
+		}	
+	}
+	else if (type_so==SO_med)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);			
+		}	
+	}
+	else if (type_so==SO_randbin)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = Random::randnum();
+			if (s < 0.5) { So.push_back(min); }
+			else { So.push_back(max); }
+		}	
+	}
+	else if (type_so==SO_rand)
+	{
+		cerr << "Random So has no real significance in Wagner model." << endl << endl;
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = (max-min)*Random::randnum()+min;
+			So.push_back(s);
+		}
+	}
+	else
+	{
+		cerr <<	"Basal So cannot be used in Wagner model : switch to Median So." << endl;
+		cerr << "Median So has no real significance in Wagner model." << endl << endl;
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);
+		}	
+	}
+}
+
+
+ArchiMasel::ArchiMasel(const ParameterSet& param) 
+	: ArchiRegulatoryMatrix(param)
+{ 
+	int min = 0;
+	int max = 1;
+	
+	string type_so = param.getpar(TYPE_SO)->GetString();
+    if (type_so==SO_min)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(min);
+		}	
+    }
+    else if (type_so==SO_max)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(max);
+		}	
+	}
+	else if (type_so==SO_med)
+	{
+		cerr << "Median So has no real significance in Masel model." << endl << endl;
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);	
+		}	
+	}
+	else if (type_so==SO_randbin)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = Random::randnum();
+			if (s < 0.5) { So.push_back(min); }
+			else { So.push_back(max); }
+		}	
+	}
+	else if (type_so==SO_rand)
+	{
+		cerr << "Random So has no real significance in Masel model." << endl << endl;
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = (max-min)*Random::randnum()+min;
+			So.push_back(s);
+		}
+	}
+	else 
+	{
+		cerr <<	"Basal So cannot be used in Masel model : switch to Median So." << endl;
+		cerr << "Median So has no real significance in Masel model." << endl << endl;
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);
+		}	
+	}	
+}
+
+
+ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
+	: ArchiRegulatoryMatrix(param)
+	, basal(param.getpar(INIT_BASAL)->GetDouble())
+{ 
+	int min = -1;
+	int max = 1;
+	
+	string type_so = param.getpar(TYPE_SO)->GetString();
+    if (type_so==SO_min)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(min);
+		}	
+    }
+    else if (type_so==SO_max)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(max);
+		}	
+	}
+	else if (type_so==SO_med)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);			
+		}	
+	}
+	else if (type_so==SO_randbin)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = Random::randnum();
+			if (s < 0.5) { So.push_back(min); }
+			else { So.push_back(max); }
+		}	
+	}
+	else if (type_so==SO_rand)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = (max-min)*Random::randnum()+min;
+			So.push_back(s);
+		}
+	}
+	else
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(basal);
+		}
+	}
+}
+
+
+ArchiM2::ArchiM2(const ParameterSet& param) 
+	: ArchiRegulatoryMatrix(param)
+	, basal(param.getpar(INIT_BASAL)->GetDouble())
+{ 
+	int min = 0;
+	int max = 1;
+	
+	string type_so = param.getpar(TYPE_SO)->GetString();
+    if (type_so==SO_min)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(min);
+		}	
+    }
+    else if (type_so==SO_max)
+    {
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(max);
+		}	
+	}
+	else if (type_so==SO_med)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back((min+max)/2);			
+		}	
+	}
+	else if (type_so==SO_randbin)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = Random::randnum();
+			if (s < 0.5) { So.push_back(min); }
+			else { So.push_back(max); }
+		}	
+	}
+	else if (type_so==SO_rand)
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			double s = (max-min)*Random::randnum()+min;
+			So.push_back(s);
+		}
+	}
+	else
+	{
+		for (unsigned int n=0; n<nb_loc(); n++)
+		{
+			So.push_back(basal);
+		}
+	}
 }

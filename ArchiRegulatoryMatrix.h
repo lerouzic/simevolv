@@ -40,8 +40,7 @@ class ArchiRegulatoryMatrix : public Architecture
 		std::vector<double> So;
 		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
-		double basal;
-		
+				
 	    //functions
 		void init_connectivity_matrix(const ParameterSet &);		
 };
@@ -52,12 +51,12 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	public :
 	    //constructors/destructor
 	    ArchiWagner() {assert(false);}
-	    ArchiWagner(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
+	    ArchiWagner(const ParameterSet&);
 	    ~ArchiWagner() {}
 		
 		// Inherited functions
-		double sigma(double h) const {if (h<0){return (-1.);} else if (h>0) {return (1.);} else {return (0.);}}		
-};
+		double sigma(double h) const {if (h<0){return (-1.);} else if (h>0) {return (1.);} else {return (0.);}}	
+};	
 
 
 
@@ -66,7 +65,7 @@ class ArchiMasel : public ArchiRegulatoryMatrix
 	public :
 	    //constructors/destructor
 	    ArchiMasel() {assert(false);}
-	    ArchiMasel(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
+	    ArchiMasel(const ParameterSet&);
 	    ~ArchiMasel() {}
 		
 		// Inherited functions
@@ -79,12 +78,30 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 	public : 
 		//constructors/destructor
 	    ArchiSiegal() {assert(false);}
-	    ArchiSiegal(const ParameterSet& param) : ArchiRegulatoryMatrix(param) {}
+	    ArchiSiegal(const ParameterSet&);
 	    ~ArchiSiegal() {}
 		
 		// Inherited functions
-		double sigma(double h) const {return ((2/(1+exp(-basal*h)))-1);}
+		double sigma(double h) const {return ((2 / (1 + exp(-basal*h)) ) -1);}
+		
+	protected :
+		double basal;
 };
 
+
+class ArchiM2 : public ArchiRegulatoryMatrix
+{
+	public : 
+		//constructors/destructor
+	    ArchiM2() {assert(false);}
+	    ArchiM2(const ParameterSet&);
+	    ~ArchiM2() {}
+		
+		// Inherited functions
+		double sigma(double h) const {return (1 / (1 + exp((-h/basal*(1-basal))+log(1/basal-1)) ));}
+	
+	protected :
+		double basal;
+};
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

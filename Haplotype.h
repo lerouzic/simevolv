@@ -35,6 +35,7 @@ class Haplotype
     friend class ArchiWagner;
     friend class ArchiMasel; 
     friend class ArchiSiegal; 
+    friend class ArchiM2;
 
 	public :
 	    //constructors/destructor

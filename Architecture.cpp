@@ -102,6 +102,10 @@ void Architecture::initialize(const ParameterSet& param)
     {
         Architecture::instance = new ArchiSiegal(param);
     }
+    else if (type_archi==AR_m2)
+    {
+        Architecture::instance = new ArchiM2(param);
+    }
     else
     {
         assert("Wrong architecture type");
