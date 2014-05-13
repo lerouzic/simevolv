@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -30,6 +30,7 @@ class Phenotype
 		Phenotype();
 		Phenotype(const double);
 		Phenotype(const std::vector<double> &);
+		Phenotype(const std::vector<double> &, const std::vector<double> &);
 		Phenotype(const Phenotype &);
 		~Phenotype();
 		
@@ -38,19 +39,23 @@ class Phenotype
 		
 		//operator overload
 		Phenotype& operator= (const Phenotype &);
+		
+		// getters
 		double operator[] (const unsigned int index) const;
+		double get_pheno(const unsigned int index) const;
+		double get_unstab(const unsigned int index) const;
 				
-		//functions
-		void copy(const Phenotype &);
+		// number of phenotypes
 		unsigned int dimensionality() const;
 		
 		//output
 		void write_debug (std::ostream&) const;	
 		void write_simple (std::ostream&) const;	
-	    friend std::ostream& operator << (std::ostream&, const Phenotype&); // probably doesn't need to be friend
+	    friend std::ostream& operator << (std::ostream&, const Phenotype&); 
 		
 	protected:
 		std::vector<double> pheno;
+		std::vector<double> unstabpheno;
 };
 
 

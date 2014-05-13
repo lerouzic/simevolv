@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -34,6 +34,7 @@ Phenotype::Phenotype()
 Phenotype::Phenotype(double init) 
 {
 	pheno.push_back(init);
+	unstabpheno.push_back(0.0);
 }
 
 
@@ -42,6 +43,17 @@ Phenotype::Phenotype(double init)
 Phenotype::Phenotype(const vector<double> & init) 
 {
 	pheno = init;
+	// when the unstability vector is not provided, we assume that phenotypes
+	// are all stable.
+	for (unsigned int i = 0; i < pheno.size(); i++) {
+		unstabpheno.push_back(0.0);
+	}
+}
+
+Phenotype::Phenotype(const vector<double>& init, const vector<double>& initunstab)
+{
+	pheno = init;
+	unstabpheno = initunstab;
 }
 
 
@@ -49,6 +61,7 @@ Phenotype::Phenotype(const vector<double> & init)
 Phenotype::Phenotype(const Phenotype & templ)
 {
 	pheno = templ.pheno;
+	unstabpheno = templ.unstabpheno;
 }
 
 
@@ -66,14 +79,27 @@ Phenotype & Phenotype::operator = (const Phenotype & templ)
 	if (this == &templ)
         return (*this);
     pheno = templ.pheno;
+    unstabpheno = templ.unstabpheno;
     return(*this);
 }
 
-
+// Warning: this returns the phenotypic value!
 double Phenotype::operator[] (const unsigned int index) const 
+{
+	return(get_pheno(index));
+}
+
+double Phenotype::get_pheno(const unsigned int index) const
 {
 	assert(index < dimensionality());
 	return(pheno[index]);
+}
+
+double Phenotype::get_unstab(const unsigned int index) const
+{
+	assert(index < dimensionality());
+	assert(pheno.size() == unstabpheno.size());
+	return(unstabpheno[index]);
 }
 
 
@@ -82,6 +108,7 @@ double Phenotype::operator[] (const unsigned int index) const
 /* return the dimensionnality of the phenotype (number of phenotypes observed) */
 unsigned int Phenotype::dimensionality() const 
 {
+	assert(pheno.size() == unstabpheno.size());
 	return(pheno.size());
 }
 
@@ -89,7 +116,7 @@ unsigned int Phenotype::dimensionality() const
 void Phenotype::write_debug (ostream& out) const
 {
 	for (unsigned int i = 0; i < dimensionality(); i++) {
-		out << pheno[i];
+		out << pheno[i] << "(" << unstabpheno[i] << ")";
 		if (i < dimensionality()-2)
 			out << "/";
 	}
@@ -107,7 +134,7 @@ void Phenotype::write_simple (ostream& out) const
 ostream& operator << (ostream& out, const Phenotype& phen)
 {
 	for (unsigned int k = 0; k < phen.dimensionality(); k++) {
-		out << phen[k] << "\t";
+		out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";
 	}
 	return(out);
 }
