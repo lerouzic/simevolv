@@ -44,6 +44,7 @@ class Phenotype
 		double operator[] (const unsigned int index) const;
 		double get_pheno(const unsigned int index) const;
 		double get_unstab(const unsigned int index) const;
+		void add_pheno(const unsigned int index, const double effect);
 				
 		// number of phenotypes
 		unsigned int dimensionality() const;
@@ -63,20 +64,37 @@ class Phenotype
 
 ///////////// Specific class to get multivariate statistics on phenotypes. 
 
-class PhenotypeStat: public MultivariateStat
+class PhenotypeStat
 {
 	public:
 		//constructor
 		PhenotypeStat(const std::vector<Phenotype> &);
 		
 		//functions
-		Phenotype means_phen() const {return(Phenotype(means()));}
-		Phenotype vars_phen() const {return(Phenotype(vars()));}
-		unsigned int dimensionality() const {return(data.size());}
+		std::vector<double> means_phen() const {return(pheno.means());}
+		std::vector<double> vars_phen() const {return(pheno.vars());}
+		
+		std::vector<double> means_unstab() const {return(unstab.means());}
+		std::vector<double> vars_unstab() const {return(unstab.vars());}
+		
+		unsigned int dimensionality() const {return(pheno.means().size());}
 		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
+		static std::vector<std::vector<double> > transpose_unstabphen_matrix(const std::vector<Phenotype> &);
 		
 	protected:
+		MultivariateStat pheno;
+		MultivariateStat unstab;
 		
+};
+
+class InvertedMStat: public MultivariateStat
+{
+	public:
+		InvertedMStat(const std::vector<std::vector<double> > &);
+	
+	protected:
+	// functions
+	static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
 };
 
 

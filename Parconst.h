@@ -52,6 +52,7 @@ const std::string INIT_CONNECT = "INIT_CONNECT";
 const std::string TYPE_SO = "TYPE_SO";	
 const std::string INIT_BASAL = "INIT_BASAL";				/* Initial vector (So) types */
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
+const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
 
 
 

@@ -32,7 +32,7 @@ class Environment
 	    static void initialize(const ParameterSet&);
 	
 	    // functions
-	    static Phenotype rand_effect(const Phenotype &);
+	    static Phenotype rand_effect(Phenotype);
 	    static double get_sd();
 	
 	private:

@@ -45,7 +45,8 @@ Phenotype::Phenotype(const vector<double> & init)
 	pheno = init;
 	// when the unstability vector is not provided, we assume that phenotypes
 	// are all stable.
-	for (unsigned int i = 0; i < pheno.size(); i++) {
+	for (unsigned int i = 0; i < pheno.size(); i++) 
+	{
 		unstabpheno.push_back(0.0);
 	}
 }
@@ -102,6 +103,12 @@ double Phenotype::get_unstab(const unsigned int index) const
 	return(unstabpheno[index]);
 }
 
+void Phenotype::add_pheno(const unsigned int index, const double effect) 
+{
+	assert (index < dimensionality());
+	pheno[index] += effect;
+}
+
 
 // functions
 
@@ -115,7 +122,8 @@ unsigned int Phenotype::dimensionality() const
 
 void Phenotype::write_debug (ostream& out) const
 {
-	for (unsigned int i = 0; i < dimensionality(); i++) {
+	for (unsigned int i = 0; i < dimensionality(); i++) 
+	{
 		out << pheno[i] << "(" << unstabpheno[i] << ")";
 		if (i < dimensionality()-2)
 			out << "/";
@@ -133,7 +141,8 @@ void Phenotype::write_simple (ostream& out) const
 
 ostream& operator << (ostream& out, const Phenotype& phen)
 {
-	for (unsigned int k = 0; k < phen.dimensionality(); k++) {
+	for (unsigned int k = 0; k < phen.dimensionality(); k++) 
+	{
 		out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";
 	}
 	return(out);
@@ -149,7 +158,8 @@ ostream& operator << (ostream& out, const Phenotype& phen)
 
 /* constructor using a vector of phenotype */
 PhenotypeStat::PhenotypeStat(const vector<Phenotype> & vec_phen)
-	: MultivariateStat(transpose_phen_matrix(vec_phen))
+	: pheno(transpose_phen_matrix(vec_phen))
+	, unstab(transpose_unstabphen_matrix(vec_phen))
 {
 }
 
@@ -168,7 +178,51 @@ vector<vector<double> > PhenotypeStat::transpose_phen_matrix(const vector<Phenot
 	for (unsigned int k = 0; k < dim; k++) {
 		vector<double> tmp;
 		for (unsigned int i = 0; i < vec_phen.size(); i++) {
-			tmp.push_back(vec_phen[i][k]);
+			tmp.push_back(vec_phen[i].get_pheno(k));
+		}
+		ans.push_back(tmp);
+	}
+	return(ans);
+}
+
+vector<vector<double> > PhenotypeStat::transpose_unstabphen_matrix(const vector<Phenotype> & vec_phen)
+{ 
+	assert(!vec_phen.empty());
+	
+	unsigned int dim = vec_phen[0].dimensionality();
+	vector<vector<double> > ans;
+	
+	for (unsigned int k = 0; k < dim; k++) {
+		vector<double> tmp;
+		for (unsigned int i = 0; i < vec_phen.size(); i++) {
+			tmp.push_back(vec_phen[i].get_unstab(k));
+		}
+		ans.push_back(tmp);
+	}
+	return(ans);
+}
+
+
+// Inverted multivariate stats (to be copied in multivariateStats?)
+
+InvertedMStat::InvertedMStat(const vector<vector<double> > & vec_vec_d)
+	: MultivariateStat(transpose_double_matrix(vec_vec_d))
+{
+}
+
+
+// Exactly the same code as above (:-@!!! )
+vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vector<double> > & vec_vec_d) 
+{
+	assert(!vec_vec_d.empty());
+	
+	unsigned int dim = vec_vec_d[0].size();
+	vector<vector<double> > ans;
+	for (unsigned int k = 0; k < dim; k++) {
+		vector<double> tmp;
+		for (unsigned int i = 0; i < vec_vec_d.size(); i++) {
+			if (k==0) assert(vec_vec_d[i].size() == dim);
+			tmp.push_back(vec_vec_d[i][k]);
 		}
 		ans.push_back(tmp);
 	}

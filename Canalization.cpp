@@ -126,7 +126,6 @@ void Canalization::process_phen()
 		mean_per_indiv.push_back(stat_i.means_phen());
 		var_per_indiv.push_back(stat_i.vars_phen());
 	}	
-	
 	PhenotypeStat stat_m(mean_per_indiv);
 	PhenotypeStat stat_v(var_per_indiv);
 	

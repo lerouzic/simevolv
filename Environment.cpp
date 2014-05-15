@@ -58,15 +58,13 @@ void Environment::initialize(const ParameterSet & param)
 /* modify the genotypic value by adding an environmental effect 
  * (Probably not very efficient, but this will probably not be used for complex 
  * architectures in which the environmental effect is correlated to the genotype) */
-Phenotype Environment::rand_effect(const Phenotype& genot_values)
+Phenotype Environment::rand_effect(Phenotype genot_values)
 {	 
     assert (Environment::instance != NULL);
-    vector<double> updated;
     for (unsigned int i = 0; i < genot_values.dimensionality(); i++) {
-		updated.push_back(genot_values[i]+Environment::instance->sd*Random::randgauss());
+		genot_values.add_pheno(i, Environment::instance->sd*Random::randgauss());
 	}
-	Phenotype newphen(updated);
-    return(newphen);
+    return(genot_values);
 }
 
 
