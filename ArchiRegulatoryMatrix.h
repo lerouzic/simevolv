@@ -40,6 +40,7 @@ class ArchiRegulatoryMatrix : public Architecture
 		std::vector<double> So;
 		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
+		unsigned int calcsteps; 
 				
 	    //functions
 		void init_connectivity_matrix(const ParameterSet &);		
@@ -103,5 +104,7 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 	protected :
 		double basal;
 };
+
+
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

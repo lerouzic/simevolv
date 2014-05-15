@@ -16,6 +16,7 @@
 #include "ArchiRegulatoryMatrix.h"
 #include "Parconst.h"
 #include "Random.h"
+#include "Statistics.h"
 #include "main.h"
 
 #include <vector>
@@ -33,6 +34,19 @@
 using namespace std;
 
 
+/* Misc functions (why here?) */
+
+// convert a boost vector into a regulat std::vector
+template<class T>
+std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x) {
+	// not very fast, optimize with std::copy if necessary
+	std::vector<T> ans;
+	for (unsigned int i = 0; i < x.size(); i++) {
+		ans.push_back(x(i));
+	}
+	return(ans);
+}
+
 // constructors and destuctor
 
 /* default constructor  -  should never be used */
@@ -46,7 +60,8 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix()
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param) 
     : Architecture(param)
     , sall(nb_loc())
-    , timesteps(param.getpar(DEV_TIMESTEPS)->GetDouble())
+    , timesteps(param.getpar(DEV_TIMESTEPS)->GetInt())
+    , calcsteps(param.getpar(DEV_CALCSTEPS) -> GetInt())
 {
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
@@ -119,18 +134,16 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 }
 
 
-/* calculate the phenotypic function depending on the genotype 
- * here : depend of the initial vector, and the connectivity matrix */
 Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) const
 {
 	// creation of the W matrix;
-	vector<vector<double> > matrix;
+	std::vector<std::vector<double> > matrix;
 	for (unsigned int loc=0; loc < nb_loc(); loc++) 
 	{
 		matrix.push_back(Allele::combine_add(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
 	}
 	
-	// creation of the w_matrix and st_vector for using ublas 
+	// creation of the w_matrix and st_vector (from std to ublas)
 	unsigned int nloc = nb_loc();
 	boost::numeric::ublas::vector<double> St(nloc);
 	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
@@ -151,25 +164,42 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	// simulation
 	boost::numeric::ublas::vector<double> h(nloc);
 	
+	std::vector<std::vector<double> > result;
+	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
-		h = prod(St,W);
-		for (unsigned int i=0 ; i<h.size() ; i++)
-		{
-			St(i) = sigma(h(i));
-		}
+			h = prod(St,W);
+			for (unsigned int i=0 ; i<h.size() ; i++)
+			{
+				St(i) = sigma(h(i));
+				//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
+			}
+			if (t > (timesteps-calcsteps)) {
+				result.push_back(boost_to_std(St));
+			}
+			//~ for (unsigned int c=0 ; c< result.size() ; c++)
+			//~ {
+				//~ result = St; 				
+			//~ }
 	}
-	
-	// output
-	std::vector<double> Sf;
-	for (unsigned int i=0 ; i<nloc ; i++)
-	{
-		Sf.push_back(St(i));
-	}
-	
-	return Phenotype(Sf);
-}
 
+	// stability test
+	
+	
+	// output (from ublas to std)
+	
+	InvertedMStat stat_steps(result);
+	
+	//~ std::vector<double> Sf_mean;
+	//~ std::vector<double> Sf_var;
+	//~ for (unsigned int i=0 ; i<nloc ; i++)
+	//~ {
+		//~ Sf_mean.push_back(St_mean(i));
+		//~ Sf_var.push_back(St_var(i));
+	//~ }
+
+	return Phenotype(stat_steps.means(), stat_steps.vars());
+}
 
 
 
