@@ -34,18 +34,20 @@
 using namespace std;
 
 
-/* Misc functions (why here?) */
+// convert a boost vector into a regulat std::vector and vice-versa
 
-// convert a boost vector into a regulat std::vector
 template<class T>
-std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x) {
+std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x) 
+{
 	// not very fast, optimize with std::copy if necessary
 	std::vector<T> ans;
-	for (unsigned int i = 0; i < x.size(); i++) {
+	for (unsigned int i = 0; i < x.size(); i++) 
+	{
 		ans.push_back(x(i));
 	}
 	return(ans);
 }
+
 
 // constructors and destuctor
 
@@ -147,7 +149,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	unsigned int nloc = nb_loc();
 	boost::numeric::ublas::vector<double> St(nloc);
 	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
-		
+	
 	for (unsigned int i=0 ; i<nloc ; i++)
 	{
 		St(i) = So[i];
@@ -160,45 +162,31 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
             W(i,j) = matrix[i][j];
         }
 	}
-		
+	
 	// simulation
 	boost::numeric::ublas::vector<double> h(nloc);
-	
-	std::vector<std::vector<double> > result;
+	std::vector<std::vector<double> > unstability;
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
-			h = prod(St,W);
-			for (unsigned int i=0 ; i<h.size() ; i++)
-			{
-				St(i) = sigma(h(i));
-				//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
-			}
-			if (t > (timesteps-calcsteps)) {
-				result.push_back(boost_to_std(St));
-			}
-			//~ for (unsigned int c=0 ; c< result.size() ; c++)
-			//~ {
-				//~ result = St; 				
-			//~ }
+		h = prod(St,W);
+		for (unsigned int i=0 ; i<h.size() ; i++)
+		{
+			St(i) = sigma(h(i));
+			//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
+		}
+		if (t > (timesteps-calcsteps)) 
+		{
+			unstability.push_back(boost_to_std(St));
+		}
 	}
 
-	// stability test
-	
-	
 	// output (from ublas to std)
+	InvertedMStat stat_steps(unstability);
+	vector<double> Sf_mean = stat_steps.means();
+	vector<double> Sf_var = stat_steps.vars();
 	
-	InvertedMStat stat_steps(result);
-	
-	//~ std::vector<double> Sf_mean;
-	//~ std::vector<double> Sf_var;
-	//~ for (unsigned int i=0 ; i<nloc ; i++)
-	//~ {
-		//~ Sf_mean.push_back(St_mean(i));
-		//~ Sf_var.push_back(St_var(i));
-	//~ }
-
-	return Phenotype(stat_steps.means(), stat_steps.vars());
+	return Phenotype(Sf_mean, Sf_var);
 }
 
 
