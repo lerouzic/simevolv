@@ -85,6 +85,7 @@ const std::string FF_brown = "brownian";
 const std::string FF_white = "white_noise";
 const std::vector<std::string> FF_options = boost::assign::list_of (FF_nofluct)(FF_smooth)(FF_pflips)(FF_sflips)(FF_brown)(FF_white);
 
+// Strenght of selection on stability
 const std::string FS_nostab = "no_stabsel";
 const std::string FS_expo = "exponential_stab";
 const std::vector<std::string> FS_options = boost::assign::list_of (FS_nostab)(FS_expo);

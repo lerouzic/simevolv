@@ -391,14 +391,13 @@ void Population::write_summary(ostream & out, int generation) const
 	vector<double> mm = phenstat.means_phen();
 	vector<double> mm2 = phenstat.means_unstab();
 	for (unsigned int i = 0; i < mm.size(); i++){
-		out << mm[i] << "(" << mm2[i] << ")" << "\t";
+		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
+		out << mm[i] << "\t";
 	}
 	vector<double> vv = phenstat.vars_phen();
 	for (unsigned int i = 0; i < vv.size(); i++){
 		out << vv[i] << "\t";
 	}
-    //~ out << phenstat.means_phen() << "\t";
-    //~ out << phenstat.vars_phen() << "\t";
     out << fitstat.mean() << "\t";
     out << fitstat.var() << "\t";
     out << Fitness::current_optimum() << "\t";

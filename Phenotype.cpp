@@ -132,7 +132,8 @@ void Phenotype::write_debug (ostream& out) const
 {
 	for (unsigned int i = 0; i < dimensionality(); i++) 
 	{
-		out << pheno[i] << "(" << unstabpheno[i] << ")";
+		//out << pheno[i] << "(" << unstabpheno[i] << ")"; 	//for debug
+		out << pheno[i];
 		if (i < dimensionality()-2)
 			out << "/";
 	}
@@ -151,7 +152,8 @@ ostream& operator << (ostream& out, const Phenotype& phen)
 {
 	for (unsigned int k = 0; k < phen.dimensionality(); k++) 
 	{
-		out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";
+		//out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";   // for debug
+		out << phen.pheno[k] << "\t";
 	}
 	return(out);
 }
