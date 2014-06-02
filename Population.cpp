@@ -354,7 +354,9 @@ void Population::write_summary(ostream & out, int generation) const
 		}
 		out << "MFit" << "\t";
 		out << "VFit" << "\t";
-		out << "FitOpt" << "\t";
+		for (unsigned int opt = 0; opt < Fitness::current_optimum().size(); opt++) {
+			out << "FitOpt" << opt << "\t";
+		}
 		if (nb_canal_test > 0) 
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
