@@ -21,7 +21,24 @@
 #include <iostream>
 #include <vector>
 
-
+// Phenovec is "just" a vector of double, storing phenotypic values for several characters
+class Phenovec: private std::vector<double>
+{
+    typedef double T;
+    typedef std::vector<double> vector;
+public:
+    using vector::push_back;
+    using vector::operator[];
+    using vector::begin;
+    using vector::end;
+    using vector::size;
+    unsigned int dimensionality() const { return(size()); }
+    Phenovec() : std::vector<double>() { }
+    Phenovec(const std::vector<double> & vec) : std::vector<double>(vec) { }
+    virtual ~Phenovec() { }
+    
+	friend std::ostream& operator << (std::ostream&, const Phenovec &); 
+};
 
 class Phenotype
 {

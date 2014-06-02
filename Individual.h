@@ -48,7 +48,6 @@ class Individual
 	
 	    // functions
 	    void update_fitness(const Population &);
-	    void update_fitness(const double);
 	    double get_fitness() const;
 	    Phenotype get_phenotype() const;
 	    Phenotype get_genot_value() const;

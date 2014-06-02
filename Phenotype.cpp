@@ -19,7 +19,15 @@
 
 using namespace std;
 
-
+ostream& operator << (ostream& out, const Phenovec & pvec)
+{
+	for (unsigned int i = 0; i < pvec.size(); i++) {
+		out << pvec[i];
+		if (i < pvec.size() - 1)
+			out << "\t";
+	}
+	return(out);
+}
 
 // constructors and destructors
 

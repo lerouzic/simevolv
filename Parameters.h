@@ -42,6 +42,7 @@ class Parameter
 	    virtual double GetDouble() const {assert(false && "function unavailable");}
 	    virtual double GetDouble(int) const {assert(false && "function unavailable");}
 	    virtual std::string GetString() const {assert(false && "function unavailable");}
+	    virtual std::vector<double> GetVectorDouble() const {assert(false && "function unavailable");}
 	    virtual bool is_nil() const {assert(false && "function unavailable");}
 };
 
@@ -111,6 +112,7 @@ class Parameter_vector_double: public Parameter
 	
 	    // functions
 	    std::vector<double> Get() const;
+	    std::vector<double> GetVectorDouble() const {return(value);}
 	    double Get_element(int) const;
 	    double GetDouble(int el) const {return(Get_element(el));}
 	    void Set(const std::vector<double>&);

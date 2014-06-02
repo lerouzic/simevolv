@@ -342,12 +342,14 @@ void ParameterSet::initialize()
 
     // Fitness parameters
     parameters[FITNESS_TYPE] = new Parameter_string(FT_options);
-    parameters[FITNESS_STRENGTH] = new Parameter_double(-1000.*1000., 1000.*1000.);
-    parameters[FITNESS_OPTIMUM] = new Parameter_double(-999.9, 999.9);
+    parameters[FITNESS_STRENGTH] = new Parameter_vector_double(-1000.*1000., 1000.*1000.);
+    parameters[FITNESS_OPTIMUM] = new Parameter_vector_double(-999.9, 999.9);
     parameters[FITNESS_FLUCT] = new Parameter_string(FF_options);
-    parameters[FITNESS_OPTIMUM2] = new Parameter_double(-999.9, 999.9);
-    parameters[FITNESS_STRENGTH2] = new Parameter_double(-999.9, 999.9);
+    parameters[FITNESS_OPTIMUM2] = new Parameter_vector_double(-999.9, 999.9);
+    parameters[FITNESS_STRENGTH2] = new Parameter_vector_double(-999.9, 999.9);
     parameters[FITNESS_PERIOD] = new Parameter_int(0,100*1000);
+    parameters[FITNESS_STAB] = new Parameter_string(FS_options);
+    parameters[FITNESS_STABSTR] = new Parameter_double(0.0, 1000.*1000.);
 
     // Architecture type
     parameters[TYPE_ARCHI] = new Parameter_string(AR_options);

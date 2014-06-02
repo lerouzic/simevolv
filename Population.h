@@ -17,6 +17,7 @@
 #define POPULATION_H_INCLUDED
 
 #include "Parameters.h"
+#include "Phenotype.h"
 
 #include <iostream>
 #include <vector>
@@ -45,7 +46,7 @@ class Population
 	    Population reproduce(long int offspr_number = 0) const;
 	    
 	    void update(void); // ideally, should not be public
-	    double mean_phenotype() const; // this is a relic from unidimensional phenotypes. probably used by the fitness routine only
+	    Phenovec mean_phenotype() const; // Probably used by the Fitness class only
 	    
 	    long int size() const;
 

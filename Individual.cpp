@@ -103,14 +103,6 @@ void Individual::update_fitness(const Population & pop)
     fitness = Fitness::compute(phenotype, pop);
 }
 
-
-/*  ???? */
-void Individual::update_fitness(const double population_value)
-{
-    fitness = Fitness::compute(phenotype, population_value);
-}
-
-
 /* return the fitness value */
 double Individual::get_fitness() const
 {

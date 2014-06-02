@@ -153,32 +153,26 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
    is probably not necessary */
 void Population::update(void)
 {
-    double popvalue = Fitness::GetPopulationValue(*this);
-    // "population value" is a bit abstract and depends on
-    // the fitness function. Most of the time, this is the 
-    // population mean (but for truncation selection, this is
-    // the truncation point.
+    Fitness::update(*this);
+	// Initialization of the fitness function for this generation
     for (vector<Individual>::iterator indiv = pop.begin();
             indiv != pop.end(); indiv++)
     {
-        indiv->update_fitness(popvalue);
+        indiv->update_fitness(*this);
     }
 }
 
 
 
-/* calculates and returns the phenotypic mean value for the first phenotype */
-/* Note: so far, this function is unidimensional, which is quite
-   stupid in the new framework. There will be a bug here sooner or later! */
-double Population::mean_phenotype() const
+/* calculates and returns the phenotypic mean value for each trait */
+Phenovec Population::mean_phenotype() const
 {
-	int focal_phen = 0; // Dirty, needs to be fixed at one point.
-	vector<double> phen(pop.size());
+	vector<Phenotype> phen;
 	for (unsigned int i = 0; i < pop.size(); i++) {
-		phen.push_back(pop[i].get_phenotype()[focal_phen]);
+		phen.push_back(pop[i].get_phenotype());
 	}
-	UnivariateStat us(phen);
-    return(us.mean());
+	PhenotypeStat phenstat(phen);
+	return(phenstat.means_phen());
 }
 
 

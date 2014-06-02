@@ -40,6 +40,8 @@ const std::string FITNESS_FLUCT = "FITNESS_FLUCT";			/* Fluctuation types */
 const std::string FITNESS_STRENGTH2 = "FITNESS_STRENGTH2";
 const std::string FITNESS_OPTIMUM2 = "FITNESS_OPTIMUM2";
 const std::string FITNESS_PERIOD = "FITNESS_PERIOD";
+const std::string FITNESS_STAB = "FITNESS_STAB";            /* Type of stability selection */
+const std::string FITNESS_STABSTR = "FITNESS_STABSTR";      /* Strenght of selection on stability */
 const std::string OUT_CANAL_TESTS = "OUT_CANAL_TESTS";
 const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
 
@@ -82,6 +84,10 @@ const std::string FF_sflips = "stochastic_flips";
 const std::string FF_brown = "brownian";
 const std::string FF_white = "white_noise";
 const std::vector<std::string> FF_options = boost::assign::list_of (FF_nofluct)(FF_smooth)(FF_pflips)(FF_sflips)(FF_brown)(FF_white);
+
+const std::string FS_nostab = "no_stabsel";
+const std::string FS_expo = "exponential_stab";
+const std::vector<std::string> FS_options = boost::assign::list_of (FS_nostab)(FS_expo);
 
 // Architecture types
 const std::string AR_add = "additive";

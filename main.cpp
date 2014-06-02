@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     int maxgen = param.getpar(SIMUL_GENER)->GetInt();
     for (int generation = 1; generation <= maxgen; generation++)
     {
-        Fitness::update_generation(generation);
+        Fitness::fluctuate(generation);
         if ((generation == 1) || (generation == maxgen) || (generation % param.getpar(SIMUL_OUTPUT)->GetInt() == 0))
         {
             pop.write(generation);
