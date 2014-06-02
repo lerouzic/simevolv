@@ -16,6 +16,7 @@
 #include "Parconst.h"
 #include "Individual.h"
 #include "Population.h"
+#include "Fitness.h"
 
 #include <cassert>
 #include <vector>
@@ -31,6 +32,10 @@ Canalization::Canalization(unsigned int nb_tests, const Population & pop)
 {
 	phen_ready = false;
 	fit_ready = false;
+
+	// In theory, this should not be necessary. In practice, something in the population changes
+	// and the Fitness function complains
+	Fitness::update(pop);
 	
 	// Fills the database of the object: a collection of reference ("wild") individuals
 	// (the individuals of the population), and for each wild individual, nb_tests mutants. 
