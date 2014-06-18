@@ -30,7 +30,7 @@ Random::Random()
 {
     random_generator = gsl_rng_alloc(gsl_rng_mt19937);
     seed = time(0)*getpid();
-    cerr << "Warning: Random number generator initialized with time():" << seed << endl << endl;
+    //cerr << "Random number generator initialized with time():" << seed << endl << endl;
     gsl_rng_set (random_generator, seed);
 }
 
