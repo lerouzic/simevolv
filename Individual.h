@@ -72,5 +72,4 @@ class Individual
 	    double fitness;
 };
 
-
 #endif // INDIVIDUAL_H_INCLUDED

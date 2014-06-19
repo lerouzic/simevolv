@@ -48,6 +48,10 @@ class MultivariateStat
 		// constructors/destructors
 		MultivariateStat(const std::vector<std::vector<double> > &);
 
+		// get infos: dimensions
+		unsigned int dim1() const {return(data.size());}
+		unsigned int dim2() const {if (dim1() > 0) return(data[0].size()); else return(0);}
+
 		// get results: vectorized
 		std::vector<double> means() const;
 		std::vector<double> vars() const;

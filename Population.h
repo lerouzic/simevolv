@@ -31,6 +31,7 @@ class Population
 {
 	friend class Canalization;
 	friend class Heritability;
+	friend class Direpistasis;
 
 	public :
 	    //constructors
@@ -75,6 +76,7 @@ class Population
 	    std::vector<Individual> pop;
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
+	    unsigned int nb_direpi_test;
 
 };
 

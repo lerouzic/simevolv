@@ -23,6 +23,7 @@
 #include "Architecture.h"
 #include "Canalization.h"
 #include "Heritability.h"
+#include "Direpistasis.h"
 
 #include <algorithm>
 #include <numeric>
@@ -37,12 +38,18 @@ using namespace std;
 
 /* default constructor (necessary a build a population individual by individual, but might reflect a design error) */ 
 Population::Population()
+	: nb_canal_test(0)
+	, nb_herit_test(0)
+	, nb_direpi_test(0)
 {
 }
 
 
 /* constructor using the population size (full of default individuals) */
 Population::Population(long int size)
+	: nb_canal_test(0)
+	, nb_herit_test(0)
+	, nb_direpi_test(0)
 {
     for (long int i = 0; i <= size; i++)
     {
@@ -57,6 +64,7 @@ Population::Population(const Population & copy)
     : pop(copy.pop)
     , nb_canal_test(copy.nb_canal_test)
     , nb_herit_test(copy.nb_herit_test)
+    , nb_direpi_test(copy.nb_direpi_test)
 {
 }
 
@@ -64,6 +72,9 @@ Population::Population(const Population & copy)
 /* constructor using a vector of individuals */
 Population::Population(const std::vector<Individual>& vecindiv)
     : pop(vecindiv)
+    , nb_canal_test(0)
+	, nb_herit_test(0)
+	, nb_direpi_test(0)
 {
 }
 
@@ -86,6 +97,7 @@ Population & Population::operator=(const Population& copy)
     pop = copy.pop;
     nb_canal_test = copy.nb_canal_test; 
     nb_herit_test = copy.nb_herit_test;
+    nb_direpi_test = copy.nb_direpi_test;
     return(*this);
 }
 
@@ -103,6 +115,7 @@ void Population::initialize(const ParameterSet& param)
     }
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
+    nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
     update();
 }
 
@@ -115,11 +128,12 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
 {
     Population offspring;
     
-    // Information about the number of canalization and heritability tests
+    // Information about the number of canalization, heritability, and directionality tests
     // is transmitted to the offspring. Strange design, but the Population
     // class does not save a copy of the parameter set. 
     offspring.nb_canal_test = nb_canal_test; 
     offspring.nb_herit_test = nb_herit_test;
+    offspring.nb_direpi_test = nb_direpi_test;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<double> cumul_fit = cumul_fitness();
@@ -371,6 +385,13 @@ void Population::write_summary(ostream & out, int generation) const
 			}
 			out << "HerFit" << "\t";
 		}
+		if (nb_direpi_test > 0) 
+		{
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
+				out << "DirPhen" << i + 1 << "\t";
+			}
+			out << "DirFit" << "\t";
+		}
 		out << endl; 
    	}
 		
@@ -388,13 +409,13 @@ void Population::write_summary(ostream & out, int generation) const
   */
 		
 	out << generation << "\t";
-	vector<double> mm = phenstat.means_phen();
-	vector<double> mm2 = phenstat.means_unstab();
+	Phenovec mm = phenstat.means_phen();
+	Phenovec mm2 = phenstat.means_unstab();
 	for (unsigned int i = 0; i < mm.size(); i++){
 		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
 		out << mm[i] << "\t";
 	}
-	vector<double> vv = phenstat.vars_phen();
+	Phenovec vv = phenstat.vars_phen();
 	for (unsigned int i = 0; i < vv.size(); i++){
 		out << vv[i] << "\t";
 	}
@@ -412,6 +433,12 @@ void Population::write_summary(ostream & out, int generation) const
 		Heritability herit_test(nb_herit_test, *this);
 		out << herit_test.h2() << "\t";
 		out << herit_test.fit_h2() << "\t";
+	}
+	if (nb_direpi_test > 0) {
+		// Runs the directional epistasis tests
+		Direpistasis dir_test(nb_direpi_test, *this);
+		out << dir_test.phen_direpistasis() << "\t";
+		out << dir_test.fitness_direpistasis() << "\t";
 	}
     out << endl;
 }

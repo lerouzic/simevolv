@@ -355,8 +355,10 @@ void ParameterSet::initialize()
     parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
     
     // Output measurements
-    parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 100*1000);
-    parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 100*1000);
+    parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 1000*1000);
+    parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 1000*1000);
+    parameters[OUT_DIREPI_TESTS] = new Parameter_int(0, 1000*1000);
+    
     
     // Multilinear architecture
     parameters[GENET_EPSILON2] = new Parameter_gaussian(-999.9, 999.9, 999.9);

@@ -85,6 +85,7 @@ void MultivariateStat::initialize()
 	// Tests if the data behaves properly (same number of measurements for each category)
 	assert(data.size() > 0);
 	size1 = data[0].size();
+	assert(size1 > 0);
 	if (data.size() > 1) {
 		for (unsigned int i = 1; i < data.size(); i++) { // i = 1: desired behaviour
 			assert(data[i].size() == size1);

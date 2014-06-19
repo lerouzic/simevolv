@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 // Phenovec is "just" a vector of double, storing phenotypic values for several characters
 class Phenovec: private std::vector<double>
@@ -47,6 +48,7 @@ class Phenotype
 		Phenotype();
 		Phenotype(const double);
 		Phenotype(const std::vector<double> &);
+		Phenotype(const Phenovec &);
 		Phenotype(const std::vector<double> &, const std::vector<double> &);
 		Phenotype(const Phenotype &);
 		~Phenotype();
@@ -59,7 +61,9 @@ class Phenotype
 		
 		// getters
 		double operator[] (const unsigned int index) const;
+		Phenovec get_pheno() const;
 		double get_pheno(const unsigned int index) const;
+		Phenovec get_unstab() const;
 		double get_unstab(const unsigned int index) const;
 		void add_pheno(const unsigned int index, const double effect);
 				
@@ -72,8 +76,8 @@ class Phenotype
 	    friend std::ostream& operator << (std::ostream&, const Phenotype&); 
 		
 	protected:
-		std::vector<double> pheno;
-		std::vector<double> unstabpheno;
+		Phenovec pheno;
+		Phenovec unstabpheno;
 };
 
 
@@ -86,21 +90,24 @@ class PhenotypeStat
 	public:
 		//constructor
 		PhenotypeStat(const std::vector<Phenotype> &);
+		PhenotypeStat(const std::vector<Phenovec> &);
+		~PhenotypeStat();
 		
 		//functions
-		std::vector<double> means_phen() const {return(pheno.means());}
-		std::vector<double> vars_phen() const {return(pheno.vars());}
+		Phenovec means_phen() const {assert(pheno != NULL); return(pheno->means());}
+		Phenovec vars_phen() const {assert(pheno != NULL); return(pheno->vars());}
 		
-		std::vector<double> means_unstab() const {return(unstab.means());}
-		std::vector<double> vars_unstab() const {return(unstab.vars());}
+		Phenovec means_unstab() const {assert(unstab != NULL); return(unstab->means());}
+		Phenovec vars_unstab() const {assert(unstab != NULL); return(unstab->vars());}
 		
-		unsigned int dimensionality() const {return(pheno.means().size());}
+		unsigned int dimensionality() const {assert(pheno != NULL); return(pheno->dim1());}
 		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
 		static std::vector<std::vector<double> > transpose_unstabphen_matrix(const std::vector<Phenotype> &);
+		static std::vector<std::vector<double> > transpose_phenovec_matrix(const std::vector<Phenovec> &);
 		
 	protected:
-		MultivariateStat pheno;
-		MultivariateStat unstab;
+		MultivariateStat * pheno;
+		MultivariateStat * unstab;
 		
 };
 

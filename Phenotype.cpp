@@ -59,6 +59,17 @@ Phenotype::Phenotype(const vector<double> & init)
 	}
 }
 
+Phenotype::Phenotype(const Phenovec & init)
+{
+	pheno = init;
+	// when the unstability vector is not provided, we assume that phenotypes
+	// are all stable.
+	for (unsigned int i = 0; i < pheno.size(); i++) 
+	{
+		unstabpheno.push_back(0.0);
+	}
+}
+
 Phenotype::Phenotype(const vector<double>& init, const vector<double>& initunstab)
 {
 	pheno = init;
@@ -98,10 +109,20 @@ double Phenotype::operator[] (const unsigned int index) const
 	return(get_pheno(index));
 }
 
+Phenovec Phenotype::get_pheno() const
+{
+	return(pheno);
+}
+
 double Phenotype::get_pheno(const unsigned int index) const
 {
 	assert(index < dimensionality());
 	return(pheno[index]);
+}
+
+Phenovec Phenotype::get_unstab() const
+{
+	return(unstabpheno);
 }
 
 double Phenotype::get_unstab(const unsigned int index) const
@@ -168,11 +189,25 @@ ostream& operator << (ostream& out, const Phenotype& phen)
 
 /* constructor using a vector of phenotype */
 PhenotypeStat::PhenotypeStat(const vector<Phenotype> & vec_phen)
-	: pheno(transpose_phen_matrix(vec_phen))
-	, unstab(transpose_unstabphen_matrix(vec_phen))
 {
+	assert(vec_phen.size() > 2);
+	pheno = new MultivariateStat(transpose_phen_matrix(vec_phen));
+	unstab = new MultivariateStat(transpose_unstabphen_matrix(vec_phen));
 }
 
+PhenotypeStat::PhenotypeStat(const vector<Phenovec> & vec_phen)
+{
+	assert(vec_phen.size() > 2);
+	pheno = new MultivariateStat(transpose_phenovec_matrix(vec_phen));
+	unstab = NULL;
+}
+
+PhenotypeStat::~PhenotypeStat()
+{
+	// Very important; these are raw pointers and memory MUST be cleared when the object is destroyed!
+	delete pheno;
+	delete unstab; 
+}
 
 // functions
 
@@ -212,6 +247,22 @@ vector<vector<double> > PhenotypeStat::transpose_unstabphen_matrix(const vector<
 	return(ans);
 }
 
+vector<vector<double> > PhenotypeStat::transpose_phenovec_matrix(const vector<Phenovec> & vec_phen)
+{
+	assert(!vec_phen.empty());
+	
+	unsigned int dim = vec_phen[0].dimensionality();
+	vector<vector<double> > ans;
+	
+	for (unsigned int k = 0; k < dim; k++) {
+		vector<double> tmp;
+		for (unsigned int i = 0; i < vec_phen.size(); i++) {
+			tmp.push_back(vec_phen[i][k]);
+		}
+		ans.push_back(tmp);
+	}
+	return(ans);
+}
 
 // Inverted multivariate stats (to be copied in multivariateStats?)
 

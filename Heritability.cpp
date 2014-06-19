@@ -26,6 +26,7 @@ using namespace std;
 /* Most of the computationally-demanding operations are run in the constructor 
   (simulation of parent-offspring pairs) */
 Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
+	// nb_pairs is the number of pairs per individual
 	
 	vector<double> cumul_equal_fit; 
 
@@ -37,7 +38,7 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
 		equal_fit = equal_fit + 1.0/pop.size();
 	}
 	
-	for (unsigned int pp = 0; pp < nb_pairs; pp++) {
+	for (unsigned int pp = 0; pp < nb_pairs*pop.size(); pp++) {
 		/* The algorithm to compute heritability is not very complex. It basically 
 		   follows the pattern of a parent - offspring study. 
 		   * Step 1: sample two parents randomly in the population

@@ -28,7 +28,7 @@ using namespace std;
 
 // Constructors 
 
-Canalization::Canalization(unsigned int nb_tests, const Population & pop)
+Canalization::Canalization(unsigned int can_tests, const Population & pop)
 {
 	phen_ready = false;
 	fit_ready = false;
@@ -39,11 +39,11 @@ Canalization::Canalization(unsigned int nb_tests, const Population & pop)
 	
 	// Fills the database of the object: a collection of reference ("wild") individuals
 	// (the individuals of the population), and for each wild individual, nb_tests mutants. 
-	if (nb_tests > 0) {
+	if (can_tests > 0) {
 		for (unsigned int i = 0; i < pop.size(); i++) {
 			const Individual & ref = pop.pop[i];
 			reference_indiv(ref);
-			for (unsigned int test = 0; test < nb_tests; test++) {
+			for (unsigned int test = 0; test < can_tests; test++) {
 				mutant_indiv(ref.test_canalization(1, pop)); // So far: only one mutation per mutant
 			}
 		} 

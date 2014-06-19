@@ -44,6 +44,7 @@ const std::string FITNESS_STAB = "FITNESS_STAB";            /* Type of stability
 const std::string FITNESS_STABSTR = "FITNESS_STABSTR";      /* Strenght of selection on stability */
 const std::string OUT_CANAL_TESTS = "OUT_CANAL_TESTS";
 const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
+const std::string OUT_DIREPI_TESTS= "OUT_DIREPI_TESTS";
 
 // MULTILINEAR ARCHITECTURE
 const std::string GENET_EPSILON2 = "GENET_EPSILON2";
