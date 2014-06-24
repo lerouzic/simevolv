@@ -174,19 +174,15 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
     {
         tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
     }
-    shared_ptr<Allele> a(new Allele(tmp));
+    shared_ptr<Allele> a(new Allele(tmp)); // Here the class of Allele should be determined. 
     return(a);
 }
 
 
 /* force to make a mutation at one position of the allele :
  * replace the value at the mutated site by a new value */
-shared_ptr<Allele> Architecture::allele_mutation(const Allele & templ, unsigned int loc /* = 0 */) const 
+shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 {
-    int mutated_site = floor(sall*Random::randnum());
-    double modifier = mutation_sd(loc) * Random::randgauss();
-    shared_ptr<Allele> a(new Allele(templ));
-    a->allele[mutated_site] += modifier;
-    return(a);
+    return(templ->make_mutant(mutation_sd(loc)));
 }
 

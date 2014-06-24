@@ -28,23 +28,15 @@ using namespace std;
 
 // constructors and destructor
 
-/* default constructor */
-Allele::Allele()
-{
-    int sall = Allele::all_size();
-    
-    cerr << "Calling Allele default constructor: should probably not happen." << endl;
-
-    for(int i = 0; i < sall; i++)
-    {
-        allele.push_back(0.0);
-    }
-}
-
 
 /* constructor called by Haplotype */
 Allele::Allele(const vector<double> content)
 	: allele(content)
+{
+}
+
+Allele::Allele(const Allele & copy)
+	: allele(copy.allele)
 {
 }
 
@@ -86,5 +78,52 @@ vector<double> Allele::combine_add(const Allele & a1, const Allele & a2)
 	}
 	return(ans);
 }
+
+shared_ptr<Allele> Allele::make_mutant(double mutsd) const
+{
+    int mutated_site = floor(allele.size()*Random::randnum());
+    double modifier = mutsd * Random::randgauss();
+    shared_ptr<Allele> a(new Allele(*this));
+    a->allele[mutated_site] += modifier;
+    return(a);
+}
+
+
+/********** DERIVED CLASSES *******************************************/
+// Allele_zero
+
+Allele_zero::Allele_zero(const vector<double> content)
+	: Allele(content)
+{
+}
+
+Allele_zero::Allele_zero(const Allele_zero & copy)
+	: Allele(copy.allele)
+{
+}
+
+shared_ptr<Allele> Allele_zero::make_mutant(double mutsd) const
+{
+	vector<unsigned int> non_zero;
+	for (unsigned int i = 0; i < allele.size(); i++) {
+		if (allele[i] != 0.0) 
+			non_zero.push_back(i);
+	}
+	// This can't be a shared_ptr<Allele> since we need to access the protected member of the base
+	// class. C++ is sometimes a bit too subtle... 
+    shared_ptr<Allele_zero> a(new Allele_zero(*this));	 
+	if (non_zero.size() > 0) {
+		int mutated_site = non_zero[floor(non_zero.size()*Random::randnum())];
+		double modifier = mutsd * Random::randgauss();
+		a->allele[mutated_site] += modifier;		
+	}
+	// a bit stupid: if all sites are 0, no mutation, but
+	// we create a new Allele instance.
+	
+    return(dynamic_pointer_cast<Allele>(a));	
+}
+
+
+
 
 

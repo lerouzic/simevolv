@@ -55,7 +55,7 @@ class Architecture  	/* Pure virtual class */
 		//inheritance
 	    virtual Phenotype phenotypic_value(const Genotype&) const = 0;
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
-	    virtual std::shared_ptr<Allele> allele_mutation(const Allele &, unsigned int loc = 0) const;
+	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
 
 	
 	protected :

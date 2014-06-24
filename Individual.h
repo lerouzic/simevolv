@@ -33,7 +33,6 @@ class Individual
 {
 	public :
 	    // constructors/destructor
-	    Individual();
 	    Individual(const Haplotype&, const Haplotype&);
 	    Individual(const Individual&);
 	    Individual(const ParameterSet&);

@@ -98,7 +98,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 			temp_allele.push_back(value);
 		}
 	}
-	shared_ptr<Allele> a (new Allele(temp_allele));
+	shared_ptr<Allele> a (new Allele(temp_allele)); // Here the class of Allele should be determined. 
 	return(a);
 }
 

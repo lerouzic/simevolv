@@ -17,6 +17,7 @@
 #define ALLELE_H_INCLUDED
 
 #include <vector>
+#include <memory>
 
 #include "Parameters.h"
 
@@ -32,11 +33,13 @@ class Allele
     friend class ArchiWagner;
     friend class ArchiMasel;
     friend class ArchiSiegal; 
+    friend class ArchiM2;
 	
 	public :
 	    //constructors/destructor
-	    Allele();
 	    Allele(const std::vector<double>);
+	    Allele(const Allele &);
+	    virtual ~Allele() { }
 	
 	    //operator overload
 	    int operator== (const Allele&) const;
@@ -45,9 +48,31 @@ class Allele
 	    //functions
 	    unsigned int all_size() const;
 		static std::vector<double> combine_add(const Allele &, const Allele &);
+		virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
 	
 	protected :
 	    std::vector<double> allele;
+};
+
+class Allele_zero: public Allele
+{
+	friend class Haplotype;
+    friend class Architecture; 
+    friend class ArchiAdditive;
+    friend class ArchiMultilinear;
+    friend class ArchiRegulatoryMatrix;
+    friend class ArchiWagner;
+    friend class ArchiMasel;
+    friend class ArchiSiegal; 
+    friend class ArchiM2;
+    
+	public:
+	// This is a 'normal Allele' but sites with 0.0 values cannot mutate
+	Allele_zero(const std::vector<double>);
+	Allele_zero(const Allele_zero &);
+	virtual ~Allele_zero() { }
+	
+	virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
 };
 
 

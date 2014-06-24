@@ -39,7 +39,6 @@ class Haplotype
 
 	public :
 	    //constructors/destructor
-	    Haplotype();
 	    Haplotype(const ParameterSet &);
 	    Haplotype(const Haplotype &);
 	    Haplotype(const std::vector<std::shared_ptr<Allele> > &);

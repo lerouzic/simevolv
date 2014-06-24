@@ -48,6 +48,7 @@ Random::~Random()
 {
     gsl_rng_free(random_generator);
     random_generator = NULL;
+    delete Random::instance;
 }
 
 

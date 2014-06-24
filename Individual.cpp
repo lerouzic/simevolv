@@ -27,13 +27,6 @@ using namespace std;
 
 // constructors and destructor
 
-/* default constructor using a genotype */
-Individual::Individual()
-    : genotype()
-{
-    initialize();
-}
-
 
 /* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)

@@ -36,7 +36,6 @@ class Population
 	public :
 	    //constructors
 	    Population();
-	    Population(long int); // population size
 	    Population(const Population&); // copy constructor
 	    Population(const std::vector<Individual>&); 
 	    Population(const ParameterSet&);

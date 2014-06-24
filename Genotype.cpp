@@ -28,14 +28,6 @@ using namespace std;
 
 // constructors and destuctor
 
-/* default constructor */
-Genotype::Genotype()
-    : gam_father(Haplotype())
-    , gam_mother(Haplotype())
-{
-}
-
-
 /* constructor using two haplotypes */
 Genotype::Genotype(const Haplotype& father, const Haplotype& mother)
     : gam_father(father)

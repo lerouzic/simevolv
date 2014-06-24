@@ -44,21 +44,6 @@ Population::Population()
 {
 }
 
-
-/* constructor using the population size (full of default individuals) */
-Population::Population(long int size)
-	: nb_canal_test(0)
-	, nb_herit_test(0)
-	, nb_direpi_test(0)
-{
-    for (long int i = 0; i <= size; i++)
-    {
-        Individual indiv;
-        pop.push_back(indiv);
-    }
-}
-
-
 /* copy constructor. Warning: it should be updated when the class changes, along with the assignement operator */ 
 Population::Population(const Population & copy)
     : pop(copy.pop)

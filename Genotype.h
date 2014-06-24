@@ -36,7 +36,6 @@ class Genotype
 
 	public:
 	    //constructors / destructors
-	    Genotype();
 	    Genotype(const Haplotype&, const Haplotype&);
 	    Genotype(const Genotype&);
 	    Genotype(const ParameterSet &);

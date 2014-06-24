@@ -28,20 +28,6 @@ using namespace std;
 
 // constructors/destructor
 
-/* default constructor */
-Haplotype::Haplotype()
-{
-    int nloc = Haplotype::nb_loc();
-    
-    cerr << "Calling Haplotype default constructor: Should probably not happen."<< endl;
-    
-    for(int i = 0; i < nloc; i++)
-    {
-		shared_ptr<Allele> a (new Allele());
-        haplotype.push_back(a);
-    }
-}
-
 
 /* constructor using the parameters given by the parameters file and the Architecture files*/
 Haplotype::Haplotype(const ParameterSet & param)
@@ -127,7 +113,7 @@ void Haplotype::make_mutation()
 void Haplotype::make_mutation(unsigned int loc)
 {
 	Architecture * archi = Architecture::Get();
-	shared_ptr<Allele> a = archi->allele_mutation(*haplotype[loc], loc);
+	shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc);
     haplotype[loc] = a;
 }
 
