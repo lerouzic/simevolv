@@ -22,19 +22,19 @@
 using namespace std;
 
 
-
 ///// Parameter and daughter classes /////
 
 Parameter_int::Parameter_int(long int minimum, long int maximum)
-    : min(minimum)
+	: Parameter()
+    , min(minimum)
     , max(maximum)
-    , initialized(false)
 {}
 
 
 long int Parameter_int::Get() const
 {
-    assert (initialized && "Parameter not initialized");
+    assert (is_initialized() && "Parameter not initialized");
+    count++;
     return(value);
 }
 
@@ -57,7 +57,7 @@ void Parameter_int::read(istream & i)
 
 void Parameter_int::write(ostream & out) const
 {
-    if (initialized)
+    if (is_initialized())
     {
         out << value;
     }
@@ -71,15 +71,16 @@ void Parameter_int::write(ostream & out) const
 
 
 Parameter_double::Parameter_double(double minimum, double maximum)
-    : min(minimum)
+    : Parameter()
+    , min(minimum)
     , max(maximum)
-    , initialized(false)
 {}
 
 
 double Parameter_double::Get() const
 {
-    assert (initialized && "Parameter not initialized");
+    assert (is_initialized() && "Parameter not initialized");
+    count++;
     return(value);
 }
 
@@ -102,7 +103,7 @@ void Parameter_double::read(istream & i)
 
 void Parameter_double::write(ostream & out) const
 {
-    if (initialized)
+    if (is_initialized())
     {
         out << value;
     }
@@ -116,23 +117,26 @@ void Parameter_double::write(ostream & out) const
 
 
 Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
-    : min(minimum)
+    : Parameter()
+    , min(minimum)
     , max(maximum)
-    , initialized(false)
 {
 }
 
 
 std::vector<double> Parameter_vector_double::Get() const
 {
-    assert (initialized && "Parameter not initialized");
+    assert (is_initialized() && "Parameter not initialized");
+    count++;
     return(value);
 }
 
 
 double Parameter_vector_double::Get_element(int elem) const
 {
-    assert (initialized && "Parameter not initialized");
+    assert (is_initialized() && "Parameter not initialized");
+    if (count == 0)
+		count++;  // otherwise accessing multiple elements counts several accesses
     if (elem < int(value.size()))
         return(value[elem]);
     else
@@ -171,7 +175,7 @@ void Parameter_vector_double::read(istream & i)
 
 void Parameter_vector_double::write(ostream & out) const
 {
-    if (initialized)
+    if (is_initialized())
     {
         for (vector<double>::const_iterator it = value.begin();
                 it != value.end(); it++)
@@ -189,7 +193,8 @@ void Parameter_vector_double::write(ostream & out) const
 
 
 Parameter_gaussian::Parameter_gaussian(double minimum_mean, double maximum_mean, double maximum_sd)
-    : mean(minimum_mean, maximum_mean)
+    : Parameter()
+    , mean(minimum_mean, maximum_mean)
     , sd(0.0, maximum_sd)
 {
 }
@@ -209,6 +214,8 @@ void Parameter_gaussian::SetSd(double s)
 
 double Parameter_gaussian::draw() const
 {
+	assert(is_initialized() && "Parameter not initialized");
+	count ++;
     return(mean.Get() + sd.Get()*Random::randgauss());
 }
 
@@ -235,9 +242,9 @@ void Parameter_gaussian::write(ostream & out) const
 // Parameter_string
 
 Parameter_string::Parameter_string(const vector<string> posval)
-	:possible_values(posval)
-	,value("NotInitialized")
-	,initialized(false)
+	: Parameter()
+	, possible_values(posval)
+	, value("NotInitialized")
 {
 }
 
@@ -257,7 +264,7 @@ void Parameter_string::read(istream & i)
 
 void Parameter_string::write(ostream & out) const
 {
-    if (initialized)
+    if (is_initialized())
     {
         out << value;
     }
@@ -288,7 +295,8 @@ void Parameter_string::Set(string v) {
 
 
 string Parameter_string::GetString() const {
-    assert (initialized && "Parameter not initialized");
+    assert (is_initialized() && "Parameter not initialized");
+    count++;
 	return(value);
 }
 
@@ -312,7 +320,7 @@ ParameterSet::ParameterSet(const string & file)
 
 ParameterSet::~ParameterSet()
 {
-    for (map<string, Parameter*>::iterator it = parameters.begin();
+    for (auto it = parameters.begin();
             it != parameters.end(); it++)
     {
         delete (it->second);
@@ -418,4 +426,26 @@ const Parameter * ParameterSet::getpar(const string & tag) const
     const Parameter * ans = parameters.find(tag)->second;
     
     return(ans);
+}
+
+void ParameterSet::warning_unused() const 
+{
+    for (auto it = parameters.begin();
+            it != parameters.end(); it++)
+    {
+		if (it->second->is_initialized() && it->second->get_count() == 0) {
+			cerr << "Warning: Parameter " << it->first << " initialized but unused." << endl;
+		}
+	}	
+}
+
+void ParameterSet::warning_multicalls(unsigned int morethan /* = 1 */) const
+{
+    for (auto it = parameters.begin();
+            it != parameters.end(); it++)
+    {
+		if (it->second->get_count() > morethan) {
+			cerr << "Warning: Parameter " << it->first << " called " << it->second->get_count() << " times." << endl;
+		}		
+	}	
 }

@@ -31,6 +31,7 @@ class Parameter
 {
 	public:
 	    //constructors/destructor
+	    Parameter() : count(0), initialized(false) { }
 	    virtual ~Parameter() {}
 	
 	    //input/output
@@ -44,6 +45,12 @@ class Parameter
 	    virtual std::string GetString() const {assert(false && "function unavailable");}
 	    virtual std::vector<double> GetVectorDouble() const {assert(false && "function unavailable");}
 	    virtual bool is_nil() const {assert(false && "function unavailable");}
+	    virtual bool is_initialized() const {return(initialized);}
+	    unsigned int get_count() const {return(count);}
+	    
+	protected:
+		mutable unsigned int count;
+		bool initialized;
 };
 
 
@@ -69,7 +76,6 @@ class Parameter_int: public Parameter
 	    long int value;
 	    long int min;
 	    long int max;
-	    bool initialized;
 };
 
 
@@ -95,7 +101,6 @@ class Parameter_double: public Parameter
 	    double value;
 	    double min;
 	    double max;
-	    bool initialized;
 };
 
 
@@ -112,7 +117,7 @@ class Parameter_vector_double: public Parameter
 	
 	    // functions
 	    std::vector<double> Get() const;
-	    std::vector<double> GetVectorDouble() const {return(value);}
+	    std::vector<double> GetVectorDouble() const {return(Get());}
 	    double Get_element(int) const;
 	    double GetDouble(int el) const {return(Get_element(el));}
 	    void Set(const std::vector<double>&);
@@ -122,7 +127,6 @@ class Parameter_vector_double: public Parameter
 	    std::vector<double> value;
 	    double min;
 	    double max;
-	    bool initialized;
 };
 
 
@@ -143,6 +147,7 @@ class Parameter_gaussian: public Parameter
 	    double draw() const;
 	    double GetDouble() const {return(draw());}
 	    bool is_nil() const {return((mean.Get() == 0.0) && (sd.Get() == 0.0));}
+	    bool is_initialized() const {return(mean.is_initialized() && sd.is_initialized());}
 	
 	protected:
 	    Parameter_double mean;
@@ -168,7 +173,6 @@ class Parameter_string: public Parameter
 	protected:
 		std::vector<std::string> possible_values; 
 		std::string value;
-		bool initialized;
 };
 
 
@@ -194,6 +198,10 @@ class ParameterSet
 	
 	    // function
 	    const Parameter * getpar(const std::string&) const;
+	    
+	    // consistency checks
+	    void warning_unused() const;
+	    void warning_multicalls(unsigned int morethan = 1) const;
 	
 	protected:
 	    std::map<std::string, Parameter*> parameters;

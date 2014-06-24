@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
       ("parameter,p", po::value<string>(&input_file), "Parameter file")
       ("output,o", po::value<string>(&output_file), "Output file")
       ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
-      ("template,t", "Print a template for the parameter file");
+      ("template,t", "Print a template for the parameter file")
+      ("parcheck,c", "Warns about inconsistencies in the parameter file");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm); //read the command line options
@@ -98,6 +99,11 @@ int main(int argc, char *argv[])
             pop = offsp;
     }
     
+    if (vm.count("parcheck")) {
+		param.warning_unused();
+		param.warning_multicalls();
+	}   
+	
 	file_out.close(); // This probably does not harm if the file is not open
 	return(0);
 }
