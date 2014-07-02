@@ -31,6 +31,7 @@ const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
 const std::string INIT_PSIZE = "INIT_PSIZE";
 const std::string INIT_ALLELES = "INIT_ALLELES";
+const std::string TYPE_ALLELES = "TYPE_ALLELES";			/* Mutation type for the alleles */
 const std::string INIT_CLONAL = "INIT_CLONAL";	 			/* Initial clonal status */
 const std::string ENVIRO_SD = "ENVIRO_SD";
 const std::string FITNESS_TYPE = "FITNESS_TYPE";			/* Selection types */
@@ -56,7 +57,6 @@ const std::string TYPE_SO = "TYPE_SO";
 const std::string INIT_BASAL = "INIT_BASAL";				/* Initial vector (So) types */
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
 const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
-
 
 
 
@@ -108,6 +108,11 @@ const std::string SO_randbin = "random_binary";
 const std::string SO_rand = "random";
 const std::string SO_basal = "basal";
 const std::vector<std::string> SO_options = boost::assign::list_of (SO_min)(SO_max)(SO_med)(SO_randbin)(SO_rand)(SO_basal);
+
+// Mutation type for the alleles
+const std::string TA_norm = "normal";
+const std::string TA_zero = "zero";
+const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero);
 
 
 #endif // PARCONST_H_INCLUDED

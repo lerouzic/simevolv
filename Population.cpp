@@ -354,7 +354,7 @@ void Population::write_summary(ostream & out, int generation) const
 		out << "MFit" << "\t";
 		out << "VFit" << "\t";
 		for (unsigned int opt = 0; opt < Fitness::current_optimum().size(); opt++) {
-			out << "FitOpt" << opt << "\t";
+			out << "FitOpt" << opt + 1 << "\t";
 		}
 		if (nb_canal_test > 0) 
 		{

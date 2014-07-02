@@ -343,6 +343,7 @@ void ParameterSet::initialize()
     // Initial population parameters
     parameters[INIT_PSIZE] = new Parameter_int(1, 1000*1000);
     parameters[INIT_ALLELES] = new Parameter_gaussian(-999.9,999.9,999.9);
+    parameters[TYPE_ALLELES] = new Parameter_string(TA_options);
     parameters[INIT_CLONAL] = new Parameter_string(CL_options);
 
     // Environmental parameters

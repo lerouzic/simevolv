@@ -89,7 +89,8 @@ shared_ptr<Allele> Allele::make_mutant(double mutsd) const
 }
 
 
-/********** DERIVED CLASSES *******************************************/
+
+/******************** DERIVED CLASSES *********************************/
 // Allele_zero
 
 Allele_zero::Allele_zero(const vector<double> content)

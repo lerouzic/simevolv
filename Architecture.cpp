@@ -81,7 +81,7 @@ void Architecture::initialize(const ParameterSet& param)
         Architecture::instance = NULL;
     }
 
-    string type_archi = param.getpar(TYPE_ARCHI)->GetString();
+    string type_archi = param.getpar(TYPE_ARCHI) -> GetString();
     if (type_archi==AR_add)
     {
         Architecture::instance = new ArchiAdditive(param);
@@ -174,7 +174,22 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
     {
         tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
     }
-    shared_ptr<Allele> a(new Allele(tmp)); // Here the class of Allele should be determined. 
+  
+    string type_alleles = param.getpar(TYPE_ALLELES) -> GetString();
+    shared_ptr<Allele> a;
+    if (type_alleles==TA_norm)
+    {
+        a = shared_ptr<Allele>(new Allele(tmp));
+    }
+    else if (type_alleles==TA_zero)
+    {
+		a = shared_ptr<Allele>(new Allele_zero(tmp));
+    }
+    else
+    {
+		cerr << "Unknown allele type -- theoretically this should not happen" << endl;
+		exit(EXIT_FAILURE);
+	}
     return(a);
 }
 

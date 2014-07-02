@@ -98,8 +98,23 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 			temp_allele.push_back(value);
 		}
 	}
-	shared_ptr<Allele> a (new Allele(temp_allele)); // Here the class of Allele should be determined. 
-	return(a);
+	
+	string type_alleles = param.getpar(TYPE_ALLELES) -> GetString();
+    shared_ptr<Allele> a;
+    if (type_alleles==TA_norm)
+    {
+        a = shared_ptr<Allele>(new Allele(temp_allele));
+    }
+    else if (type_alleles==TA_zero)
+    {
+		a = shared_ptr<Allele>(new Allele_zero(temp_allele));
+    }
+    else 
+    {
+		cerr << "Unknown allele type -- theoretically this should not happen" << endl;
+		exit(EXIT_FAILURE);
+	}
+    return(a);
 }
 
 
