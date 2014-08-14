@@ -24,7 +24,7 @@ struct MiniIndividual
 	public:
 		MiniIndividual(const MiniIndividual & mini) : phen(mini.phen), fitness(mini.fitness) { }
 		MiniIndividual(const Individual & ind) : phen(ind.get_genot_value()), fitness(ind.get_fitness()) { }
-		
+				
 		Phenotype phen;
 		double fitness;
 };
@@ -37,6 +37,8 @@ class Mutantcollection
 		Mutantcollection(unsigned int, const Individual &, const Population &);
 		~Mutantcollection();
 		
+		Mutantcollection & operator=(const Mutantcollection &);
+		
 		Phenovec mean_phen() const;
 		Phenovec var_phen() const;
 		double mean_fit() const;
@@ -46,7 +48,7 @@ class Mutantcollection
 		void compute_phenostat() const;
 		void compute_fitstat() const;
 	
-		const MiniIndividual reference;
+		MiniIndividual reference;
 		std::vector<MiniIndividual> collection;
 		
 		mutable PhenotypeStat* phenostat;
@@ -58,6 +60,8 @@ class DoubleMutantcollection
 	public:
 		DoubleMutantcollection(unsigned int, unsigned int, const Individual &, const Population &);
 		~DoubleMutantcollection();
+		
+		DoubleMutantcollection & operator=(const DoubleMutantcollection &);
 		
 		Phenovec ref_mean_phen() const;
 		Phenovec ref_var_phen() const;

@@ -36,6 +36,17 @@ Mutantcollection::~Mutantcollection()
 	delete fitstat;
 }
 
+Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl) 
+{
+	if (this != &tmpl) {
+		reference=tmpl.reference;
+		collection = tmpl.collection;
+		phenostat=NULL;
+		fitstat=NULL;
+	}
+	return(*this);
+}
+
 Phenovec Mutantcollection::mean_phen() const
 {
 	if (phenostat == NULL)
@@ -109,6 +120,17 @@ DoubleMutantcollection::~DoubleMutantcollection()
 { 
 	delete refstat;
 	delete reffitstat;
+}
+
+DoubleMutantcollection & DoubleMutantcollection::operator=(const DoubleMutantcollection & tmpl)
+{
+	if (this != &tmpl) {
+		dcollection = tmpl.dcollection;
+		// it is probably safer and easier to recompute the statistics stored in cache
+		refstat = NULL;
+		reffitstat = NULL;
+	}
+	return(*this);
 }
 
 Phenovec DoubleMutantcollection::ref_mean_phen() const 
