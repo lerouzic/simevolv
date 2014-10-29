@@ -45,8 +45,13 @@ UnivariateStat::UnivariateStat(const vector<double> & vv)
 void UnivariateStat::initialize()
 {
 	for (unsigned int i = 0; i < data.size(); i++) {
-		sum_i += data[i];
-		sum_i2 += data[i]*data[i];
+		if (isfinite(data[i])) {
+			sum_i += data[i];
+			sum_i2 += data[i]*data[i];
+		} else {
+			// cerr << "Warning: trying to compute statistics with non-finite numbers" << endl;
+			data.erase(data.begin()+i);
+		}
 	}
 }
 

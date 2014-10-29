@@ -33,7 +33,7 @@ class UnivariateStat
 		void initialize();
 		
 		// data and 
-		const std::vector<double> data;
+		std::vector<double> data;
 		double sum_i;
 		double sum_i2;
 };

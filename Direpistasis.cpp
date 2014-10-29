@@ -32,7 +32,7 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	vector<double> fit_dir;
 	for (unsigned int i = 0; i < pop.size(); i++) {
 		DoubleMutantcollection dmutcol(mutants1, mutants2, pop.pop[i], pop);
-					// We can do that because Direpistasis is a friend of Population
+					// We can do this because Direpistasis is a friend of Population
 
 		dir_ind.push_back(individual_direpi(dmutcol));
 		fit_dir.push_back(individual_fitdir(dmutcol));
@@ -44,6 +44,7 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	UnivariateStat fit_stat(fit_dir);
 	fit_epi_mean = fit_stat.mean();
 	fit_epi_var = fit_stat.var();
+	
 }
 
 Phenovec Direpistasis::phen_direpistasis() const
@@ -101,6 +102,7 @@ double Direpistasis::individual_fitdir(const DoubleMutantcollection & dmutcol) c
 {
 	// This is much simpler than for phenotypes, because there is only one dimension. 
 	double mut1_var = dmutcol.ref_var_fit();
+	// if (mut1_var <= 0.0) cerr << "No variance in fitness among mutants." << endl;
 	vector<double> mut1_fit = dmutcol.ref_fit();
 	vector<double> mut2_sdfit = dmutcol.var_mutant_fit();
 	for (unsigned int i = 0; i < mut2_sdfit.size(); i++) {
