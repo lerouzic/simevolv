@@ -16,7 +16,8 @@
 #define OUTPUTFORMAT_H_INCLUDED
 
 #include <iostream>
-
+#include <iomanip>
+#include <vector>
 
 
 struct nullstream:
@@ -24,6 +25,14 @@ std::ostream
 {
     nullstream(): std::ios(0), std::ostream(0) {}
 };
+
+void outformat(std::ostream &, const double, unsigned int width=12, unsigned int precision=5, const std::string & sep="");
+void outformat(std::ostream &, const int, unsigned int width=12, const std::string & sep="");
+
+void outformat(std::ostream &, const std::vector<double> &, unsigned int width=12, unsigned int precision=5, const std::string & sep="");
+
+void outformat(std::ostream &, const std::string &, unsigned int width=12, const std::string & sep="");
+void outformat(std::ostream &, unsigned int, const std::string &, unsigned int width=12, const std::string & sep="");
 
 
 class OutputFormat

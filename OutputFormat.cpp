@@ -10,12 +10,33 @@
  *                                                                         *
  ***************************************************************************/
 
-
+#include <sstream>
 
 #include "OutputFormat.h"
 
 using namespace std;
 
+void outformat(ostream & out, const double number, unsigned int width /*=10*/, unsigned int precision /*=5*/, const string & sep /*=""*/) {
+	out << setw(width) << setprecision(precision) << left << number << sep;
+}
+void outformat(ostream & out, const int number, unsigned int width /*=10*/, const string & sep /*=""*/) {
+	out << setw(width) << left << number << sep;
+}
+
+void outformat(ostream & out, const vector<double> & numbers, unsigned int width /*=10*/, unsigned int precision /*=5*/, const string & sep /*=""*/) {
+	for (unsigned int i = 0; i < numbers.size(); i++)
+		outformat(out, numbers[i], width, precision, sep);
+}
+
+void outformat(ostream & out, const string & text, unsigned int width /*=10*/, const string & sep /*=""*/) {
+	out << setw(width) << left << text << sep;
+}
+
+void outformat(ostream & out, unsigned int index, const string & text, unsigned int width /*=10*/, const string & sep /*=""*/) {
+	ostringstream o;
+	o << text << index;
+	out << setw(width) << left << o.str() << sep;
+}
 
 
 // constructors and destructor

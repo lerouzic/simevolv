@@ -29,6 +29,8 @@
 #include <numeric>
 #include <cmath>
 #include <cassert>
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -344,38 +346,38 @@ void Population::write_summary(ostream & out, int generation) const
          synchronized with the rest of the function! */
 	if (generation==1)
 	{ 
-		out << "Gen" << "\t";
+		outformat(out, "Gen");
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
-			out << "MPhen" << i + 1 << "\t";
+			outformat(out, i+1, "MPhen");
 		}
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
-			out << "VPhen" << i + 1 << "\t";
+			outformat(out, i+1, "VPhen");
 		}
-		out << "MFit" << "\t";
-		out << "VFit" << "\t";
+		outformat(out, "MFit");
+		outformat(out, "VFit");
 		for (unsigned int opt = 0; opt < Fitness::current_optimum().size(); opt++) {
-			out << "FitOpt" << opt + 1 << "\t";
+			outformat(out, opt+1, "FitOpt");
 		}
 		if (nb_canal_test > 0) 
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
-				out << "CanPhen" << i + 1 << "\t";
+				outformat(out, i+1, "CanPhen");
 			}
-			out << "CanFit" << "\t";
+			outformat(out, "CanFit");
 		}
 		if (nb_herit_test > 0)
 		{	
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {			
-				out << "HerPhen" << i + 1 << "\t";
+				outformat(out, i+1, "HerPhen");
 			}
-			out << "HerFit" << "\t";
+			outformat(out, "HerFit");
 		}
 		if (nb_direpi_test > 0) 
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) {
-				out << "DirPhen" << i + 1 << "\t";
+				outformat(out, i+1, "DirPhen");
 			}
-			out << "DirFit" << "\t";
+			outformat(out, "DirFit");
 		}
 		out << endl; 
    	}
@@ -392,39 +394,40 @@ void Population::write_summary(ostream & out, int generation) const
 	 * n following columns: heritability for the n phenotypes (if enabled)
 	 * following column: heritability for fitness (if enabled)
   */
-		
-	out << generation << "\t";
+	
+
+	outformat(out, generation);
 	Phenovec mm = phenstat.means_phen();
 	Phenovec mm2 = phenstat.means_unstab();
 	for (unsigned int i = 0; i < mm.size(); i++){
 		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
-		out << mm[i] << "\t";
+		outformat(out, mm[i]);
 	}
 	Phenovec vv = phenstat.vars_phen();
 	for (unsigned int i = 0; i < vv.size(); i++){
-		out << vv[i] << "\t";
+		outformat(out, vv[i]);
 	}
-    out << fitstat.mean() << "\t";
-    out << fitstat.var() << "\t";
-    out << Fitness::current_optimum() << "\t";
+    outformat(out, fitstat.mean());
+    outformat(out, fitstat.var());
+    outformat(out, Fitness::current_optimum());
     if (nb_canal_test > 0) {
 		// Runs the canalization tests
 		Canalization can_test(nb_canal_test, *this);
-		out << can_test.phen_canalization() << "\t";
-		out << can_test.fitness_canalization() << "\t";
+		outformat(out, can_test.phen_canalization());
+		outformat(out, can_test.fitness_canalization());
 	}    
 	if (nb_herit_test > 0) {
 		// Runs the heritability tests
 		Heritability herit_test(nb_herit_test, *this);
-		out << herit_test.h2() << "\t";
-		out << herit_test.fit_h2() << "\t";
+		outformat(out, herit_test.h2());
+		outformat(out, herit_test.fit_h2());
 	}
 	if (nb_direpi_test > 0) {
 		// Runs the directional epistasis tests
 		Direpistasis dir_test(nb_direpi_test, *this);
-		out << dir_test.phen_direpistasis() << "\t";
-		out << dir_test.fitness_direpistasis() << "\t";
+		outformat(out, dir_test.phen_direpistasis());
+		outformat(out, dir_test.fitness_direpistasis());
 	}
-    out << endl;
+    out << '\n';
 }
 

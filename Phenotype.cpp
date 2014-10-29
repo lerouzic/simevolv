@@ -14,6 +14,7 @@
 
 
 #include "Phenotype.h"
+#include "OutputFormat.h"
 
 #include <cassert>
 
@@ -27,6 +28,12 @@ ostream& operator << (ostream& out, const Phenovec & pvec)
 			out << "\t";
 	}
 	return(out);
+}
+
+void outformat(std::ostream & out, const Phenovec & pv, unsigned int width /*=10*/, 
+			unsigned int precision /* =5 */, std::string sep /* ="" */) {
+	for (unsigned int i = 0; i < pv.size(); i++)
+		outformat(out, pv[i], width, precision, sep);
 }
 
 // constructors and destructors
@@ -180,6 +187,11 @@ ostream& operator << (ostream& out, const Phenotype& phen)
 }
 
 
+
+void outformat(std::ostream & out, const Phenotype & ph, unsigned int width /*=10*/, 
+	unsigned int precision /*=5*/, std::string sep /*=""*/) {
+		outformat(out, ph.pheno, width, precision, sep);
+}
 
 
 

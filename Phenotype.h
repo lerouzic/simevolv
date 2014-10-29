@@ -38,7 +38,9 @@ public:
     Phenovec(const std::vector<double> & vec) : std::vector<double>(vec) { }
     virtual ~Phenovec() { }
     
-	friend std::ostream& operator << (std::ostream&, const Phenovec &); 
+	friend std::ostream& operator << (std::ostream&, const Phenovec &);
+	friend void outformat(std::ostream &, const Phenovec &, 
+		unsigned int width=12, unsigned int precision=5, std::string sep="");
 };
 
 class Phenotype
@@ -73,7 +75,9 @@ class Phenotype
 		//output
 		void write_debug (std::ostream&) const;	
 		void write_simple (std::ostream&) const;	
-	    friend std::ostream& operator << (std::ostream&, const Phenotype&); 
+	    friend std::ostream& operator << (std::ostream&, const Phenotype&);
+		friend void outformat(std::ostream &, const Phenotype &, 
+			unsigned int width=12, unsigned int precision=5, std::string sep="");	    
 		
 	protected:
 		Phenovec pheno;
