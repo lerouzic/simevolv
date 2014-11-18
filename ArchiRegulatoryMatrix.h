@@ -11,8 +11,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
-
 #ifndef ARCHIREGULATORYMATRIX_H_INCLUDED
 #define ARCHIREGULATORYMATRIX_H_INCLUDED
 
@@ -99,7 +97,7 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 	    ~ArchiM2() {}
 		
 		// Inherited functions
-		double sigma(double h) const {return (1 / (1 + exp((-h/basal*(1-basal))+log(1/basal-1)) ));}
+		double sigma(double h) const {return (1 / (1 + exp((-h/(basal*(1-basal)))+log(1/basal-1)) ));}
 	
 	protected :
 		double basal;
