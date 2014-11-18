@@ -285,7 +285,7 @@ void Parameter_string::Set(string v) {
 		initialized=true;
 	} else {
 		cerr << "Option " << v << " not recognized." << endl;
-		cerr << "Accetable options are :" << endl;
+		cerr << "Acceptable options are :" << endl;
 		for (unsigned int i = 0; i < possible_values.size(); i++) {
 			cerr << "\t" << possible_values[i] << endl;
 		}
