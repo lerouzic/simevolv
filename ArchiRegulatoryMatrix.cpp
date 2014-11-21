@@ -187,7 +187,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 		h = prod(St,W);
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			St(i) = sigma(h(i));
+			St(i) = this->sigma(h(i));
 			//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
 		}
 		if (t > (timesteps-calcsteps)) 
