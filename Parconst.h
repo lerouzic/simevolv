@@ -95,10 +95,9 @@ const std::vector<std::string> FS_options = boost::assign::list_of (FS_nostab)(F
 const std::string AR_add = "additive";
 const std::string AR_mult = "multilinear";
 const std::string AR_wagner = "wagner";
-const std::string AR_masel = "masel";
 const std::string AR_siegal = "siegal";
 const std::string AR_m2 = "m2";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_masel)(AR_siegal)(AR_m2);
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2);
 
 // Initial vector type
 const std::string SO_min = "minimum";

@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -13,7 +13,13 @@
 
 
 
-#include "main.h"
+#include "Parameters.h"
+#include "Parconst.h"
+#include "Architecture.h"
+#include "Fitness.h"
+#include "Environment.h"
+#include "Population.h"
+#include "Random.h"
 
 #include <boost/program_options.hpp>
 
@@ -53,24 +59,23 @@ int main(int argc, char *argv[])
 		file_out.open(output_file.c_str());
 		pt_output = &file_out;
 	}
-	OutputFormat::SetSummary(*pt_output);
 
     if (vm.count("help")) {
 		*pt_output << "Command line help" << endl;
 		*pt_output << desc << endl;
-		return(0); // The program ends here
+		return(EXIT_SUCCESS); // The program ends here
 	}
 
 	if (vm.count("template")) {
 		ParameterSet pp;
 		pp.write(*pt_output);
-		return(0);
+		return(EXIT_SUCCESS);
 	}
 
 	if (!vm.count("parameter")) {
 		cerr << "A parameter file must be provided" << endl;
 		cerr << desc << endl;
-		return(1);
+		return(EXIT_FAILURE);
 	}
 
 	ParameterSet param(input_file);
@@ -86,25 +91,27 @@ int main(int argc, char *argv[])
     Environment::initialize(param);
 
     Population pop(param);
-    int maxgen = param.getpar(SIMUL_GENER)->GetInt();
-    for (int generation = 1; generation <= maxgen; generation++)
+    unsigned int maxgen = param.getpar(SIMUL_GENER)->GetInt();
+    unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
+    for (unsigned int generation = 1; generation <= maxgen; generation++)
     {
         Fitness::fluctuate(generation);
-        if ((generation == 1) || (generation == maxgen) || (generation % param.getpar(SIMUL_OUTPUT)->GetInt() == 0))
+        if ((generation == 1) || (generation == maxgen) || (generation % intervgen == 0))
         {
-            pop.write(generation);
+            pop.write(*pt_output, generation);
         }
-        Population offsp = pop.reproduce();
-        if (generation < maxgen)
+        
+        if (generation < maxgen) {
+			Population offsp = pop.reproduce();
             pop = offsp;
+        }
     }
     
     if (vm.count("parcheck")) {
 		param.warning_unused();
 		param.warning_multicalls();
-	}   
+	}
 	
 	file_out.close(); // This probably does not harm if the file is not open
-	return(0);
+	return(EXIT_SUCCESS);
 }
-

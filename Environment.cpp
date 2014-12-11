@@ -14,7 +14,6 @@
 
 #include "Environment.h"
 #include "Parconst.h"
-#include "main.h"
 #include "Random.h"
 
 #include <iostream>
@@ -34,7 +33,6 @@ Environment::Environment(const ParameterSet & param)
 {
 }
 
-
 // instance and initialization
 
 /* put the existence of the environmental values to non-existent */
@@ -52,7 +50,6 @@ void Environment::initialize(const ParameterSet & param)
     Environment::instance = new Environment(param);
 }
 
-
 // functions
 
 /* modify the genotypic value by adding an environmental effect 
@@ -62,11 +59,10 @@ Phenotype Environment::rand_effect(Phenotype genot_values)
 {	 
     assert (Environment::instance != NULL);
     for (unsigned int i = 0; i < genot_values.dimensionality(); i++) {
-		genot_values.add_pheno(i, Environment::instance->sd*Random::randgauss());
+		genot_values.add_to_pheno(i, Environment::instance->sd*Random::randgauss());
 	}
     return(genot_values);
 }
-
 
 /* return the effect of environmental modification */
 double Environment::get_sd()

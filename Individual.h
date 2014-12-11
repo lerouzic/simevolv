@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -16,7 +16,6 @@
 #ifndef INDIVIDUAL_H_INCLUDED
 #define INDIVIDUAL_H_INCLUDED
 
-#include "Population.h"
 #include "Phenotype.h"
 #include "Haplotype.h"
 #include "Genotype.h"
@@ -25,14 +24,13 @@
 #include <iostream>
 
 
-
 class Population;
-
 
 class Individual
 {
 	public :
 	    // constructors/destructor
+	    Individual() = delete;
 	    Individual(const Haplotype&, const Haplotype&);
 	    Individual(const Individual&);
 	    Individual(const ParameterSet&);
@@ -44,25 +42,23 @@ class Individual
 	
 	    // instance/initialization
 	    void initialize();
-	
-	    // functions
 	    void update_fitness(const Population &);
+
+		// getters
 	    double get_fitness() const;
 	    Phenotype get_phenotype() const;
 	    Phenotype get_genot_value() const;
 	    
+	    // reproduction
 	    Haplotype produce_gamete() const;
 	    static Individual mate(const Individual&, const Individual&);
+	    
 	    void draw_mutation();
 	    void make_mutation();
 	    	    		
-	    Individual test_canalization(unsigned int, const Population &) const;  /* the first parameter is the number of mutations */
-	
-	    //output
-	    void write_debug (std::ostream&) const;
-	    void write_xml (std::ostream&) const;
-	    void write_simple(std::ostream&) const;
-	
+	    /* Make a clone with some mutations
+		- the first parameter is the number of mutations */	    	    		
+	    Individual test_canalization(unsigned int, const Population &) const;  
 	
 	public :
 	    Genotype genotype;

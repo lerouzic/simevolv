@@ -66,9 +66,20 @@ unsigned int Allele::all_size() const
 }
 
 
-/* mean of the value of the two alleles of a genotype
+/* adds of the value of the two alleles of a genotype
  * (static function) */
 vector<double> Allele::combine_add(const Allele & a1, const Allele & a2) 
+{
+	vector<double> ans;
+	unsigned int all_size =  a1.allele.size();
+	for (unsigned int sa = 0; sa < all_size; sa++) 
+	{
+		ans.push_back(a1.allele[sa] + a2.allele[sa]);
+	}
+	return(ans);
+}
+
+vector<double> Allele::combine_mean(const Allele & a1, const Allele & a2) 
 {
 	vector<double> ans;
 	unsigned int all_size =  a1.allele.size();
@@ -118,13 +129,8 @@ shared_ptr<Allele> Allele_zero::make_mutant(double mutsd) const
 		double modifier = mutsd * Random::randgauss();
 		a->allele[mutated_site] += modifier;		
 	}
-	// a bit stupid: if all sites are 0, no mutation, but
+	// Note: if all sites are 0, no mutation, but
 	// we create a new Allele instance.
 	
-    return(dynamic_pointer_cast<Allele>(a));	
+    return(dynamic_pointer_cast<Allele>(a));
 }
-
-
-
-
-

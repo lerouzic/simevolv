@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -18,7 +18,6 @@
 
 #include "Parameters.h"
 
-#include <iostream>
 #include <vector>
 
 
@@ -28,16 +27,16 @@ class GeneticMap
 	public:
 	    //constructors/destructor
 	    GeneticMap();
+	    GeneticMap(const GeneticMap&) = delete;
 	    GeneticMap(const ParameterSet&);
+	    ~GeneticMap();
 	
 	    //functions
 	    int nb_loc() const;
-	    double recombination_rate(int loc1, int loc2 = -1) const;
+	    double recombination_rate(unsigned int loc) const;
 	
 	protected:
 	    std::vector<double> recrate;
 };
 
-
 #endif // GENETICMAP_H_INCLUDED
-

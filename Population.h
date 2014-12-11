@@ -18,13 +18,11 @@
 
 #include "Parameters.h"
 #include "Phenotype.h"
+#include "Individual.h"
 
 #include <iostream>
 #include <vector>
 
-
-
-class Individual; // This is clearly a design bug. Population.h is called in Individual.h through another way. 
 
 
 class Population
@@ -45,29 +43,24 @@ class Population
 	
 	    Population reproduce(long int offspr_number = 0) const;
 	    
-	    void update(void); // ideally, should not be public
 	    Phenovec mean_phenotype() const; // Probably used by the Fitness class only
-	    
 	    long int size() const;
 
-		// Is it safe to leave these two as public? Only friends might be allowed to do this. 
 	    void draw_mutation();
 	    void make_mutation();
 	    	
 	    //output
-	    void write(int) const;
-	    void write_debug(std::ostream&) const;
-	    void write_xml(std::ostream&) const;
-	    void write_simple(std::ostream&) const;
-	    void write_summary(std::ostream&, int) const;
+	    void write(std::ostream &, int) const;
 	
 	protected :
 		// internal functions
 	    void initialize(const ParameterSet &);
+	    void update(void); 
 	    
 	    // Stuff for selection
 	    std::vector<double> cumul_fitness() const;
 	    const Individual & pick_parent(const std::vector<double>&) const;
+	    // different algorithms to optimize weighted random picking of parents
 	    long int search_fit_table(double, const std::vector<double>&) const;
 	    long int sequential_search_fit_table(double, const std::vector<double>&) const;
 	    long int stl_search_fit_table(double, const std::vector<double>&) const;		
@@ -76,7 +69,6 @@ class Population
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
-
 };
 
 #endif // POPULATION_H_INCLUDED

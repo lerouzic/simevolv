@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -35,15 +35,13 @@ Genotype::Genotype(const Haplotype& father, const Haplotype& mother)
 {
 }
 
-
 /* copy constructor */
 Genotype::Genotype(const Genotype& copy)
     : gam_father(copy.gam_father)
     , gam_mother(copy.gam_mother)
 {
 }
- 
- 
+  
 /* constructor using the parameters for building the two haplotypes */
 Genotype::Genotype(const ParameterSet & param)
 	: gam_father(param)
@@ -51,11 +49,10 @@ Genotype::Genotype(const ParameterSet & param)
 {
 }
 
-
 // operator overload
 
 int Genotype::operator== (const Genotype& other) const
-{
+{ // some kind of hypothesis here: no maternal or epigenetic effects
     return
     (
         ((this->gam_father == other.gam_father) &&
@@ -78,21 +75,14 @@ int Genotype::operator!= (const Genotype& other) const
 /* collect the number of loci from the Architecture and return it */
 int Genotype::nb_loc() const
 {
-    Architecture * archi = Architecture::Get();
-    int nloc = archi -> nb_loc();
-    return nloc;
+    return (Architecture::Get() -> nb_loc());
 }
-
 
 /* collect the size of the allele from the Architecture and return it */
 int Genotype::all_size() const
 {
-    Architecture * archi = Architecture::Get();
-    int sall = archi -> all_size();
-
-    return sall;
+    return (Architecture::Get() -> all_size());
 }
-
 
 /* perform the recombination between the the father and the mother haplotype */
 Haplotype Genotype::recombine() const
@@ -130,8 +120,7 @@ void Genotype::draw_mutation()
 /* force to make a mutation in one of the haplotype */
 void Genotype::make_mutation()
 {
-    int gen = floor(2*Random::randnum()+1);
-    if (gen==1)
+    if (Random::randnum() < 0.5)
     {
         gam_father.make_mutation();
     }
@@ -140,31 +129,3 @@ void Genotype::make_mutation()
         gam_mother.make_mutation();
     }
 }
-
-
-// output
-
-void Genotype::write_debug(ostream & out) const
-{
-    out << "Gamete 1" << endl;
-    gam_father.write_debug(out);
-    out << "Gamete 2" << endl;
-    gam_mother.write_debug(out);
-}
-
-
-void Genotype::write_xml(ostream & out) const
-{
-    out << "xml output: not implemented yet.\n";
-}
-
-
-void Genotype::write_simple(ostream& out) const
-{
-    out << "simple output: not implemented yet.\n";
-}
-
-
-
-
-

@@ -15,7 +15,6 @@
 #include "Parameters.h"
 #include "Parconst.h"
 #include "Random.h"
-#include "main.h"
 
 #include <algorithm> // for function std::find()
 

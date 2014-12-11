@@ -19,15 +19,14 @@
 #include "Parameters.h"
 #include "Phenotype.h"
 
-
-
+// Singleton pattern
 class Environment
-{
+{	
 	public:
-	    // constructors / destructor
 	    Environment(const ParameterSet&);
 	
 	    // initialization / instance
+	    // warning: dangerous structure, the instance is public! 
 	    static Environment* instance;
 	    static void initialize(const ParameterSet&);
 	

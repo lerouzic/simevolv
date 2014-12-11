@@ -28,7 +28,6 @@ using namespace std;
 
 // constructors/destructor
 
-
 /* constructor using the parameters given by the parameters file and the Architecture files*/
 Haplotype::Haplotype(const ParameterSet & param)
 {
@@ -45,15 +44,13 @@ Haplotype::Haplotype(const ParameterSet & param)
 /* copy constructor */
 Haplotype::Haplotype(const Haplotype & templ)
 	: haplotype(templ.haplotype)
-{
-	
+{	
 }
 
 /* constructor using a vector of Alleles */
-Haplotype::Haplotype(const vector<shared_ptr<Allele> > & vectalleles)
+Haplotype::Haplotype(const vector<shared_ptr<Allele>> & vectalleles)
 	: haplotype(vectalleles)
-{
-	
+{	
 }
 
 
@@ -77,10 +74,8 @@ int Haplotype::operator!=(const Haplotype& other) const
 unsigned int Haplotype::nb_loc() const
 {
     Architecture * archi = Architecture::Get();
-    unsigned int nloc = archi -> nb_loc();
-    return nloc;
+    return(archi -> nb_loc());
 }
-
 
 /* determines if there will be a mutation, for each locus of the haplotype 
  * (depending on the mutation rate) 
@@ -88,12 +83,12 @@ unsigned int Haplotype::nb_loc() const
 void Haplotype::draw_mutation()
 {
     Architecture * archi = Architecture::Get();
-    for (unsigned int loc = 0; loc < nb_loc(); loc++)
+    for (unsigned int loc = 0; loc < archi->nb_loc(); loc++)
     {
         if (Random::randnum() < archi->mutation_rate(loc))
         // This is not really efficient (many drawings with low probabilities)
         {
-			make_mutation(loc);        
+			make_mutation(loc);     
         }
     }
 }
@@ -116,29 +111,3 @@ void Haplotype::make_mutation(unsigned int loc)
 	shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc);
     haplotype[loc] = a;
 }
-
-
-// output and debug
-
-void Haplotype::write_debug(ostream & out) const
-{
-    //~ for (vector<Allele>::const_iterator it = haplotype.begin(); it != haplotype.end(); it++)
-    //~ {
-//~ //        out << *it << "\t";
-    //~ }
-    out << endl;
-}
-
-
-void Haplotype::write_xml(ostream & out) const
-{
-    out << "xml output: not implemented yet.\n";
-}
-
-
-void Haplotype::write_simple(ostream& out) const
-{
-    out << "simple output: not implemented yet.\n";
-}
-
-

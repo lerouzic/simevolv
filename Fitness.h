@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007-2014 Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 
 /***************************************************************************
@@ -73,22 +73,16 @@ class Fitness_Fluct
 		Fitness_Fluct(const ParameterSet & param) { }
 		virtual ~Fitness_Fluct() = 0;
 		
-		virtual Phenovec get_new_strength(const Phenovec & old_strength) 
-			{ assert("Function not implemented."); return(Phenovec());}
-		virtual Phenovec get_new_strength(const Phenovec & old_strength, unsigned int generation)
-			{ return(get_new_strength(old_strength)); }
-		virtual Phenovec get_new_optimum(const Phenovec & old_optimum)
-			{ assert("Function not implemented."); return(Phenovec());}
-		virtual Phenovec get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
-			{ return(get_new_optimum(old_optimum)); }
+		virtual Phenovec get_new_strength(const Phenovec & old_strength, unsigned int generation) = 0;
+		virtual Phenovec get_new_optimum(const Phenovec & old_optimum, unsigned int generation) = 0;
 };
 
 class Fitness_Fluct_Nofluct: public Fitness_Fluct
 {
 	public:
 		Fitness_Fluct_Nofluct(const ParameterSet &);
-		Phenovec get_new_strength(const Phenovec & old_strength) { return(old_strength); }
-		Phenovec get_new_optimum(const Phenovec & old_optimum) { return(old_optimum); } 
+		Phenovec get_new_strength(const Phenovec &, unsigned int);
+		Phenovec get_new_optimum(const Phenovec &, unsigned int);		
 };
 
 class Fitness_Fluct_States: public Fitness_Fluct
@@ -133,9 +127,7 @@ class Fitness_Fluct_Noise: public Fitness_Fluct
 { // Abstract class
 	public:
 		Fitness_Fluct_Noise(const ParameterSet &);
-		virtual ~Fitness_Fluct_Noise() { }
-		virtual Phenovec get_new_strength(const Phenovec &, unsigned int) = 0;
-		virtual Phenovec get_new_optimum(const Phenovec &, unsigned int) = 0;	
+		virtual ~Fitness_Fluct_Noise() = 0;	
 			
 	protected:
 		Phenovec strength_sd;
@@ -184,13 +176,10 @@ class Fitness_Phenotype
 		virtual ~Fitness_Phenotype() = 0;
 	
 		double get_fitness(const Phenotype & phenotype, const Population &);
-		virtual double get_fitness_trait(unsigned int trait, const Phenotype &)
-			{ assert("The function is not defined."); return(0.0); }
-		virtual double get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population&) 
-			{ return(get_fitness_trait(trait, phenotype)); }
+		virtual double get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population&) = 0;
 		virtual void update(const Population &) { }
 		virtual void fluctuate(Fitness_Fluct *, unsigned int) { }
-		virtual Phenovec get_optimum() const { Phenovec dumb; return(dumb); }
+		virtual Phenovec get_optimum() const;
 };
 
 class Fitness_Phenotype_Noselection: public Fitness_Phenotype
@@ -204,7 +193,7 @@ class Fitness_Phenotype_Directional: public Fitness_Phenotype
 { // Abstract class for directional selection
 	public: 
 		Fitness_Phenotype_Directional(const ParameterSet &);
-		virtual ~Fitness_Phenotype_Directional() { }
+		virtual ~Fitness_Phenotype_Directional() = 0;
 		virtual double get_fitness_trait(unsigned int trait, const Phenotype &, const Population &) = 0;
 		void update(const Population &);
 		void fluctuate(Fitness_Fluct *, unsigned int);
@@ -242,7 +231,7 @@ class Fitness_Phenotype_Stabilizing: public Fitness_Phenotype
 	public:
 		Fitness_Phenotype_Stabilizing(const ParameterSet &);
 		virtual ~Fitness_Phenotype_Stabilizing() { }
-		virtual double get_fitness_trait(unsigned int, const Phenotype&) = 0;
+		virtual double get_fitness_trait(unsigned int, const Phenotype&, const Population&) = 0;
 		void fluctuate(Fitness_Fluct *, unsigned int);
 		Phenovec get_optimum() const { return(optimum);}
 				
@@ -255,22 +244,21 @@ class Fitness_Phenotype_Gaussian: public Fitness_Phenotype_Stabilizing
 {
 	public:
 		Fitness_Phenotype_Gaussian(const ParameterSet &);
-		double get_fitness_trait(unsigned int, const Phenotype&);
-		
+		double get_fitness_trait(unsigned int, const Phenotype&, const Population&);
 };
 
 class Fitness_Phenotype_Quadratic: public Fitness_Phenotype_Stabilizing
 {
 	public:
 		Fitness_Phenotype_Quadratic(const ParameterSet &);
-		double get_fitness_trait(unsigned int, const Phenotype&);
+		double get_fitness_trait(unsigned int, const Phenotype&, const Population&);
 };
 
 class Fitness_Phenotype_Biconvex: public Fitness_Phenotype_Stabilizing
 {
 	public:
 		Fitness_Phenotype_Biconvex(const ParameterSet &);
-		double get_fitness_trait(unsigned int, const Phenotype&);
+		double get_fitness_trait(unsigned int, const Phenotype&, const Population&);
 };
 
 /**************************** Fitness_Stability *********************************/
@@ -294,7 +282,7 @@ class Fitness_Stability_Noselection: public Fitness_Stability
 {
 	public:
 		Fitness_Stability_Noselection(const ParameterSet &);
-		double get_fitness_trait(unsigned int, const Phenotype &) { return(1.0); }	
+		double get_fitness_trait(unsigned int, const Phenotype &);	
 };
 
 class Fitness_Stability_Exponential: public Fitness_Stability

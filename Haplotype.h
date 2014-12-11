@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -24,7 +24,6 @@
 #include <memory> // shared_ptr
 
 
-
 class Haplotype
 {
     friend class Genotype;
@@ -33,7 +32,6 @@ class Haplotype
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
-    friend class ArchiMasel; 
     friend class ArchiSiegal; 
     friend class ArchiM2;
 
@@ -41,11 +39,12 @@ class Haplotype
 	    //constructors/destructor
 	    Haplotype(const ParameterSet &);
 	    Haplotype(const Haplotype &);
-	    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
+	    Haplotype(const std::vector<std::shared_ptr<Allele>> &);
+		~Haplotype() {}
 	
 	    //operator overload
-	    int operator== (const Haplotype&) const;
-	    int operator!= (const Haplotype&) const;
+	    int operator == (const Haplotype&) const;
+	    int operator != (const Haplotype&) const;
 	
 	    //functions
 	    unsigned int nb_loc() const;
@@ -53,15 +52,9 @@ class Haplotype
 	    void make_mutation(); 				
 	    void make_mutation(unsigned int); 
 	
-	    //output/debug
-	    void write_debug (std::ostream&) const;
-	    void write_xml   (std::ostream&) const;
-	    void write_simple(std::ostream&) const;
-	
 	protected :
-	    std::vector<std::shared_ptr<Allele> > haplotype;
+	    std::vector<std::shared_ptr<Allele>> haplotype;
 };
 
 
 #endif // HAPLOTYPE_H_INCLUDED
-

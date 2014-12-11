@@ -1,5 +1,3 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -11,36 +9,38 @@
  *                                                                         *
  ***************************************************************************/
 
+
+
 #ifndef ARCHIREGULATORYMATRIX_H_INCLUDED
 #define ARCHIREGULATORYMATRIX_H_INCLUDED
 
 #include "Architecture.h"
 
 #include <math.h>
-
+#include <iostream>
 
 
 class ArchiRegulatoryMatrix : public Architecture
 {
 	public :
 	    //constructors/destructor
-	    ArchiRegulatoryMatrix();
+	    ArchiRegulatoryMatrix() = delete;
+	    ArchiRegulatoryMatrix(const ArchiRegulatoryMatrix&) = delete;
 	    ArchiRegulatoryMatrix(const ParameterSet&);
-	    ~ArchiRegulatoryMatrix() {}
+	    virtual ~ArchiRegulatoryMatrix() {}
 		
-		// functions 
-		virtual double sigma(double h) const {return (h);}
+		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
 		virtual Phenotype phenotypic_value(const Genotype&) const;
-		std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
 	
 	protected :
 		unsigned int sall;
 		std::vector<double> So;
-		std::vector<std::vector<double> > connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
+		std::vector<std::vector<double>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
 		unsigned int calcsteps; 
 				
 	    //functions
+		virtual double sigma(double h) const;
 		void init_connectivity_matrix(const ParameterSet &);		
 };
 
@@ -49,60 +49,51 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 {
 	public :
 	    //constructors/destructor
-	    ArchiWagner() {assert(false);}
+	    ArchiWagner() = delete;
+	    ArchiWagner(const ArchiWagner &) = delete;
 	    ArchiWagner(const ParameterSet&);
-	    ~ArchiWagner() {}
+	    virtual ~ArchiWagner() {}
 		
+	protected :
 		// Inherited functions
-		double sigma(double h) const {if (h<0){return (-1.);} else if (h>0) {return (1.);} else {return (0.);}}	
+		virtual double sigma(double h) const;
 };	
 
-
-
-class ArchiMasel : public ArchiRegulatoryMatrix
-{
-	public :
-	    //constructors/destructor
-	    ArchiMasel() {assert(false);}
-	    ArchiMasel(const ParameterSet&);
-	    ~ArchiMasel() {}
-		
-		// Inherited functions
-		double sigma(double h) const {if (h>=0){return (1.);} else {return (0.);}}	
-};
 
 
 class ArchiSiegal : public ArchiRegulatoryMatrix
 {
 	public : 
 		//constructors/destructor
-	    ArchiSiegal() {assert(false);}
+	    ArchiSiegal() = delete;
+		ArchiSiegal(const ArchiSiegal &) = delete;
 	    ArchiSiegal(const ParameterSet&);
-	    ~ArchiSiegal() {}
-		
-		// Inherited functions
-		double sigma(double h) const {return ((2 / (1 + exp(-basal*h)) ) -1);}
-		
+	    virtual ~ArchiSiegal() {}
+
 	protected :
 		double basal;
+		
+		// Inherited functions
+		virtual double sigma(double h) const; 
 };
+
 
 
 class ArchiM2 : public ArchiRegulatoryMatrix
 {
 	public : 
 		//constructors/destructor
-	    ArchiM2() {assert(false);}
+	    ArchiM2() = delete;
+	    ArchiM2(const ArchiM2 &) = delete;
 	    ArchiM2(const ParameterSet&);
-	    ~ArchiM2() {}
-		
-		// Inherited functions
-		double sigma(double h) const {return (1 / (1 + exp((-h/(basal*(1-basal)))+log(1/basal-1)) ));}
-	
+	    virtual ~ArchiM2() {}
+			
 	protected :
 		double basal;
-};
 
+		// Inherited functions
+		virtual double sigma(double h) const; 
+};
 
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

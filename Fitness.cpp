@@ -15,7 +15,6 @@
 #include "Fitness.h"
 #include "Parconst.h"
 #include "Random.h"
-#include "main.h"
 
 #include <iostream>
 #include <vector>
@@ -158,16 +157,27 @@ Phenovec Fitness::expand_vec(const Phenovec & templ, unsigned int maxsize)
 }
 
 /******************************** Fitness Fluct ******************************/
-Fitness_Fluct::~Fitness_Fluct() 
-{ // The program does not compile without the empty virtual pure destructor
-	
-} 
 
+Fitness_Fluct::~Fitness_Fluct()
+{ // virtual pure
+}
+
+//////// Fitness_Nofluct
 Fitness_Fluct_Nofluct::Fitness_Fluct_Nofluct(const ParameterSet & param)
 	: Fitness_Fluct(param)
 {
-	
 }
+
+Phenovec Fitness_Fluct_Nofluct::get_new_strength(const Phenovec & old_strength, unsigned int generation) 
+{ 
+	return(old_strength); 
+}
+
+Phenovec Fitness_Fluct_Nofluct::get_new_optimum(const Phenovec & old_optimum, unsigned int generation) 
+{ 
+	return(old_optimum); 
+} 
+
 
 Fitness_Fluct_States::~Fitness_Fluct_States()
 { // The program does not compile without the empty virtual pure destructor
@@ -296,8 +306,11 @@ Fitness_Fluct_Noise::Fitness_Fluct_Noise(const ParameterSet & param)
 	, strength_sd(param.getpar(FITNESS_STRENGTH2)->GetVectorDouble())
 	, optimum_sd(param.getpar(FITNESS_OPTIMUM2)->GetVectorDouble())
 	, period(param.getpar(FITNESS_PERIOD)->GetInt())
+{	
+}
+
+Fitness_Fluct_Noise::~Fitness_Fluct_Noise()
 {
-	
 }
 
 Fitness_Fluct_Whitenoise::Fitness_Fluct_Whitenoise(const ParameterSet & param)
@@ -305,7 +318,6 @@ Fitness_Fluct_Whitenoise::Fitness_Fluct_Whitenoise(const ParameterSet & param)
 	, strength_ref(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
 	, optimum_ref(param.getpar(FITNESS_OPTIMUM)->GetVectorDouble())
 {
-	
 }
 
 Phenovec Fitness_Fluct_Whitenoise::get_new_strength(const Phenovec & old_strength, unsigned int generation)
@@ -397,11 +409,16 @@ double Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Populat
 	return(fitness);
 }
 
+Phenovec Fitness_Phenotype::get_optimum() const 
+{ 
+	Phenovec nothing; 
+	return(nothing); 
+}
+
 
 Fitness_Phenotype_Noselection::Fitness_Phenotype_Noselection(const ParameterSet & param) 
 	: Fitness_Phenotype(param)
-{
-	
+{	
 }
 
 Fitness_Phenotype_Directional::Fitness_Phenotype_Directional(const ParameterSet & param)
@@ -409,7 +426,10 @@ Fitness_Phenotype_Directional::Fitness_Phenotype_Directional(const ParameterSet 
 	, strength(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
 	, popmem(NULL)
 {
-	
+}
+
+Fitness_Phenotype_Directional::~Fitness_Phenotype_Directional()
+{ // virtual pure
 }
 
 void Fitness_Phenotype_Directional::update(const Population & population)
@@ -489,7 +509,6 @@ Fitness_Phenotype_Stabilizing::Fitness_Phenotype_Stabilizing(const ParameterSet 
 	, strength(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
 	, optimum(param.getpar(FITNESS_OPTIMUM)->GetVectorDouble())
 {
-
 }
 
 void Fitness_Phenotype_Stabilizing::fluctuate(Fitness_Fluct * fitfluct, unsigned int generation)
@@ -501,10 +520,9 @@ void Fitness_Phenotype_Stabilizing::fluctuate(Fitness_Fluct * fitfluct, unsigned
 Fitness_Phenotype_Gaussian::Fitness_Phenotype_Gaussian(const ParameterSet & param)
 	: Fitness_Phenotype_Stabilizing(param)
 {
-	
 }
 
-double Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
+double Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -524,7 +542,7 @@ Fitness_Phenotype_Quadratic::Fitness_Phenotype_Quadratic(const ParameterSet & pa
 	
 }
 
-double Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
+double Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -546,7 +564,7 @@ Fitness_Phenotype_Biconvex::Fitness_Phenotype_Biconvex(const ParameterSet & para
 	
 }
 
-double Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
+double Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -575,14 +593,17 @@ double Fitness_Stability::get_fitness(const Phenotype & phenotype)
 Fitness_Stability_Noselection::Fitness_Stability_Noselection(const ParameterSet & param)
 	: Fitness_Stability(param)
 {
-	
+}
+
+double Fitness_Stability_Noselection::get_fitness_trait(unsigned int trait, const Phenotype & phenotype) 
+{ 
+	return(1.0); 
 }
 
 Fitness_Stability_Exponential::Fitness_Stability_Exponential(const ParameterSet & param) 
 	: Fitness_Stability(param)
 	, strength(param.getpar(FITNESS_STABSTR)->GetVectorDouble())
-{
-	
+{	
 }
 
 double Fitness_Stability_Exponential::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)

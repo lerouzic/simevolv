@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -14,38 +13,26 @@
 
 
 #include "Architecture.h"
+
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
 #include "ArchiRegulatoryMatrix.h"
 #include "Parconst.h"
 #include "Random.h"
-#include "main.h"
 
+#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <cmath>
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+#include <vector>
+#include <memory>
 
 using namespace std;
 
-
-
 // constructors/destructor
-
-/* default constructor  -  should never be used */
-Architecture::Architecture()
-{
-    assert(false);
-}
-
-
-/* copy constructor  -  should never be used */
-Architecture::Architecture(const Architecture& archi)
-{
-    assert(false); 
-}
 
 /* constructor using the paramater given by ParameterSet */
 Architecture::Architecture(const ParameterSet& param)
@@ -60,7 +47,6 @@ Architecture::Architecture(const ParameterSet& param)
         mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
     }
-
 }
 
 
@@ -68,7 +54,6 @@ Architecture::Architecture(const ParameterSet& param)
 
 /* put the existence of the architecture to non-existent */
 Architecture* Architecture::instance = NULL;
-
 
 /* initialization of the global architecture of the genetic system,
  * depending on the architecture type */
@@ -94,10 +79,6 @@ void Architecture::initialize(const ParameterSet& param)
     {
         Architecture::instance = new ArchiWagner(param);
     }
-    else if (type_archi==AR_masel)
-    {
-        Architecture::instance = new ArchiMasel(param);
-    }
     else if (type_archi==AR_siegal)
     {
         Architecture::instance = new ArchiSiegal(param);
@@ -108,7 +89,8 @@ void Architecture::initialize(const ParameterSet& param)
     }
     else
     {
-        assert("Wrong architecture type");
+        cerr << "Wrong architecture type" << endl;
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -184,7 +166,7 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
     else if (type_alleles==TA_zero)
     {
 		a = shared_ptr<Allele>(new Allele_zero(tmp));
-    }
+    } 
     else
     {
 		cerr << "Unknown allele type -- theoretically this should not happen" << endl;
@@ -192,7 +174,6 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
 	}
     return(a);
 }
-
 
 /* force to make a mutation at one position of the allele :
  * replace the value at the mutated site by a new value */

@@ -14,11 +14,13 @@
 
 
 #include "Phenotype.h"
-#include "OutputFormat.h"
+#include "OutputFormat.h" // for outformat(ostream, -> double <-, ...)
 
 #include <cassert>
 
 using namespace std;
+
+/////////////////// Phenovec - related friend functions ////////////////////////
 
 ostream& operator << (ostream& out, const Phenovec & pvec)
 {
@@ -31,10 +33,30 @@ ostream& operator << (ostream& out, const Phenovec & pvec)
 }
 
 void outformat(std::ostream & out, const Phenovec & pv, unsigned int width /*=10*/, 
-			unsigned int precision /* =5 */, std::string sep /* ="" */) {
+			unsigned int precision /* =5 */, std::string sep /* ="" */) 
+{
 	for (unsigned int i = 0; i < pv.size(); i++)
 		outformat(out, pv[i], width, precision, sep);
 }
+
+//////////////////////////// Phenotype //////////////////////////////////////////
+
+// Friend functions
+ostream& operator << (ostream& out, const Phenotype& phen)
+{
+	for (unsigned int k = 0; k < phen.dimensionality(); k++) 
+	{
+		//out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";   // for debug
+		out << phen.pheno[k] << "\t";
+	}
+	return(out);
+}
+
+void outformat(std::ostream & out, const Phenotype & ph, unsigned int width /*=10*/, 
+	unsigned int precision /*=5*/, std::string sep /*=""*/) {
+		outformat(out, ph.pheno, width, precision, sep);
+}
+
 
 // constructors and destructors
 
@@ -43,7 +65,6 @@ Phenotype::Phenotype()
 {
 }
 
-
 /* constructor using an initialization value 
  * for uni-dimension phentotype */
 Phenotype::Phenotype(double init) 
@@ -51,7 +72,6 @@ Phenotype::Phenotype(double init)
 	pheno.push_back(init);
 	unstabpheno.push_back(0.0);
 }
-
 
 /* constructor using a vector of initialization value 
  * for multi-dimension phenotype */
@@ -83,7 +103,6 @@ Phenotype::Phenotype(const vector<double>& init, const vector<double>& initunsta
 	unstabpheno = initunstab;
 }
 
-
 /* constructor using a previous phenotype as pattern */
 Phenotype::Phenotype(const Phenotype & templ)
 {
@@ -91,16 +110,12 @@ Phenotype::Phenotype(const Phenotype & templ)
 	unstabpheno = templ.unstabpheno;
 }
 
-
 /* destructor */
 Phenotype::~Phenotype() 
 {
-	
 }
 
-
 // operator overload 
-
 Phenotype & Phenotype::operator = (const Phenotype & templ) 
 {
 	if (this == &templ)
@@ -116,6 +131,7 @@ double Phenotype::operator[] (const unsigned int index) const
 	return(get_pheno(index));
 }
 
+// getters
 Phenovec Phenotype::get_pheno() const
 {
 	return(pheno);
@@ -139,15 +155,6 @@ double Phenotype::get_unstab(const unsigned int index) const
 	return(unstabpheno[index]);
 }
 
-void Phenotype::add_pheno(const unsigned int index, const double effect) 
-{
-	assert (index < dimensionality());
-	pheno[index] += effect;
-}
-
-
-// functions
-
 /* return the dimensionnality of the phenotype (number of phenotypes observed) */
 unsigned int Phenotype::dimensionality() const 
 {
@@ -155,47 +162,18 @@ unsigned int Phenotype::dimensionality() const
 	return(pheno.size());
 }
 
-
-void Phenotype::write_debug (ostream& out) const
+// changes in the phenotype (for Environment only?)
+void Phenotype::add_to_pheno(const unsigned int index, const double effect) 
 {
-	for (unsigned int i = 0; i < dimensionality(); i++) 
-	{
-		//out << pheno[i] << "(" << unstabpheno[i] << ")"; 	//for debug
-		out << pheno[i];
-		if (i < dimensionality()-2)
-			out << "/";
-	}
-	out << endl;
-}
-
-
-// Output
-
-void Phenotype::write_simple (ostream& out) const
-{
-	write_debug(out);
-}
-
-ostream& operator << (ostream& out, const Phenotype& phen)
-{
-	for (unsigned int k = 0; k < phen.dimensionality(); k++) 
-	{
-		//out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";   // for debug
-		out << phen.pheno[k] << "\t";
-	}
-	return(out);
+	assert (index < dimensionality());
+	pheno[index] += effect;
 }
 
 
 
-void outformat(std::ostream & out, const Phenotype & ph, unsigned int width /*=10*/, 
-	unsigned int precision /*=5*/, std::string sep /*=""*/) {
-		outformat(out, ph.pheno, width, precision, sep);
-}
 
 
-
-/////////////////////// class PhenotypeStat
+/////////////////////// class PhenotypeStat //////////////////////////////////////
 
 // constructors and destructors
 
@@ -223,14 +201,45 @@ PhenotypeStat::~PhenotypeStat()
 
 // functions
 
+Phenovec PhenotypeStat::means_phen() const 
+{
+	assert(pheno != NULL); 
+	return(pheno->means());
+}
+
+Phenovec PhenotypeStat::vars_phen() const 
+{
+	assert(pheno != NULL); 
+	return(pheno->vars());
+}
+		
+Phenovec PhenotypeStat::means_unstab() const 
+{
+	assert(unstab != NULL); 
+	return(unstab->means());
+}
+
+Phenovec PhenotypeStat::vars_unstab() const 
+{
+	assert(unstab != NULL); 
+	return(unstab->vars());
+}
+
+unsigned int PhenotypeStat::dimensionality() const 
+{
+	assert(pheno != NULL); 
+	return(pheno->dim1());
+}
+
+
 /* transpose the phen_matrix (vector of vector) to get means and variances of traits
  * static function called into the initialization list of the constructor */
-vector<vector<double> > PhenotypeStat::transpose_phen_matrix(const vector<Phenotype> & vec_phen)
+vector<vector<double>> PhenotypeStat::transpose_phen_matrix(const vector<Phenotype> & vec_phen)
 { 
 	assert(!vec_phen.empty());
 	
 	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double> > ans;
+	vector<vector<double>> ans;
 	
 	for (unsigned int k = 0; k < dim; k++) {
 		vector<double> tmp;
@@ -242,12 +251,12 @@ vector<vector<double> > PhenotypeStat::transpose_phen_matrix(const vector<Phenot
 	return(ans);
 }
 
-vector<vector<double> > PhenotypeStat::transpose_unstabphen_matrix(const vector<Phenotype> & vec_phen)
+vector<vector<double>> PhenotypeStat::transpose_unstabphen_matrix(const vector<Phenotype> & vec_phen)
 { 
 	assert(!vec_phen.empty());
 	
 	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double> > ans;
+	vector<vector<double>> ans;
 	
 	for (unsigned int k = 0; k < dim; k++) {
 		vector<double> tmp;
@@ -259,43 +268,17 @@ vector<vector<double> > PhenotypeStat::transpose_unstabphen_matrix(const vector<
 	return(ans);
 }
 
-vector<vector<double> > PhenotypeStat::transpose_phenovec_matrix(const vector<Phenovec> & vec_phen)
+vector<vector<double>> PhenotypeStat::transpose_phenovec_matrix(const vector<Phenovec> & vec_phen)
 {
 	assert(!vec_phen.empty());
 	
 	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double> > ans;
+	vector<vector<double>> ans;
 	
 	for (unsigned int k = 0; k < dim; k++) {
 		vector<double> tmp;
 		for (unsigned int i = 0; i < vec_phen.size(); i++) {
 			tmp.push_back(vec_phen[i][k]);
-		}
-		ans.push_back(tmp);
-	}
-	return(ans);
-}
-
-// Inverted multivariate stats (to be copied in multivariateStats?)
-
-InvertedMStat::InvertedMStat(const vector<vector<double> > & vec_vec_d)
-	: MultivariateStat(transpose_double_matrix(vec_vec_d))
-{
-}
-
-
-// Exactly the same code as above (:-@!!! )
-vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vector<double> > & vec_vec_d) 
-{
-	assert(!vec_vec_d.empty());
-	
-	unsigned int dim = vec_vec_d[0].size();
-	vector<vector<double> > ans;
-	for (unsigned int k = 0; k < dim; k++) {
-		vector<double> tmp;
-		for (unsigned int i = 0; i < vec_vec_d.size(); i++) {
-			if (k==0) assert(vec_vec_d[i].size() == dim);
-			tmp.push_back(vec_vec_d[i][k]);
 		}
 		ans.push_back(tmp);
 	}

@@ -237,3 +237,31 @@ ostream & operator << (ostream & os, const MultivariateStat & obj) {
 	os << "\n";
 	return(os);
 }
+
+
+////////////////////////// InvertedMStat ///////////////////////////////
+
+// Inverted multivariate stats
+InvertedMStat::InvertedMStat(const vector<vector<double> > & vec_vec_d)
+	: MultivariateStat(transpose_double_matrix(vec_vec_d))
+{
+}
+
+// Exactly the same code as in Phenotype (:-@!!! )
+vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vector<double> > & vec_vec_d) 
+{
+	assert(!vec_vec_d.empty());
+	
+	unsigned int dim = vec_vec_d[0].size();
+	vector<vector<double> > ans;
+	for (unsigned int k = 0; k < dim; k++) {
+		vector<double> tmp;
+		for (unsigned int i = 0; i < vec_vec_d.size(); i++) {
+			if (k==0) assert(vec_vec_d[i].size() == dim);
+			tmp.push_back(vec_vec_d[i][k]);
+		}
+		ans.push_back(tmp);
+	}
+	return(ans);
+}
+

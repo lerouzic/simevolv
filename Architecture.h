@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -18,7 +17,7 @@
 
 #include "Parameters.h"
 #include "GeneticMap.h"
-#include "Haplotype.h"
+#include "Allele.h"
 #include "Genotype.h"
 #include "Phenotype.h"
 
@@ -32,41 +31,38 @@ class Architecture  	/* Pure virtual class */
 {
 	public :
 	    //constructors/destructor
-	    Architecture();
-	    Architecture(const Architecture&);
+	    Architecture() = delete;
+	    Architecture(const Architecture&) = delete;
 	    Architecture (const ParameterSet&);
-	    virtual ~Architecture(){};
+	    virtual ~Architecture() {}
 	
 	    // operator overload
 	    friend std::ostream& operator << (std::ostream&, const Architecture&);
 	
 	    // instance / initialization
-	    static Architecture* instance;
 	    static void initialize(const ParameterSet&);
-	    static Architecture* Get();
+	    static /* const */ Architecture* Get();
 	
-	    //functions
+	    // "getters"
 	    unsigned int nb_loc() const;
 	    unsigned int all_size() const;
 	    double mutation_rate(unsigned int) const;
 	    double mutation_sd(unsigned int) const;
 	    double recombination_rate(unsigned int) const;
 	    		
-		//inheritance
-	    virtual Phenotype phenotypic_value(const Genotype&) const = 0;
+		// to be defined by inherited classes 
+	    virtual Phenotype phenotypic_value(const Genotype&) const = 0; // no default
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
 	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
-
 	
 	protected :
+	    static Architecture* instance;
+
 	    GeneticMap gmap;
-	    unsigned int nloc;
-	    unsigned int sall;
+	    unsigned int nloc; // number of loci
+	    unsigned int sall; // size of alleles
 	    std::vector<double> mutrate;
 	    std::vector<double> mutsd;
-
 };
 
-
 #endif // ARCHITECTURE_H_INCLUDED
-

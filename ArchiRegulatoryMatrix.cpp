@@ -1,5 +1,3 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -17,7 +15,6 @@
 #include "Parconst.h"
 #include "Random.h"
 #include "Statistics.h"
-#include "main.h"
 
 #include <vector>
 #include <iomanip>
@@ -35,7 +32,6 @@ using namespace std;
 
 
 // convert a boost vector into a regulat std::vector and vice-versa
-
 template<class T>
 std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x) 
 {
@@ -49,14 +45,10 @@ std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x)
 }
 
 
+
+///////////////////// Class ArchiRegulatoryMatrix //////////////////////////////////
+
 // constructors and destuctor
-
-/* default constructor  -  should never be used */
-ArchiRegulatoryMatrix::ArchiRegulatoryMatrix()
-{
-    assert(false); // The default constructor should never be used.
-}
-
 
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param) 
@@ -68,11 +60,8 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
 
-
-// functions
-
-/* initialization of the alleles (1 allele = 1 vector of value) 
- * depend on the connectivity matrix */
+/* initialization of the alleles (1 allele = 1 vector of values) 
+ * depends on the connectivity matrix */
 shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param, unsigned int loc) const
 {
 	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
@@ -117,6 +106,67 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
     return(a);
 }
 
+Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) const
+{
+	// creation of the W matrix;
+	std::vector<std::vector<double>> matrix;
+	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
+	{
+		matrix.push_back(Allele::combine_mean(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
+	}
+	
+	// creation of the w_matrix and st_vector (from std to ublas)
+	unsigned int nloc = nb_loc();
+	boost::numeric::ublas::vector<double> St(nloc);
+	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
+	
+	for (unsigned int i = 0 ; i<nloc ; i++)
+	{
+		St(i) = So[i];
+	}
+	
+	for (unsigned int i=0; i<nloc; i++) 
+	{
+        for (unsigned int j=0; j<nloc; j++) 
+        {
+            W(i,j) = matrix[i][j];
+        }
+	}
+	
+	// dynamic simulation
+	boost::numeric::ublas::vector<double> h(nloc);
+	std::vector<std::vector<double>> unstability;
+	
+	for (unsigned int t=0 ; t<timesteps ;t++)
+	{
+		h = prod(St,W);
+		for (unsigned int i=0 ; i<h.size() ; i++)
+		{
+			St(i) = this->sigma(h(i));
+			//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
+		}
+		if (t > (timesteps-calcsteps)) 
+		{
+			unstability.push_back(boost_to_std(St));
+		}
+	}
+
+	// output (from ublas to std)
+	InvertedMStat stat_steps(unstability);
+	vector<double> Sf_mean = stat_steps.means();
+	vector<double> Sf_var = stat_steps.vars();
+	
+	return Phenotype(Sf_mean, Sf_var);
+}
+
+//********** Protected functions
+
+// Theoretically useless. Just in case, running the model on the base class
+// just calls the identity function (no sigmoid)
+double ArchiRegulatoryMatrix::sigma(double h) const 
+{
+	return(h);
+}
 
 //static unsigned int count_init = 0; // debug instruction
 
@@ -149,62 +199,6 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 	}
 	//std::cout << count_init << "\n";  // debug instruction
 }
-
-
-Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) const
-{
-	// creation of the W matrix;
-	std::vector<std::vector<double> > matrix;
-	for (unsigned int loc=0; loc < nb_loc(); loc++) 
-	{
-		matrix.push_back(Allele::combine_add(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
-	}
-	
-	// creation of the w_matrix and st_vector (from std to ublas)
-	unsigned int nloc = nb_loc();
-	boost::numeric::ublas::vector<double> St(nloc);
-	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
-	
-	for (unsigned int i=0 ; i<nloc ; i++)
-	{
-		St(i) = So[i];
-	}
-	
-	for (unsigned int i=0; i<nloc; i++) 
-	{
-        for (unsigned int j=0; j<nloc; j++) 
-        {
-            W(i,j) = matrix[i][j];
-        }
-	}
-	
-	// simulation
-	boost::numeric::ublas::vector<double> h(nloc);
-	std::vector<std::vector<double> > unstability;
-	
-	for (unsigned int t=0 ; t<timesteps ;t++)
-	{
-		h = prod(St,W);
-		for (unsigned int i=0 ; i<h.size() ; i++)
-		{
-			St(i) = this->sigma(h(i));
-			//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
-		}
-		if (t > (timesteps-calcsteps)) 
-		{
-			unstability.push_back(boost_to_std(St));
-		}
-	}
-
-	// output (from ublas to std)
-	InvertedMStat stat_steps(unstability);
-	vector<double> Sf_mean = stat_steps.means();
-	vector<double> Sf_var = stat_steps.vars();
-	
-	return Phenotype(Sf_mean, Sf_var);
-}
-
-
 
 
 //////////////////////////// INHERITED CLASSES //////////////////////////////////
@@ -268,64 +262,22 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 	}
 }
 
-
-ArchiMasel::ArchiMasel(const ParameterSet& param) 
-	: ArchiRegulatoryMatrix(param)
-{ 
-	int min = 0;
-	int max = 1;
-	
-	string type_so = param.getpar(TYPE_SO)->GetString();
-    if (type_so==SO_min)
-    {
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			So.push_back(min);
-		}	
-    }
-    else if (type_so==SO_max)
-    {
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			So.push_back(max);
-		}	
-	}
-	else if (type_so==SO_med)
+double ArchiWagner::sigma(double h) const 
+{
+	if (h<0)
 	{
-		cerr << "Median So has no real significance in Masel model." << endl << endl;
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			So.push_back((min+max)/2);	
-		}	
-	}
-	else if (type_so==SO_randbin)
+		return (-1.);
+	} 
+	else if (h>0) 
 	{
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			double s = Random::randnum();
-			if (s < 0.5) { So.push_back(min); }
-			else { So.push_back(max); }
-		}	
-	}
-	else if (type_so==SO_rand)
-	{
-		cerr << "Random So has no real significance in Masel model." << endl << endl;
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			double s = (max-min)*Random::randnum()+min;
-			So.push_back(s);
-		}
-	}
+		return (1.);
+	} 
 	else 
 	{
-		cerr <<	"Basal So cannot be used in Masel model : switch to Median So." << endl;
-		cerr << "Median So has no real significance in Masel model." << endl << endl;
-		for (unsigned int n=0; n<nb_loc(); n++)
-		{
-			So.push_back((min+max)/2);
-		}	
-	}	
-}
+		return (0.);
+	}
+}	
+
 
 
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
@@ -383,6 +335,12 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 	}
 }
 
+double ArchiSiegal::sigma(double h) const 
+{
+	return ((2. / (1. + exp(-basal*h)) ) -1.);
+}
+
+
 
 ArchiM2::ArchiM2(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
@@ -437,4 +395,9 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 			So.push_back(basal);
 		}
 	}
+}
+
+double ArchiM2::sigma(double h) const 
+{
+	return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
 }

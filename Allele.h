@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -16,12 +15,10 @@
 #ifndef ALLELE_H_INCLUDED
 #define ALLELE_H_INCLUDED
 
-#include <vector>
-#include <memory>
-
 #include "Parameters.h"
 
-
+#include <vector>
+#include <memory>
 
 class Allele
 {
@@ -31,7 +28,6 @@ class Allele
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
-    friend class ArchiMasel;
     friend class ArchiSiegal; 
     friend class ArchiM2;
 	
@@ -48,11 +44,15 @@ class Allele
 	    //functions
 	    unsigned int all_size() const;
 		static std::vector<double> combine_add(const Allele &, const Allele &);
+		static std::vector<double> combine_mean(const Allele &, const Allele &);
+		
 		virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
 	
 	protected :
 	    std::vector<double> allele;
 };
+
+
 
 class Allele_zero: public Allele
 {
@@ -62,7 +62,6 @@ class Allele_zero: public Allele
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
-    friend class ArchiMasel;
     friend class ArchiSiegal; 
     friend class ArchiM2;
     

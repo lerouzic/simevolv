@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -15,8 +15,8 @@
 
 #include "ArchiMultilinear.h"
 #include "Parconst.h"
-#include "main.h"
 
+#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -30,27 +30,15 @@ using namespace std;
 
 // constructors and destuctor
 
-/* default constructor  -  should never be used */
-ArchiMultilinear::ArchiMultilinear()
-{
-    assert(false); 
-}
-
-
-/* copy constructor  -  should never be used */
-ArchiMultilinear::ArchiMultilinear(const Architecture& archi)
-{
-    assert(false);
-}
-
-
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     : Architecture(param)
-    , epsilon2(vector<vector<double> >(0))
-    , epsilon3(vector<vector<vector<double> > >(0))
+    , epsilon2(vector<vector<double>>(0))
+    , epsilon3(vector<vector<vector<double>>>(0))
 {
 	// mutrate and mutsd are already initialized in the constructor of the parent class
+    
+    // building epsilon matrices
     for (unsigned int loc1 = 0; loc1 < nloc; loc1++)
     {
         if (nloc > 1)
@@ -82,14 +70,13 @@ double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) cons
     {
         swap(loc1, loc2);
     }
-    //assert (loc1 != loc2);
-    //assert (loc1 >= 0);
-    //assert (loc2 < nloc());
-    //assert(int(epsilon2.size()) >= loc1+1);
-    //assert(int(epsilon2[loc1].size()) >= loc2-loc1);
+    assert (loc1 != loc2);
+    assert (loc1 >= 0);
+    assert (loc2 < nloc);
+    // assert(int(epsilon2.size()) >= loc1+1);
+    // assert(int(epsilon2[loc1].size()) >= loc2-loc1);
     return(epsilon2[loc1][loc2-loc1-1]);
 }
-
 
 /* return the value for 3rd-order epistasis */
 double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3) const
@@ -106,18 +93,17 @@ double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsi
     {
         swap(loc1, loc2);
     }
-    //assert(loc1 != loc2);
-    //assert(loc2 != loc3);
-    //assert(loc1 >= 0);
-    //assert(loc3 < nloc());
+    assert(loc1 != loc2);
+    assert(loc2 != loc3);
+    assert(loc1 >= 0);
+    assert(loc3 < nloc);
     //assert(int(epsilon3.size()) >= loc1+1);
     //assert(int(epsilon3[loc1].size()) >= loc2-loc1);
     //assert(int(epsilon3[loc1][loc2-loc1-1].size()) >= loc3-loc2);
     return(epsilon3[loc1][loc2-loc1-1][loc3-loc2-1]);
 }
 
-
-/* calculate the value of 2nd-order epistasis */
+/* sets the value of 2nd-order epistasis */
 void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double value)
 {
     if (loc1 > loc2)
@@ -143,7 +129,7 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
 }
 
 
-/* calculate the value of 3rd-order epistasis */
+/* sets the value of 3rd-order epistasis */
 void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, double value)
 {
     if (loc1 > loc2)
@@ -239,22 +225,17 @@ string ArchiMultilinear::print_epsilon3() const
  * here : sum of the genotypic values, correlation with epistasis values */
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
 {
-    unsigned int nloc = nb_loc();
-    unsigned int sall = all_size();
-    vector<double> sumall_father(nloc);
-    vector<double> sumall_mother(nloc);
     vector<double> sumloc(nloc);
-    double phenotype=0.0;
+    double phenotype = 0.0;
 
-    for (unsigned int loc1 = 0 ; loc1 < nloc ; loc1++)
-    {
-        for (unsigned int all = 0 ; all < sall ; all++)
-        {
-            sumall_father[loc1] += genotype.gam_father.haplotype[loc1]->allele[all];
-            sumall_mother[loc1] += genotype.gam_mother.haplotype[loc1]->allele[all];
+    for (unsigned int loc = 0 ; loc < nloc ; loc++)
+    {	
+		vector<double> tmp_sum = Allele::combine_add(
+			*genotype.gam_father.haplotype[loc],*genotype.gam_mother.haplotype[loc]);
 
-            sumloc[loc1] = sumall_father[loc1] + sumall_mother[loc1];
-        }
+        sumloc[loc] = 0.0;
+        for (unsigned int all = 0; all < sall; all++)
+			sumloc[loc] += tmp_sum[all];
     }
 
     for (unsigned int loc1 = 0; loc1 < nloc; loc1++)
@@ -278,4 +259,3 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
     }
     return(Phenotype(phenotype));
 }
-

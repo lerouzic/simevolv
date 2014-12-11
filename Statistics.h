@@ -77,4 +77,14 @@ class MultivariateStat
 		std::vector<double> sum_i;
 };
 
+class InvertedMStat: public MultivariateStat
+{
+	public:
+		InvertedMStat(const std::vector<std::vector<double> > &);
+	
+	protected:
+	// functions
+	static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
+};
+
 #endif // STATISTICS_H_INCLUDED

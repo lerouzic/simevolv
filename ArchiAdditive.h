@@ -1,5 +1,4 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -18,22 +17,22 @@
 
 #include "Architecture.h"
 
-
+#include <iostream>
 
 class ArchiAdditive : public Architecture
 {
 	public :
 	    //constructors/destructor
-	    ArchiAdditive();
-	    ArchiAdditive(const Architecture&);
+	    ArchiAdditive() = delete;
+	    ArchiAdditive(const Architecture&) = delete;
 	    ArchiAdditive(const ParameterSet&);
-	    ~ArchiAdditive() {}
+	    virtual ~ArchiAdditive() {}
 	
 	    // operator overload
 	    friend std::ostream& operator << (std::ostream&, const Architecture&);
 	
 	    //functions
-	    Phenotype phenotypic_value(const Genotype&) const;
+	    virtual Phenotype phenotypic_value(const Genotype&) const;
 };
 
 #endif // ARCHIADDITIVE_H_INCLUDED
