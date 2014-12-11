@@ -29,6 +29,7 @@ class ArchiRegulatoryMatrix : public Architecture
 	    ArchiRegulatoryMatrix(const ParameterSet&);
 	    virtual ~ArchiRegulatoryMatrix() {}
 		
+		// functions 
 		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
 		virtual Phenotype phenotypic_value(const Genotype&) const;
 	
