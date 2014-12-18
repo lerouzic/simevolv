@@ -12,6 +12,7 @@
 
 
 #include "Canalization.h"
+
 #include "Statistics.h"
 #include "Parconst.h"
 #include "Individual.h"
@@ -39,32 +40,39 @@ Canalization::Canalization(unsigned int can_tests, const Population & pop)
 	
 	// Fills the database of the object: a collection of reference ("wild") individuals
 	// (the individuals of the population), and for each wild individual, nb_tests mutants. 
-	if (can_tests > 0) {
-		for (unsigned int i = 0; i < pop.size(); i++) {
+	if (can_tests > 0) 
+	{
+		for (unsigned int i = 0; i < pop.size(); i++) 
+		{
 			const Individual & ref = pop.pop[i];
 			reference_indiv(ref);
-			for (unsigned int test = 0; test < can_tests; test++) {
+			for (unsigned int test = 0; test < can_tests; test++) 
+			{
 				mutant_indiv(ref.test_canalization(1, pop)); // So far: only one mutation per mutant
 			}
 		} 
 	}
 }
 
+
 // User interface.
-// Get the phenotypic canalization scores (i.e. the average across individuals of mutant variances) 
+
+/* Get the phenotypic canalization scores (i.e. the average across individuals of mutant variances) */
 Phenotype Canalization::phen_canalization()
 {
-	if (!phen_ready) {
+	if (!phen_ready) 
+	{
 		process_phen();
 	}
 	
 	return(mean_of_var);
 }
 
-// Get the canalization scores for fitness (the average of mutant variances)
+/*	Get the canalization scores for fitness (the average of mutant variances) */
 double Canalization::fitness_canalization()
 {
-	if (!fit_ready) {
+	if (!fit_ready) 
+	{
 		process_fit();
 	}
 	
@@ -72,14 +80,12 @@ double Canalization::fitness_canalization()
 	return(st.mean());
 }
 
-
-
 // Internal functions
 
-// Sets a new reference individual
-// Note that, in practice, reference individuals are never used in
-// the calculation. Yet, it is mandatory to provide them, as they indicate
-// that the next mutants will concern another individual. 
+/* Sets a new reference individual
+Note that, in practice, reference individuals are never used in
+the calculation. Yet, it is mandatory to provide them, as they indicate
+that the next mutants will concern another individual.*/ 
 void Canalization::reference_indiv(Individual ind)
 {
 	reference.push_back(ind);
@@ -87,10 +93,10 @@ void Canalization::reference_indiv(Individual ind)
 	mutants.push_back(tmp);
 }
 
-// Adds a new mutant in the database. Note that reference individuals and
-// corresponding mutants have to be entered sequencially, which is not
-// very conveninent (no way to enter first all reference individuals, and 
-// then all mutants. Nevermind, this is internal code. 
+/* Adds a new mutant in the database. Note that reference individuals and
+corresponding mutants have to be entered sequencially, which is not
+very conveninent (no way to enter first all reference individuals, and 
+then all mutants. Nevermind, this is internal code. */
 void Canalization::mutant_indiv(Individual ind) 
 {
 	assert(!(phen_ready || fit_ready));
@@ -103,10 +109,13 @@ void Canalization::process()
 	assert(!mutants.empty());
 	assert(!reference.empty());
 	
-	if (!phen_ready) {
+	if (!phen_ready) 
+	{
 		process_phen();
 	}	
-	if (!fit_ready) {
+	
+	if (!fit_ready) 
+	{
 		process_fit();
 	}	
 }
@@ -121,9 +130,11 @@ void Canalization::process_phen()
 	// It then computes both the mean and the variance of these means and variances.
 	// Everything is stored, and the chosen index is returns by other "getter" functions.
 	
-	for (unsigned int i = 0; i < mutants.size(); i++) { // individual # i
+	for (unsigned int i = 0; i < mutants.size(); i++) 
+	{ // individual # i
 		vector<Phenotype> data_i;
-		for (unsigned int j = 0; j < mutants[i].size(); j++) { // mutant # j
+		for (unsigned int j = 0; j < mutants[i].size(); j++) 
+		{ // mutant # j
 			data_i.push_back(mutants[i][j].get_genot_value());
 		}
 		PhenotypeStat stat_i(data_i);
@@ -152,13 +163,16 @@ void Canalization::process_fit()
 	
 	vector<vector<double> > dat;
 	
-	for (unsigned int i = 0; i < mutants.size(); i++) {
+	for (unsigned int i = 0; i < mutants.size(); i++) 
+	{
 		vector<double> tmp;
-		for (unsigned int j = 0; j < mutants[i].size(); j++) {
+		for (unsigned int j = 0; j < mutants[i].size(); j++) 
+		{
 			tmp.push_back(mutants[i][j].get_fitness());
 		}
 		dat.push_back(tmp);
 	}
+	
 	MultivariateStat stat_fit(dat);
 	
 	indiv_fitness_mean = stat_fit.means();

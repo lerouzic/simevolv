@@ -26,7 +26,6 @@
 #include <memory>
 
 
-
 class Architecture  	/* Pure virtual class */
 {
 	public :
@@ -43,7 +42,7 @@ class Architecture  	/* Pure virtual class */
 	    static void initialize(const ParameterSet&);
 	    static /* const */ Architecture* Get();
 	
-	    // "getters"
+	    // getters
 	    unsigned int nb_loc() const;
 	    unsigned int all_size() const;
 	    double mutation_rate(unsigned int) const;

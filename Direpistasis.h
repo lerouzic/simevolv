@@ -20,15 +20,16 @@
 
 #include <vector>
 
-/** Directional epistasis
- * 
- * Directional epistasis is estimated by performing two rounds of mutations. 
- * 1) mutants are generated (the effect of mutation on the phenotype is m1)
- * 2) previous mutants are mutated again, the variance of the effect of the second mutation is 
- * 	  Var(m2|m1) = Var(m1)(1+e m1)^2, where e is the directionality of epistasis. 
- * The algorithm performs a linear regression (on the square root of Var(m2|m1) depending on m1), the slope being
- * sqrt(Var(m1)) e m1
- * **/
+
+/* Directional epistasis
+	Directional epistasis is estimated by performing two rounds of mutations. 
+	1) mutants are generated (the effect of mutation on the phenotype is m1)
+	2) previous mutants are mutated again, the variance of the effect of the second mutation is 
+ 	  Var(m2|m1) = Var(m1)(1+e m1)^2, where e is the directionality of epistasis. 
+	The algorithm performs a linear regression (on the square root of Var(m2|m1) depending on m1), the slope being
+	sqrt(Var(m1)) e m1
+*/
+
 
 class Direpistasis 
 {	
@@ -36,13 +37,13 @@ class Direpistasis
 		// The parameters are the total number of mutants, and the population to test
 		// Most of the calculation is done in the constructor
 		Direpistasis(unsigned int, const Population&);
-	
+		~Direpistasis() { }
+		
 		Phenovec phen_direpistasis() const;
 		Phenovec var_phen_direpistasis() const;
 		double fitness_direpistasis() const;
 		double var_fitness_direpistasis() const;
-		
-		
+				
 	protected:		
 		Phenovec individual_direpi(const DoubleMutantcollection &) const;
 		double individual_fitdir(const DoubleMutantcollection &) const;  
@@ -50,10 +51,7 @@ class Direpistasis
 		Phenovec dir_epi_mean;
 		Phenovec dir_epi_var;
 		double fit_epi_mean;
-		double fit_epi_var;
-
-		
-			
+		double fit_epi_var;			
 };
 
 #endif // DIREPISTASIS_H_INCLUDED

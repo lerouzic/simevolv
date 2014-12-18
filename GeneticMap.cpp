@@ -14,6 +14,7 @@
 
 
 #include "GeneticMap.h"
+
 #include "Parconst.h"
 
 #include <cassert>
@@ -21,15 +22,14 @@
 using namespace std;
 
 
+
 // constructors and destructor
 
-/* default constructor */
 GeneticMap::GeneticMap()
     : recrate(vector<double> (0))
 {
 }
 
-/* constructor using the parameters from the Parameters files */
 GeneticMap::GeneticMap(const ParameterSet& param)
     : recrate(vector<double> (0))
 {
@@ -47,7 +47,6 @@ GeneticMap::~GeneticMap()
 
 // functions
 
-/* return the number of loci in the system */
 int GeneticMap::nb_loc() const
 {
     return(recrate.size()+1);
@@ -57,7 +56,6 @@ int GeneticMap::nb_loc() const
 double GeneticMap::recombination_rate(unsigned int loc) const
 {
     unsigned int nloc = GeneticMap::nb_loc();
-    assert(loc >= 0);
 	assert(loc < nloc - 1);
 
 	return(recrate[loc]);

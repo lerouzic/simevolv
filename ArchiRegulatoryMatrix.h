@@ -1,3 +1,4 @@
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -24,8 +25,8 @@ class ArchiRegulatoryMatrix : public Architecture
 {
 	public :
 	    //constructors/destructor
-	    ArchiRegulatoryMatrix() = delete;
-	    ArchiRegulatoryMatrix(const ArchiRegulatoryMatrix&) = delete;
+	    ArchiRegulatoryMatrix() = delete; 	// should not be used (C++11)
+	    ArchiRegulatoryMatrix(const ArchiRegulatoryMatrix&) = delete;  
 	    ArchiRegulatoryMatrix(const ParameterSet&);
 	    virtual ~ArchiRegulatoryMatrix() {}
 		
@@ -45,7 +46,6 @@ class ArchiRegulatoryMatrix : public Architecture
 		void init_connectivity_matrix(const ParameterSet &);		
 };
 
-
 class ArchiWagner : public ArchiRegulatoryMatrix
 {
 	public :
@@ -59,8 +59,6 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 		// Inherited functions
 		virtual double sigma(double h) const;
 };	
-
-
 
 class ArchiSiegal : public ArchiRegulatoryMatrix
 {
@@ -78,8 +76,6 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		virtual double sigma(double h) const; 
 };
 
-
-
 class ArchiM2 : public ArchiRegulatoryMatrix
 {
 	public : 
@@ -95,6 +91,5 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		// Inherited functions
 		virtual double sigma(double h) const; 
 };
-
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

@@ -23,7 +23,6 @@
 #include <iostream>
 
 
-
 class Genotype
 {
     friend class Architecture;
@@ -57,6 +56,5 @@ class Genotype
 	    Haplotype gam_father;
 	    Haplotype gam_mother;
 };
-
 
 #endif // GENOTYPE_H_INCLUDED

@@ -12,6 +12,7 @@
 
 
 #include "Heritability.h"
+
 #include "Phenotype.h"
 #include "Population.h"
 #include "Individual.h"
@@ -21,11 +22,13 @@
 using namespace std;
 
 
+
 // constructor
 
 /* Most of the computationally-demanding operations are run in the constructor 
   (simulation of parent-offspring pairs) */
-Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
+Heritability::Heritability(unsigned int nb_pairs, const Population & pop) 
+{
 	// nb_pairs is the number of pairs per individual
 	
 	vector<double> cumul_equal_fit; 
@@ -33,12 +36,14 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
 	// This is a trick to reuse the existing algorithm for sampling individuals uniformly: just assume 
 	// a constant fitness function, and generate the corresponding cumulative fitness vector. 
 	double equal_fit = 1.0/pop.size();
-	for (unsigned int i = 0; i < pop.size(); i++) {
+	for (unsigned int i = 0; i < pop.size(); i++) 
+	{
 		cumul_equal_fit.push_back(equal_fit);
 		equal_fit = equal_fit + 1.0/pop.size();
 	}
 	
-	for (unsigned int pp = 0; pp < nb_pairs*pop.size(); pp++) {
+	for (unsigned int pp = 0; pp < nb_pairs*pop.size(); pp++) 
+	{
 		/* The algorithm to compute heritability is not very complex. It basically 
 		   follows the pattern of a parent - offspring study. 
 		   * Step 1: sample two parents randomly in the population
@@ -70,17 +75,20 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop) {
 
 // functions
 
-Phenotype Heritability::h2() const {
+Phenotype Heritability::h2() const 
+{
 	// This function calculates the narrow-sense heritability based on the
 	// mid-parent - offspring covariance. 
 	// In practice, for each phenotypic dimension, a MultivariateStat object is filled with 
 	// mid-parent phenotypic value and offspring phenotype. The slope of the regression between
 	// them provides a good estimate of heritability. 
 	vector<double> result;
-	for(unsigned int trait = 0; trait < parentoffspring[0].father_phen.dimensionality(); trait++) {
+	for(unsigned int trait = 0; trait < parentoffspring[0].father_phen.dimensionality(); trait++) 
+	{
 		vector<double> midpar;
 		vector<double> offspring;
-		for (unsigned int i = 0; i < parentoffspring.size(); i++) {
+		for (unsigned int i = 0; i < parentoffspring.size(); i++) 
+		{
 			midpar.push_back(0.5*parentoffspring[i].father_phen[trait] + 0.5*parentoffspring[i].mother_phen[trait]);
 			offspring.push_back(parentoffspring[i].offspring_phen[trait]);
 		}
@@ -93,13 +101,15 @@ Phenotype Heritability::h2() const {
 	return(Phenotype(result));
 }
 
-double Heritability::fit_h2() const {
+double Heritability::fit_h2() const 
+{
 	// Heritability for fitness. Basically the same algorithm than for phenotypes. 
 	// Is it necessary to factorize the code? This could generate more problems than 
 	// what it solves. 
 	vector<double> midpar;
 	vector<double> offspring;
-	for (unsigned int i = 0; i < parentoffspring.size(); i++) {
+	for (unsigned int i = 0; i < parentoffspring.size(); i++) 
+	{
 		midpar.push_back(0.5*parentoffspring[i].father_fit + 0.5*parentoffspring[i].mother_fit);
 			offspring.push_back(parentoffspring[i].offspring_fit);
 	}

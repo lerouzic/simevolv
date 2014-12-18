@@ -56,5 +56,4 @@ class Haplotype
 	    std::vector<std::shared_ptr<Allele>> haplotype;
 };
 
-
 #endif // HAPLOTYPE_H_INCLUDED

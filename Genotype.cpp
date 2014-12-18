@@ -14,6 +14,7 @@
 
 
 #include "Genotype.h"
+
 #include "Random.h"
 #include "Architecture.h"
 #include "Parameters.h"
@@ -22,8 +23,8 @@
 #include <cassert>
 #include <cmath>
 
-
 using namespace std;
+
 
 
 // constructors and destuctor
@@ -49,20 +50,18 @@ Genotype::Genotype(const ParameterSet & param)
 {
 }
 
+
 // operator overload
 
 int Genotype::operator== (const Genotype& other) const
 { // some kind of hypothesis here: no maternal or epigenetic effects
     return
     (
-        ((this->gam_father == other.gam_father) &&
-        (this->gam_mother == other.gam_mother))
+        ((this->gam_father == other.gam_father) && (this->gam_mother == other.gam_mother))
         ||
-        ((this->gam_father == other.gam_mother) &&
-        (this->gam_mother == other.gam_father))
+        ((this->gam_father == other.gam_mother) && (this->gam_mother == other.gam_father))
     );
 }
-
 
 int Genotype::operator!= (const Genotype& other) const
 {
@@ -95,7 +94,8 @@ Haplotype Genotype::recombine() const
 
     for (unsigned int locus = 0; locus < nloc; locus++)
     {
-		if (!copy_father) {
+		if (!copy_father) 
+		{
 			result.haplotype[locus] = gam_mother.haplotype[locus];
 		}
 		if ((locus < nloc - 1) && (Random::randnum() < archi -> recombination_rate(locus)))

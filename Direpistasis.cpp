@@ -9,7 +9,10 @@
  *                                                                         *
  ***************************************************************************/
 
+
+
 #include "Direpistasis.h"
+
 #include "Population.h"
 #include "Phenotype.h"
 
@@ -17,6 +20,8 @@
 #include <cmath>
 
 using namespace std;
+
+
 
 Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 {	
@@ -30,7 +35,8 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 		
 	vector<Phenovec> dir_ind;
 	vector<double> fit_dir;
-	for (unsigned int i = 0; i < pop.size(); i++) {
+	for (unsigned int i = 0; i < pop.size(); i++) 
+	{
 		DoubleMutantcollection dmutcol(mutants1, mutants2, pop.pop[i], pop);
 					// We can do this because Direpistasis is a friend of Population
 
@@ -76,12 +82,14 @@ Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol)
 	
 	vector<double> dir; // directional epistasis
 	// loop over characters
-	for (unsigned int t = 0; t < mut1_var.dimensionality(); t++) { 
+	for (unsigned int t = 0; t < mut1_var.dimensionality(); t++) 
+	{ 
 		
 		// Step 1: transpose the results to get means and variances per character
 		vector<double> y1_t;
 		vector<double> sd_m;
-		for (unsigned int i = 0; i < mut1_phen.size(); i++) {
+		for (unsigned int i = 0; i < mut1_phen.size(); i++) 
+		{
 			y1_t.push_back(mut1_phen[i][t]);
 			sd_m.push_back(sqrt(mut2_var_phen[i][t]));
 		}
@@ -95,6 +103,7 @@ Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol)
 		MultivariateStat ms(temp_stat);
 		dir.push_back(ms.regression_slope(1, 0)/mut1_var[t]);
 	}
+	
 	return(dir);	
 }
 
@@ -105,7 +114,8 @@ double Direpistasis::individual_fitdir(const DoubleMutantcollection & dmutcol) c
 	// if (mut1_var <= 0.0) cerr << "No variance in fitness among mutants." << endl;
 	vector<double> mut1_fit = dmutcol.ref_fit();
 	vector<double> mut2_sdfit = dmutcol.var_mutant_fit();
-	for (unsigned int i = 0; i < mut2_sdfit.size(); i++) {
+	for (unsigned int i = 0; i < mut2_sdfit.size(); i++) 
+	{
 		mut2_sdfit[i] = sqrt(mut2_sdfit[i]);
 	}
 	

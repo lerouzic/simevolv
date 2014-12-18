@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -13,8 +13,9 @@
 
 
 
-#include "Parconst.h"
 #include "Allele.h"
+
+#include "Parconst.h"
 #include "Architecture.h"
 #include "Random.h"
 
@@ -27,7 +28,6 @@ using namespace std;
 
 
 // constructors and destructor
-
 
 /* constructor called by Haplotype */
 Allele::Allele(const vector<double> content)
@@ -42,12 +42,10 @@ Allele::Allele(const Allele & copy)
 
 
 // operator overload
-
 int Allele::operator==(const Allele& other) const
 {
     return((*this).allele == other.allele);
 }
-
 
 int Allele::operator!=(const Allele& other) const
 {
@@ -64,7 +62,6 @@ unsigned int Allele::all_size() const
     int sall = archi -> all_size();
     return sall;
 }
-
 
 /* adds of the value of the two alleles of a genotype
  * (static function) */
@@ -102,6 +99,7 @@ shared_ptr<Allele> Allele::make_mutant(double mutsd) const
 
 
 /******************** DERIVED CLASSES *********************************/
+
 // Allele_zero
 
 Allele_zero::Allele_zero(const vector<double> content)

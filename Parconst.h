@@ -15,10 +15,8 @@
 #ifndef PARCONST_H_INCLUDED
 #define PARCONST_H_INCLUDED
 
-// Boost : makes vector initialization easier
-#include <boost/assign/list_of.hpp> 
+#include <boost/assign/list_of.hpp> // Boost : makes vector initialization easier
 #include <vector>
-
 
 
 // COMMON PARAMETERS
@@ -112,6 +110,5 @@ const std::vector<std::string> SO_options = boost::assign::list_of (SO_min)(SO_m
 const std::string TA_norm = "normal";
 const std::string TA_zero = "zero";
 const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero);
-
 
 #endif // PARCONST_H_INCLUDED

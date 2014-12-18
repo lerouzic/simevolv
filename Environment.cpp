@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -13,6 +13,7 @@
 
 
 #include "Environment.h"
+
 #include "Parconst.h"
 #include "Random.h"
 
@@ -38,7 +39,6 @@ Environment::Environment(const ParameterSet & param)
 /* put the existence of the environmental values to non-existent */
 Environment * Environment::instance = NULL;
 
-
 /* initialization of the environmental values system */
 void Environment::initialize(const ParameterSet & param)
 {
@@ -49,6 +49,7 @@ void Environment::initialize(const ParameterSet & param)
     }
     Environment::instance = new Environment(param);
 }
+
 
 // functions
 

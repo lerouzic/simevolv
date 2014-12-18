@@ -1,4 +1,4 @@
-TYPE_ARCHI			wagner
+TYPE_ARCHI			multilinear
 SIMUL_GENER     	100
 SIMUL_OUTPUT    	10
 GENET_NBLOC    		6
@@ -7,7 +7,7 @@ GENET_MUTSD     	0.025
 GENET_RECRATES  	0.5
 INIT_PSIZE      	1000
 INIT_ALLELES    	0 	0
-TYPE_ALLELES		zero
+TYPE_ALLELES		normal
 INIT_CLONAL			clonal
 ENVIRO_SD       	0  
 FITNESS_TYPE    	gaussian

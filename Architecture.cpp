@@ -32,6 +32,8 @@
 
 using namespace std;
 
+
+
 // constructors/destructor
 
 /* constructor using the paramater given by ParameterSet */
@@ -85,7 +87,7 @@ void Architecture::initialize(const ParameterSet& param)
     }
     else if (type_archi==AR_m2)
     {
-        Architecture::instance = new ArchiM2(param);
+		Architecture::instance = new ArchiM2(param);
     }
     else
     {
@@ -93,7 +95,6 @@ void Architecture::initialize(const ParameterSet& param)
         exit(EXIT_FAILURE);
     }
 }
-
 
 Architecture* Architecture::Get()
 {
@@ -110,36 +111,29 @@ unsigned int Architecture::nb_loc() const
     return nloc;
 }
 
-
 /* return the size of the allele */
 unsigned int Architecture::all_size() const
 {
     return sall;
 }
 
-
 /* return the mutation rate at a given locus */
 double Architecture::mutation_rate(unsigned int locus) const
 {
-    assert (locus >= 0);
     assert (locus < nloc);
     return(mutrate[locus]);
 }
 
-
 /* return the mutation effect at a given locus */
 double Architecture::mutation_sd(unsigned int locus) const
 {
-    assert(locus >= 0);
     assert(locus < nloc);
     return(mutsd[locus]);
 }
 
-
 /* return the recombination rate at a given locus */
 double Architecture::recombination_rate(unsigned int locus) const
 {
-    assert(locus >=0);
     assert(locus < nloc-1);
     return(gmap.recombination_rate(locus));
 }

@@ -19,6 +19,7 @@
 
 #include <iostream>
 
+
 class ArchiAdditive : public Architecture
 {
 	public :

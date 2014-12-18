@@ -24,14 +24,12 @@ class Heritability
 {
 	public:
 		// constructors
-			// parameters are the number of parent/offspring pairs to be tested, and the population
-		Heritability(unsigned int, const Population &);
+		Heritability(unsigned int, const Population &); // parameters are the number of parent/offspring pairs to be tested, and the population
+		~Heritability() { }
 		
 		// functions
-			// Narrow-sense heritability (VA/VP)
-		Phenotype h2() const;
-			// Narrow-sense heritability in fitness
-		double fit_h2() const;
+		Phenotype h2() const;	// Narrow-sense heritability (VA/VP)
+		double fit_h2() const;	// Narrow-sense heritability in fitness
 		
 	protected:
 		// internal structure for parent - offspring pairs (no need to make this visible from outside)

@@ -27,20 +27,12 @@ using namespace std;
 
 
 // constructors and destructor
+
 /* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
     : genotype(gam_father, gam_mother)
 {
     initialize();
-}
-
-/* copy constructor */
-Individual::Individual(const Individual& copy)
-    : genotype(copy.genotype)
-    , genot_value(copy.genot_value)
-    , phenotype(copy.phenotype)
-    , fitness(copy.fitness)
-{
 }
 
 /* constructor using the parameters from ParameterSet */
@@ -50,12 +42,20 @@ Individual::Individual(const ParameterSet& param)
     initialize();
 }
 
-/* destructor */
+Individual::Individual(const Individual& copy)
+    : genotype(copy.genotype)
+    , genot_value(copy.genot_value)
+    , phenotype(copy.phenotype)
+    , fitness(copy.fitness)
+{
+}
+
 Individual::~Individual()
 {
 }
 
 // operator overload
+
 Individual & Individual::operator= (const Individual& copy)
 {
     if (this == &copy)
@@ -69,7 +69,9 @@ Individual & Individual::operator= (const Individual& copy)
     return(*this);
 }
 
+
 // instance and initialization
+
 /* initialize the individual, with genotypic, phenotypic and environmental values */
 void Individual::initialize()
 {
@@ -79,11 +81,13 @@ void Individual::initialize()
     fitness = 0;
 }
 
+
 // functions
 void Individual::update_fitness(const Population & pop)
 {
     fitness = Fitness::compute(phenotype, pop);
 }
+
 
 // getters
 double Individual::get_fitness() const
@@ -100,7 +104,6 @@ Phenotype Individual::get_phenotype() const
 {
     return(phenotype);
 }
-
 
 /* create a new individual from the paternal and maternal gametes */
 Individual Individual::mate(const Individual& father, const Individual& mother)

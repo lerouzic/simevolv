@@ -1,6 +1,5 @@
 // Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,12 +21,14 @@
 
 #include <vector>
 
-/* This class is devoted to the estimation of the canalization (or genetic robustness) of the 
-   genetic architecture in a population. 
-   This is achieved by computing the variance of the effect of random mutations in the population.
-   The smaller this variance, the more robustness the population displays. 
-*/
 
+/* This class is devoted to the estimation of the canalization (or genetic robustness) of the 
+	genetic architecture in a population. 
+	This is achieved by computing the variance of the effect of random mutations in the population.
+	he smaller this variance, the more robustness the population displays. 
+*/
+	
+	
 class Canalization
 {
 	public:
@@ -35,6 +36,7 @@ class Canalization
 		// The database is filled in the constructor, meaning that most of the computation time will be
 		// spent here. 
 		Canalization(unsigned int, const Population &);
+		~Canalization() { }
 						
 		// get the canalization scores
 		Phenotype phen_canalization();
@@ -68,6 +70,5 @@ class Canalization
 		bool phen_ready;
 		bool fit_ready;
 };
-
 
 #endif // CANALIZATION_H_INCLUDED

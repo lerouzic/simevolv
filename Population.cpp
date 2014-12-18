@@ -38,6 +38,7 @@ using namespace std;
 
 
 // constructors (note: most are useless)
+
 /* default constructor (necessary a build a population individual by individual, but might reflect a design error) */ 
 Population::Population()
 	: nb_canal_test(0)
@@ -80,7 +81,9 @@ Population & Population::operator=(const Population& copy)
     return(*this);
 }
 
+
 // instance and initialization
+
 /* initialization of the population from parameters */
 void Population::initialize(const ParameterSet& param)
 {	
@@ -98,6 +101,7 @@ void Population::initialize(const ParameterSet& param)
 
 
 // functions
+
 /* Sexual reproduction of the population 
      returns the offspring population (of size offspr_number) */
 Population Population::reproduce(long int offspr_number /* = 0 */) const
@@ -125,8 +129,8 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
 		// Each offspring results from a cross between two random parents.
 		// (Hermaphrodite, sexual individuals)
         offspring.pop.push_back(Individual::mate(
-                               this->pick_parent(cumul_fit),
-                               this->pick_parent(cumul_fit)));
+			this->pick_parent(cumul_fit),
+            this->pick_parent(cumul_fit)));
     }
     offspring.update();
     return(offspring);
@@ -141,8 +145,7 @@ void Population::update(void)
 {
     Fitness::update(*this);
 	// Initialization of the fitness function for this generation
-    for (vector<Individual>::iterator indiv = pop.begin();
-            indiv != pop.end(); indiv++)
+    for (vector<Individual>::iterator indiv = pop.begin(); indiv != pop.end(); indiv++)
     {
         indiv->update_fitness(*this);
     }
@@ -186,7 +189,6 @@ vector<double> Population::cumul_fitness() const
 	}
     return(cum_fit);
 }
-
 
 /* Picks a parent randomly, proportionally to individual fitnesses. Requires a vector
    of cumulated fitnesses. This function is just a wrapper for search_fit_table
@@ -244,6 +246,7 @@ void Population::make_mutation()
 
 
 // output
+
 /* Final summary of an analysis */
 /* This is the function that will generate the output file */
 /* Note that it is not only a display function: some potentially heavy calculation is run here */
@@ -335,30 +338,35 @@ void Population::write(ostream & out, int generation) const
 	outformat(out, generation);
 	Phenovec mm = phenstat.means_phen();
 	Phenovec mm2 = phenstat.means_unstab();
-	for (unsigned int i = 0; i < mm.size(); i++){
+	for (unsigned int i = 0; i < mm.size(); i++)
+	{
 		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
 		outformat(out, mm[i]);
 	}
 	Phenovec vv = phenstat.vars_phen();
-	for (unsigned int i = 0; i < vv.size(); i++){
+	for (unsigned int i = 0; i < vv.size(); i++)
+	{
 		outformat(out, vv[i]);
 	}
     outformat(out, fitstat.mean());
     outformat(out, fitstat.var());
     outformat(out, Fitness::current_optimum());
-    if (nb_canal_test > 0) {
+    if (nb_canal_test > 0) 
+    {
 		// Runs the canalization tests
 		Canalization can_test(nb_canal_test, *this);
 		outformat(out, can_test.phen_canalization());
 		outformat(out, can_test.fitness_canalization());
 	}    
-	if (nb_herit_test > 0) {
+	if (nb_herit_test > 0) 
+	{
 		// Runs the heritability tests
 		Heritability herit_test(nb_herit_test, *this);
 		outformat(out, herit_test.h2());
 		outformat(out, herit_test.fit_h2());
 	}
-	if (nb_direpi_test > 0) {
+	if (nb_direpi_test > 0) 
+	{
 		// Runs the directional epistasis tests
 		Direpistasis dir_test(nb_direpi_test, *this);
 		outformat(out, dir_test.phen_direpistasis());

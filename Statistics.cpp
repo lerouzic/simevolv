@@ -23,32 +23,33 @@ using namespace std;
 
 ////////////////////////////////// UNIVARIATE ////////////////////////////////////////
 
-// constructors and destructors
+// Constructors and initialization 
 
-// Initialize from a vector<double>
 UnivariateStat::UnivariateStat(const vector<double> & vv)
 	: data(vv)
 	, sum_i(0.0)
 	, sum_i2(0.0)
 {
-	if (data.size() < 2) {
+	if (data.size() < 2) 
+	{
 		cerr << "A data set of size " << data.size() << " is not eligible for statistics." << endl;
 		assert("Terminate.");
 	}
 	initialize();
 }
 
-
-// initialisation
-
-// computes and stores intermediate results. 
+/* computes and stores intermediate results. */
 void UnivariateStat::initialize()
 {
-	for (unsigned int i = 0; i < data.size(); i++) {
-		if (isfinite(data[i])) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
+		if (isfinite(data[i])) 
+		{
 			sum_i += data[i];
 			sum_i2 += data[i]*data[i];
-		} else {
+		} 
+		else 
+		{
 			// cerr << "Warning: trying to compute statistics with non-finite numbers" << endl;
 			data.erase(data.begin()+i);
 		}
@@ -62,13 +63,10 @@ double UnivariateStat::mean() const {
 	return(sum_i / static_cast<double>(data.size()));
 }
 
-
 double UnivariateStat::var() const {
 	double mm = mean();
 	return(sum_i2/static_cast<double>(data.size()) - mm*mm);
 }
-
-
 
 
 ////////////////////////////////// MULTIVARIATE /////////////////////////////////
@@ -82,7 +80,6 @@ MultivariateStat::MultivariateStat(const vector<vector<double> > & v)
 	initialize();
 }
 
-
 void MultivariateStat::initialize()
 {
 	unsigned int size1;
@@ -91,31 +88,38 @@ void MultivariateStat::initialize()
 	assert(data.size() > 0);
 	size1 = data[0].size();
 	assert(size1 > 0);
-	if (data.size() > 1) {
-		for (unsigned int i = 1; i < data.size(); i++) { // i = 1: desired behaviour
+	if (data.size() > 1) 
+	{
+		for (unsigned int i = 1; i < data.size(); i++) 
+		{ // i = 1: desired behaviour
 			assert(data[i].size() == size1);
 		}
 	}
 	
 	// creates the matrix of sum_ij
-	for (unsigned int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
 		vector<double> tmp_sumij(data.size(), 0.0);
 		sum_ij.push_back(tmp_sumij);
 	}
 	
-	for (unsigned int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
 		
 		// vector of sum_i
 		double tmp_sum = 0.0;
-		for (unsigned int k = 0; k < data[i].size(); k++) {
+		for (unsigned int k = 0; k < data[i].size(); k++) 
+		{
 			tmp_sum += data[i][k];
 		}
 		sum_i.push_back(tmp_sum);
 		
 		// matrix of sum_ij
-		for (unsigned int j = i; j < data.size(); j++) {
+		for (unsigned int j = i; j < data.size(); j++) 
+		{
 			double tmp_sumij = 0.0;
-			for (unsigned int k = 0; k < data[i].size(); k++) {
+			for (unsigned int k = 0; k < data[i].size(); k++)
+			{
 				tmp_sumij += data[i][k] * data[j][k];
 			}
 			sum_ij[i][j] = tmp_sumij;
@@ -129,7 +133,8 @@ void MultivariateStat::initialize()
 vector<double> MultivariateStat::means() const
 {
 	vector<double> ans(data.size());
-	for (unsigned int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
 		ans[i] = sum_i[i]/static_cast<double>(data[i].size());
 	}
 	return(ans);
@@ -138,7 +143,8 @@ vector<double> MultivariateStat::means() const
 vector<double> MultivariateStat::vars() const
 {
 	vector<double> ans(data.size());
-	for (unsigned int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
 		ans[i] = var(i);
 	}
 	return(ans);
@@ -147,9 +153,11 @@ vector<double> MultivariateStat::vars() const
 vector<vector<double> > MultivariateStat::vcov() const
 {
 	vector<vector<double> > ans (data.size());
-	for (unsigned int i = 0; i < data.size(); i++) {
+	for (unsigned int i = 0; i < data.size(); i++) 
+	{
 		vector<double> tmp (data.size());
-		for (unsigned int j = 0; j < data.size(); j++) {
+		for (unsigned int j = 0; j < data.size(); j++) 
+		{
 			tmp[j] = cov(i, j);
 		}
 		ans.push_back(tmp);
@@ -197,41 +205,50 @@ double MultivariateStat::regression_slope(unsigned int i, unsigned int j) const
 	return(cov(i, j)/var(j));
 }
 
-ostream & operator << (ostream & os, const MultivariateStat & obj) {
+ostream & operator << (ostream & os, const MultivariateStat & obj) 
+{
 	os << "\t";
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << "C" << cat+1 << "\t";
 	}
 	os << "\n";
-	for (unsigned int rep = 0; rep < obj.data[0].size(); rep++) {
+	for (unsigned int rep = 0; rep < obj.data[0].size(); rep++) 
+	{
 		os << rep+1 << "\t";
-		for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+		for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+		{
 			os << obj.data[cat][rep] << "\t";
 		}
 		os << "\n";
 	}
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << "-------" << "\t";
 	}	
 	os << "\n";
 	
 	os << "Sum i" << "\t";
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << obj.sum_i[cat] << "\t";
 	}	
 	os << "\n";
 	os << "Sum i2" << "\t";
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << obj.sum_ij[cat][cat] << "\t";
 	}	
 	os << "\n";
 	os << "Mean" << "\t";
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << obj.mean(cat) << "\t";
 	}	
 	os << "\n";
 	os << "Var" << "\t";
-	for (unsigned int cat = 0; cat < obj.data.size(); cat++) {
+	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
+	{
 		os << obj.var(cat) << "\t";
 	}	
 	os << "\n";
@@ -239,24 +256,28 @@ ostream & operator << (ostream & os, const MultivariateStat & obj) {
 }
 
 
+
 ////////////////////////// InvertedMStat ///////////////////////////////
 
 // Inverted multivariate stats
+
 InvertedMStat::InvertedMStat(const vector<vector<double> > & vec_vec_d)
 	: MultivariateStat(transpose_double_matrix(vec_vec_d))
 {
 }
 
-// Exactly the same code as in Phenotype (:-@!!! )
+/* Exactly the same code as in Phenotype (:-@!!! )*/
 vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vector<double> > & vec_vec_d) 
 {
 	assert(!vec_vec_d.empty());
 	
 	unsigned int dim = vec_vec_d[0].size();
 	vector<vector<double> > ans;
-	for (unsigned int k = 0; k < dim; k++) {
+	for (unsigned int k = 0; k < dim; k++) 
+	{
 		vector<double> tmp;
-		for (unsigned int i = 0; i < vec_vec_d.size(); i++) {
+		for (unsigned int i = 0; i < vec_vec_d.size(); i++) 
+		{
 			if (k==0) assert(vec_vec_d[i].size() == dim);
 			tmp.push_back(vec_vec_d[i][k]);
 		}

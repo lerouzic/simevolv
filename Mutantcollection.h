@@ -9,6 +9,8 @@
  *                                                                         *
  ***************************************************************************/
 
+
+
 #ifndef MUTANTCOLLECTION_H_INCLUDED
 #define MUTANTCOLLECTION_H_INCLUDED
 
@@ -19,6 +21,7 @@
 
 #include <vector>
 
+
 struct MiniIndividual
 {
 	public:
@@ -28,6 +31,7 @@ struct MiniIndividual
 		Phenotype phen;
 		double fitness;
 };
+
 
 class Mutantcollection
 {
@@ -54,6 +58,7 @@ class Mutantcollection
 		mutable PhenotypeStat* phenostat;
 		mutable UnivariateStat* fitstat;
 };
+	
 	
 class DoubleMutantcollection
 {
@@ -82,6 +87,5 @@ class DoubleMutantcollection
 		mutable PhenotypeStat* refstat;
 		mutable UnivariateStat* reffitstat;
 };	
-	
 	
 #endif // MUTANTCOLLECTION_H_INCLUDED

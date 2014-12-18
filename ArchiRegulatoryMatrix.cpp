@@ -1,3 +1,4 @@
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -12,6 +13,7 @@
 
 
 #include "ArchiRegulatoryMatrix.h"
+
 #include "Parconst.h"
 #include "Random.h"
 #include "Statistics.h"
@@ -29,6 +31,7 @@
 #include <boost/numeric/ublas/io.hpp>
 
 using namespace std;
+
 
 
 // convert a boost vector into a regulat std::vector and vice-versa
@@ -60,13 +63,16 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
 
+// functions
+
 /* initialization of the alleles (1 allele = 1 vector of values) 
  * depends on the connectivity matrix */
 shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param, unsigned int loc) const
 {
 	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
 	vector<double> temp_allele;
-	for (unsigned int i = 0; i < sall; i++) {
+	for (unsigned int i = 0; i < sall; i++) 
+	{
 		assert(connectivity_matrix.size() > loc);
 		assert(connectivity_matrix[loc].size() > i);
 		if (connectivity_matrix[loc][i] == 0.0) 
@@ -159,10 +165,11 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	return Phenotype(Sf_mean, Sf_var);
 }
 
-//********** Protected functions
 
-// Theoretically useless. Just in case, running the model on the base class
-// just calls the identity function (no sigmoid)
+// Protected functions
+
+/* Theoretically useless. Just in case, running the model on the base class
+ just calls the identity function (no sigmoid)*/
 double ArchiRegulatoryMatrix::sigma(double h) const 
 {
 	return(h);
@@ -279,7 +286,6 @@ double ArchiWagner::sigma(double h) const
 }	
 
 
-
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
@@ -339,7 +345,6 @@ double ArchiSiegal::sigma(double h) const
 {
 	return ((2. / (1. + exp(-basal*h)) ) -1.);
 }
-
 
 
 ArchiM2::ArchiM2(const ParameterSet& param) 

@@ -9,13 +9,18 @@
  *                                                                         *
  ***************************************************************************/
 
+
+
 #include "Mutantcollection.h"
+
 #include "Fitness.h"
 
 #include <iostream>
 #include <vector>
 
 using namespace std;
+
+
 
 Mutantcollection::Mutantcollection(unsigned int tests, const Individual & ref, const Population & pop)
 	: reference(ref)
@@ -24,7 +29,8 @@ Mutantcollection::Mutantcollection(unsigned int tests, const Individual & ref, c
 {
 	Fitness::update(pop); // not sure this is strictly necessary...
 	
-	for (unsigned int i = 0; i < tests; i++) {
+	for (unsigned int i = 0; i < tests; i++) 
+	{
 		MiniIndividual idv = ref.test_canalization(1, pop);
 		collection.push_back(idv);
 	}
@@ -38,7 +44,8 @@ Mutantcollection::~Mutantcollection()
 
 Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl) 
 {
-	if (this != &tmpl) {
+	if (this != &tmpl) 
+	{
 		reference=tmpl.reference;
 		collection = tmpl.collection;
 		phenostat=NULL;
@@ -50,39 +57,49 @@ Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl)
 Phenovec Mutantcollection::mean_phen() const
 {
 	if (phenostat == NULL)
+	{
 		compute_phenostat();
+	}
 	return(phenostat->means_phen());
 }
 
 Phenovec Mutantcollection::var_phen() const
 {
 	if (phenostat == NULL)
+	{
 		compute_phenostat();
+	}
 	return(phenostat->vars_phen());
 }
 
 double Mutantcollection::mean_fit() const
 {
 	if (fitstat == NULL)
+	{
 		compute_fitstat();
+	}
 	return(fitstat->mean());
 }
 
 double Mutantcollection::var_fit() const
 {
 	if (fitstat == NULL)
+	{
 		compute_fitstat();
+	}
 	return(fitstat->var());
 }
 
 void Mutantcollection::compute_phenostat() const
 { // This function can be const because phenostat is mutable
-	if (phenostat != NULL) {
+	if (phenostat != NULL) 
+	{
 		cerr << "Warning: mutantcollection is updated several times." << endl;
 		delete phenostat; // otherwise the memory leaks!
 	}
 	vector<Phenotype> vecp;
-	for (unsigned int i = 0; i < collection.size(); i++) {
+	for (unsigned int i = 0; i < collection.size(); i++) 
+	{
 		vecp.push_back(collection[i].phen);
 	}
 	phenostat = new PhenotypeStat(vecp);
@@ -90,12 +107,14 @@ void Mutantcollection::compute_phenostat() const
 
 void Mutantcollection::compute_fitstat() const
 { // this function can be const because fitstat is mutable
-	if (fitstat != NULL) {
+	if (fitstat != NULL) 
+	{
 		cerr << "Warning: mutantcollection is updated several times." << endl;
 		delete fitstat; // otherwise the memory leaks!
 	}
 	vector<double> vecd;
-	for (unsigned int i = 0; i < collection.size(); i++) {
+	for (unsigned int i = 0; i < collection.size(); i++) 
+	{
 		vecd.push_back(collection[i].fitness);
 	}
 	fitstat = new UnivariateStat(vecd);
@@ -109,7 +128,8 @@ DoubleMutantcollection::DoubleMutantcollection(unsigned int tests1, unsigned int
 {
 	Fitness::update(pop); // not sure this is strictly necessary...
 	
-	for (unsigned int i = 0; i < tests1; i++) {
+	for (unsigned int i = 0; i < tests1; i++) 
+	{
 		const Individual mutant = reference.test_canalization(1, pop);
 		Mutantcollection mc(tests2, mutant, pop);
 		dcollection.push_back(mc);
@@ -124,7 +144,8 @@ DoubleMutantcollection::~DoubleMutantcollection()
 
 DoubleMutantcollection & DoubleMutantcollection::operator=(const DoubleMutantcollection & tmpl)
 {
-	if (this != &tmpl) {
+	if (this != &tmpl) 
+	{
 		dcollection = tmpl.dcollection;
 		// it is probably safer and easier to recompute the statistics stored in cache
 		refstat = NULL;
@@ -136,35 +157,44 @@ DoubleMutantcollection & DoubleMutantcollection::operator=(const DoubleMutantcol
 Phenovec DoubleMutantcollection::ref_mean_phen() const 
 {
 	if (refstat == NULL)
+	{
 		compute_refstat();
+	}
 	return(refstat->means_phen());
 }
 
 Phenovec DoubleMutantcollection::ref_var_phen() const
 {
 	if (refstat == NULL)
+	{
 		compute_refstat();
+	}
 	return(refstat->vars_phen());
 }
 
 double DoubleMutantcollection::ref_mean_fit() const
 {
 	if (reffitstat == NULL)
+	{
 		compute_reffitstat();
+	}
 	return(reffitstat->mean());
 }
 
 double DoubleMutantcollection::ref_var_fit() const
 {
 	if (reffitstat == NULL)
+	{
 		compute_reffitstat();
+	}
 	return(reffitstat->var());
 }
 
 vector<Phenovec> DoubleMutantcollection::ref_phen() const
 {
 	vector<Phenovec> ans;
-	for (unsigned int i = 0; i < dcollection.size(); i++) {
+	for (unsigned int i = 0; i < dcollection.size(); i++) 
+	{
 		ans.push_back(dcollection[i].reference.phen.get_pheno()); 
 	}
 	return(ans);
@@ -173,7 +203,8 @@ vector<Phenovec> DoubleMutantcollection::ref_phen() const
 vector<Phenovec> DoubleMutantcollection::var_mutant_phen() const
 {
 	vector<Phenovec> ans;
-	for (unsigned int i = 0; i < dcollection.size(); i++) {
+	for (unsigned int i = 0; i < dcollection.size(); i++) 
+	{
 		ans.push_back(dcollection[i].var_phen());
 	}
 	return(ans);
@@ -182,7 +213,8 @@ vector<Phenovec> DoubleMutantcollection::var_mutant_phen() const
 vector<double> DoubleMutantcollection::ref_fit() const
 {
 	vector<double> ans;
-	for (unsigned int i = 0; i < dcollection.size(); i++) {
+	for (unsigned int i = 0; i < dcollection.size(); i++) 
+	{
 		ans.push_back(dcollection[i].reference.fitness);
 	}
 	return(ans);
@@ -191,7 +223,8 @@ vector<double> DoubleMutantcollection::ref_fit() const
 vector<double> DoubleMutantcollection::var_mutant_fit() const
 {
 	vector<double> ans;
-	for (unsigned int i = 0; i < dcollection.size(); i++) {
+	for (unsigned int i = 0; i < dcollection.size(); i++) 
+	{
 		ans.push_back(dcollection[i].var_fit());
 	}
 	return(ans);
@@ -200,7 +233,8 @@ vector<double> DoubleMutantcollection::var_mutant_fit() const
 
 void DoubleMutantcollection::compute_refstat() const
 { // this can be const because refstat is mutable
-	if (refstat != NULL) {
+	if (refstat != NULL) 
+	{
 		cerr << "Warning: DoubleMutantcollection is updated several times." << endl;
 		delete refstat; // otherwise the memory leaks!
 	}
@@ -209,7 +243,8 @@ void DoubleMutantcollection::compute_refstat() const
 
 void DoubleMutantcollection::compute_reffitstat() const
 {
-	if(reffitstat != NULL) {
+	if(reffitstat != NULL) 
+	{
 		cerr << "Warning: DoubleMutantcollection is updated several times." << endl;
 		delete reffitstat; // otherwise the memory leaks!
 	}		

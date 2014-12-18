@@ -58,5 +58,4 @@ class ArchiMultilinear : public Architecture
 	    virtual bool is_epistasis3() const {return(flag_epistasis3);}	    
 };
 
-
 #endif // ARCHIMULTILINEAR_H_INCLUDED

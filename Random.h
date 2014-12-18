@@ -20,7 +20,6 @@
 #include <gsl/gsl_randist.h>
 
 
-
 class Random
 {
 	public :
@@ -43,7 +42,6 @@ class Random
 	protected :
 	    long int seed;
 	    gsl_rng * random_generator;
-
 };
 
 #endif

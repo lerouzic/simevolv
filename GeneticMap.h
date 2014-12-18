@@ -21,7 +21,6 @@
 #include <vector>
 
 
-
 class GeneticMap 
 {
 	public:

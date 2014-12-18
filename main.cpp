@@ -55,24 +55,28 @@ int main(int argc, char *argv[])
 	// First thing to do: set the output
 	ostream* pt_output = &cout; 	/* Default: the output goes to std::cout */
 	ofstream file_out;
-	if (vm.count("output")) {
+	if (vm.count("output")) 
+	{
 		file_out.open(output_file.c_str());
 		pt_output = &file_out;
 	}
 
-    if (vm.count("help")) {
+    if (vm.count("help")) 
+    {
 		*pt_output << "Command line help" << endl;
 		*pt_output << desc << endl;
 		return(EXIT_SUCCESS); // The program ends here
 	}
 
-	if (vm.count("template")) {
+	if (vm.count("template")) 
+	{
 		ParameterSet pp;
 		pp.write(*pt_output);
 		return(EXIT_SUCCESS);
 	}
 
-	if (!vm.count("parameter")) {
+	if (!vm.count("parameter")) 
+	{
 		cerr << "A parameter file must be provided" << endl;
 		cerr << desc << endl;
 		return(EXIT_FAILURE);
@@ -80,7 +84,8 @@ int main(int argc, char *argv[])
 
 	ParameterSet param(input_file);
 
-    if (vm.count("seed")) {
+    if (vm.count("seed")) 
+    {
 		Random::initialize(seed);
 	} else {
 		Random::initialize();
@@ -107,7 +112,8 @@ int main(int argc, char *argv[])
         }
     }
     
-    if (vm.count("parcheck")) {
+    if (vm.count("parcheck")) 
+    {
 		param.warning_unused();
 		param.warning_multicalls();
 	}

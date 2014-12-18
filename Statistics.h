@@ -17,6 +17,7 @@
 #include <vector>
 #include <iostream>
 
+
 /* Univariate Statistics: provides the mean and variance of a vector of double */
 class UnivariateStat
 {
@@ -69,7 +70,7 @@ class MultivariateStat
 		friend std::ostream & operator << (std::ostream &, const MultivariateStat &);
 		
 	protected:
-		// initilization
+		// initialization
 		void initialize();
 	
 		const std::vector<std::vector<double> > data;
@@ -77,14 +78,15 @@ class MultivariateStat
 		std::vector<double> sum_i;
 };
 
+
 class InvertedMStat: public MultivariateStat
 {
 	public:
 		InvertedMStat(const std::vector<std::vector<double> > &);
 	
 	protected:
-	// functions
-	static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
+		// functions
+		static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
 };
 
 #endif // STATISTICS_H_INCLUDED

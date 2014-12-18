@@ -1,7 +1,6 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,6 +21,7 @@
 
 #include <cassert>
 
+
 // These classes are implemented afterwards for readability
 class Fitness_Fluct;
 class Fitness_Phenotype;
@@ -32,6 +32,7 @@ class Fitness
 	// This is a singleton class: only one instance, access only through static
 	// functions (no public constructor)
     public:
+		Fitness(const Fitness &) = delete;
 		~Fitness();
         // instance/initialization
         static void initialize(const ParameterSet&);
@@ -55,6 +56,8 @@ class Fitness
         Fitness_Stability * fitstab;
 };
 
+
+
 /*************************** Fitness_Fluct ********************************/
 /**                         Inheritance scheme [(A): abstract class]
     Fitness_Fluct (A)
@@ -67,6 +70,7 @@ class Fitness
              -> Fitness_Fluct_Whitenoise
              -> Fitness_Fluct_Brownian 
 **/
+
 class Fitness_Fluct
 { // Abstract class (interface)
 	public:
@@ -154,6 +158,8 @@ class Fitness_Fluct_Brownian: public Fitness_Fluct_Noise
 		Phenovec get_new_optimum(const Phenovec &, unsigned int);
 };
 
+
+
 /*************************** Fitness_Phenotype ****************************/
 /**                         Inheritance Scheme [(A): Abstract class]:
    Fitness_Phenotype (A)
@@ -224,10 +230,8 @@ class Fitness_Phenotype_Concave: public Fitness_Phenotype_Directional
 		double get_fitness_trait(unsigned int trait, const Phenotype&, const Population&);
 };
 
-
-// Abstract class for stabilizing selection
 class Fitness_Phenotype_Stabilizing: public Fitness_Phenotype
-{
+{ // Abstract class for stabilizing selection
 	public:
 		Fitness_Phenotype_Stabilizing(const ParameterSet &);
 		virtual ~Fitness_Phenotype_Stabilizing() { }
@@ -261,13 +265,15 @@ class Fitness_Phenotype_Biconvex: public Fitness_Phenotype_Stabilizing
 		double get_fitness_trait(unsigned int, const Phenotype&, const Population&);
 };
 
+
+
 /**************************** Fitness_Stability *********************************/
 /**                           inheritance scheme:
       Fitness_Stability
           -> Fitness_Stability_Noselection
           -> Fitness_Stability_Exponential
-
 **/
+
 class Fitness_Stability
 { // Abstract class (interface)
 	public: 

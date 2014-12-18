@@ -13,7 +13,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++11
+CFLAGS = -Wall -std=c++0x
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = 

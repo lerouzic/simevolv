@@ -24,14 +24,13 @@
 #include <map>
 
 
-
 ////////////////////////////////// PARAMETER ////////////////////////////////////////
 
 class Parameter
-{
+{ // virtual
 	public:
 	    //constructors/destructor
-	    Parameter() : count(0), initialized(false) { }
+	    Parameter();
 	    virtual ~Parameter() {}
 	
 	    //input/output
@@ -45,14 +44,13 @@ class Parameter
 	    virtual std::string GetString() const {assert(false && "function unavailable");}
 	    virtual std::vector<double> GetVectorDouble() const {assert(false && "function unavailable");}
 	    virtual bool is_nil() const {assert(false && "function unavailable");}
-	    virtual bool is_initialized() const {return(initialized);}
-	    unsigned int get_count() const {return(count);}
+	    virtual bool is_initialized() const;
+	    unsigned int get_count() const;
 	    
 	protected:
 		mutable unsigned int count;
 		bool initialized;
 };
-
 
 class Parameter_int: public Parameter
 {
@@ -67,17 +65,16 @@ class Parameter_int: public Parameter
 	
 	    // functions
 	    long int Get() const;
-	    long int GetInt() const {return(Get());}
-	    double GetDouble() const {return(double(Get()));}
+	    long int GetInt() const;
+	    double GetDouble() const;
 	    void Set(long int);
-	    bool is_nil() const {return(value == 0);}
+	    bool is_nil() const;
 	
 	protected:
 	    long int value;
 	    long int min;
 	    long int max;
 };
-
 
 class Parameter_double: public Parameter
 {
@@ -92,17 +89,16 @@ class Parameter_double: public Parameter
 	
 	    // functions
 	    double Get() const;
-	    long int GetInt() const {return(int(Get()));}
-	    double GetDouble() const {return(Get());}
+	    long int GetInt() const;
+	    double GetDouble() const;
 	    void Set(double);
-	    bool is_nil() const {return(value == 0.0);}
+	    bool is_nil() const;
 	
 	protected:
 	    double value;
 	    double min;
 	    double max;
 };
-
 
 class Parameter_vector_double: public Parameter
 {
@@ -117,9 +113,9 @@ class Parameter_vector_double: public Parameter
 	
 	    // functions
 	    std::vector<double> Get() const;
-	    std::vector<double> GetVectorDouble() const {return(Get());}
+	    std::vector<double> GetVectorDouble() const;
 	    double Get_element(int) const;
-	    double GetDouble(int el) const {return(Get_element(el));}
+	    double GetDouble(int) const;
 	    void Set(const std::vector<double>&);
 	    void Add(double);
 	
@@ -128,7 +124,6 @@ class Parameter_vector_double: public Parameter
 	    double min;
 	    double max;
 };
-
 
 class Parameter_gaussian: public Parameter
 {
@@ -145,22 +140,21 @@ class Parameter_gaussian: public Parameter
 	    void SetMean(double);
 	    void SetSd(double);
 	    double draw() const;
-	    double GetDouble() const {return(draw());}
-	    bool is_nil() const {return((mean.Get() == 0.0) && (sd.Get() == 0.0));}
-	    bool is_initialized() const {return(mean.is_initialized() && sd.is_initialized());}
+	    double GetDouble() const;
+	    bool is_nil() const;
+	    bool is_initialized() const;
 	
 	protected:
 	    Parameter_double mean;
 	    Parameter_double sd;
 };
 
-
 class Parameter_string: public Parameter 
 {
 	public:
 	    // constructors/destructor
 	    Parameter_string(const std::vector<std::string>);
-	    ~Parameter_string();
+	    ~Parameter_string() {}
 	    
 	    // input/output
 	    void read(std::istream&);
@@ -174,8 +168,6 @@ class Parameter_string: public Parameter
 		std::vector<std::string> possible_values; 
 		std::string value;
 };
-
-
 
 
 
@@ -206,6 +198,5 @@ class ParameterSet
 	protected:
 	    std::map<std::string, Parameter*> parameters;
 };
-
 
 #endif // PARAMETERS_H_INCLUDED

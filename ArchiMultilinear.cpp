@@ -14,6 +14,7 @@
 
 
 #include "ArchiMultilinear.h"
+
 #include "Parconst.h"
 
 #include <iostream>
@@ -71,7 +72,6 @@ double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) cons
         swap(loc1, loc2);
     }
     assert (loc1 != loc2);
-    assert (loc1 >= 0);
     assert (loc2 < nloc);
     // assert(int(epsilon2.size()) >= loc1+1);
     // assert(int(epsilon2[loc1].size()) >= loc2-loc1);
@@ -95,7 +95,6 @@ double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsi
     }
     assert(loc1 != loc2);
     assert(loc2 != loc3);
-    assert(loc1 >= 0);
     assert(loc3 < nloc);
     //assert(int(epsilon3.size()) >= loc1+1);
     //assert(int(epsilon3[loc1].size()) >= loc2-loc1);
@@ -111,7 +110,6 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
         swap(loc1, loc2);
     }
     assert (loc1 != loc2);
-    assert (loc1 >= 0);
     assert (loc2 < nb_loc());
 
     while(epsilon2.size() < (loc1+1))
@@ -127,7 +125,6 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
 
     epsilon2[loc1][loc2-loc1-1] = value;
 }
-
 
 /* sets the value of 3rd-order epistasis */
 void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, double value)
@@ -146,7 +143,6 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
     }
     assert(loc1 != loc2);
     assert(loc2 != loc3);
-    assert(loc1 >= 0);
     assert(loc3 < nb_loc());
 
     while(epsilon3.size() < nb_loc()-2)
@@ -168,7 +164,6 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
 
     epsilon3[loc1][loc2-loc1-1][loc3-loc2-1] = value;
 }
-
 
 /* print the values of 2nd-order epistasis */
 string ArchiMultilinear::print_epsilon2() const
@@ -192,7 +187,6 @@ string ArchiMultilinear::print_epsilon2() const
     }
     return(out.str());
 }
-
 
 /* print the values of 3nd-order epistasis */
 string ArchiMultilinear::print_epsilon3() const
@@ -220,9 +214,8 @@ string ArchiMultilinear::print_epsilon3() const
     return(out.str());
 }
 
-
 /* calculate the phenotypic function depending on the genotype 
- * here : sum of the genotypic values, correlation with epistasis values */
+	here : sum of the genotypic values, correlation with epistasis values */
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
 {
     vector<double> sumloc(nloc);

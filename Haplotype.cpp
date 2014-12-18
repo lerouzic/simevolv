@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -14,6 +14,7 @@
 
 
 #include "Haplotype.h"
+
 #include "Architecture.h"
 #include "Parameters.h"
 #include "Random.h"
@@ -41,15 +42,14 @@ Haplotype::Haplotype(const ParameterSet & param)
     }
 }
 
-/* copy constructor */
-Haplotype::Haplotype(const Haplotype & templ)
-	: haplotype(templ.haplotype)
-{	
-}
-
 /* constructor using a vector of Alleles */
 Haplotype::Haplotype(const vector<shared_ptr<Allele>> & vectalleles)
 	: haplotype(vectalleles)
+{	
+}
+
+Haplotype::Haplotype(const Haplotype & templ)
+	: haplotype(templ.haplotype)
 {	
 }
 
@@ -60,7 +60,6 @@ int Haplotype::operator==(const Haplotype& other) const
 {
     return((*this).haplotype == other.haplotype);
 }
-
 
 int Haplotype::operator!=(const Haplotype& other) const
 {
@@ -101,7 +100,6 @@ void Haplotype::make_mutation()
     int loc = floor(Random::randnum()*nb_loc()); // static_cast<double>(nb_loc())
 	make_mutation(loc);
 }
-
 
 /* force to make a mutation at a chosen locus :
  * replace the locus (vector of allele) by a new one (<allele_mutation)*/

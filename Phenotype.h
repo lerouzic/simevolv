@@ -21,6 +21,7 @@
 #include <iostream>
 #include <vector>
 
+
 // Phenovec is "just" a vector of double, storing phenotypic values for several characters
 class Phenovec: private std::vector<double>
 {
@@ -42,6 +43,7 @@ public:
     // Phenovec(const Phenovec & vec) : std::vector<double>(vec.vector) { }
     virtual ~Phenovec() { }
 };
+
 
 class Phenotype
 {
@@ -84,15 +86,13 @@ class Phenotype
 };
 
 
-
-
 ///////////// Specific class to get multivariate statistics on phenotypes. 
-
 class PhenotypeStat
 {
 	public:
 		//constructor
 		PhenotypeStat() = delete;
+		PhenotypeStat(const PhenotypeStat &) = delete;
 		PhenotypeStat(const std::vector<Phenotype> &);
 		PhenotypeStat(const std::vector<Phenovec> &);
 		~PhenotypeStat();
@@ -115,4 +115,4 @@ class PhenotypeStat
 		MultivariateStat * unstab;
 };
 
-#endif // #ifndef PHENOTYPE_H_INCLUDED
+#endif // PHENOTYPE_H_INCLUDED

@@ -20,6 +20,7 @@
 #include <vector>
 #include <memory>
 
+
 class Allele
 {
     friend class Haplotype;
@@ -53,7 +54,6 @@ class Allele
 };
 
 
-
 class Allele_zero: public Allele
 {
 	friend class Haplotype;
@@ -73,6 +73,5 @@ class Allele_zero: public Allele
 	
 	virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
 };
-
 
 #endif // ALLELE_H_INCLUDED

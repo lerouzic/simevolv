@@ -24,7 +24,6 @@
 #include <vector>
 
 
-
 class Population
 {
 	friend class Canalization;

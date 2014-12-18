@@ -19,7 +19,6 @@
 #include <vector>
 
 
-
 void outformat(std::ostream &, const double, unsigned int width=12, unsigned int precision=5, const std::string & sep="");
 void outformat(std::ostream &, const int, unsigned int width=12, const std::string & sep="");
 

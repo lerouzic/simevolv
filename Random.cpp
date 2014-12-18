@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007      Arnaud Le Rouzic    <a.p.s.lerouzic@bio.uio.no>
+// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -25,7 +25,6 @@ using namespace std;
 
 // constructors/destructor
 
-/* default constructor */
 Random::Random()
 {
     random_generator = gsl_rng_alloc(gsl_rng_mt19937);
@@ -34,7 +33,6 @@ Random::Random()
     gsl_rng_set (random_generator, seed);
 }
 
-
 /* constructor with seed (for repetability) */
 Random::Random(long int s) : seed(s)
 {
@@ -42,8 +40,6 @@ Random::Random(long int s) : seed(s)
     gsl_rng_set (random_generator, seed);
 }
 
-
-/* destructor */
 Random::~Random()
 {
     gsl_rng_free(random_generator);
@@ -52,21 +48,15 @@ Random::~Random()
 }
 
 
-
 // initialization
 
-/* put the existence of the random number system to non-existent */
 Random* Random::instance = NULL;
 
-
-/* verify if the random system number is initialized */
 bool Random::is_initialized()
 {
     return(!(Random::instance == NULL));
 }
 
-
-/* initialize the random number system */
 void Random::initialize()
 {
     if (Random::instance != NULL)
@@ -77,8 +67,6 @@ void Random::initialize()
     Random::instance = new Random();
 }
 
-
-/* initialize the random number system with a given seed */
 void Random::initialize(long int s)
 {
     if (Random::instance != NULL)
@@ -89,17 +77,13 @@ void Random::initialize(long int s)
     Random::instance = new Random(s);
 }
 
-
-
 // functions
 
-/* get the seed */
 long int Random::get_seed()
 {
     assert(Random::instance != NULL);
     return(Random::instance->seed);
 }
-
 
 /* return a random number 
  * from a numeric distribution */
@@ -115,7 +99,6 @@ double Random::randnum()
     }
     return(gsl_rng_uniform(Random::instance->random_generator));
 }
-
 
 /* return a random number 
  * from a gaussian distribution */
