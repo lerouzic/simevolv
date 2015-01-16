@@ -425,7 +425,7 @@ void ParameterSet::initialize()
 	parameters[DEV_TIMESTEPS] = new Parameter_int(0, 100*1000);
 	parameters[DEV_CALCSTEPS] = new Parameter_int(0, 100*1000);
 	parameters[FITNESS_STAB] = new Parameter_string(FS_options);
-    parameters[FITNESS_STABSTR] = new Parameter_double(0.0, 1000.*1000.);
+    parameters[FITNESS_STABSTR] = new Parameter_vector_double(0.0, 1000.*1000.);
 }
 
 void ParameterSet::write(ostream & out) const
