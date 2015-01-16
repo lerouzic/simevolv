@@ -51,6 +51,7 @@ const std::string GENET_EPSILON3 = "GENET_EPSILON3";
 
 // REGULATORY ARCHITECTURE
 const std::string INIT_CONNECT = "INIT_CONNECT";
+const std::string INIT_CONDIAG = "INIT_CONDIAG";
 const std::string TYPE_SO = "TYPE_SO";	
 const std::string INIT_BASAL = "INIT_BASAL";				/* Initial vector (So) types */
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";

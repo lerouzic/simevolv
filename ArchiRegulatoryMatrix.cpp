@@ -184,13 +184,20 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 	//count_init++; // debug instruction;
 	
 	double connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
+	double connectivity_diag = param.getpar(INIT_CONDIAG)->GetDouble();
 	
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
 		vector<double> allele_pattern;
 		for (unsigned int n=0 ; n<sall ; n++)
 		{
-			if (Random::randnum() < connectivity)
+			double threshold = connectivity;
+			if (n == loc)
+			{
+				threshold = connectivity_diag;
+			}
+			
+			if (Random::randnum() < threshold)
 			{
 				/* This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
 				 * double value = 1.0  - in non-clonal, this would be enough */
