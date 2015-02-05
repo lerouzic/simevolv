@@ -283,6 +283,8 @@ void Population::write(ostream & out, int generation) const
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 		{
 			outformat(out, i+1, "MPhen");
+			outformat(out, i+1, "MUnstab");
+
 		}
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 		{
@@ -342,6 +344,7 @@ void Population::write(ostream & out, int generation) const
 	{
 		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
 		outformat(out, mm[i]);
+		outformat(out, mm2[i]);
 	}
 	Phenovec vv = phenstat.vars_phen();
 	for (unsigned int i = 0; i < vv.size(); i++)
