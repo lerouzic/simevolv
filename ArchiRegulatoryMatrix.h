@@ -37,9 +37,10 @@ class ArchiRegulatoryMatrix : public Architecture
 	protected :
 		unsigned int sall;
 		std::vector<double> So;
+		double recur;
 		std::vector<std::vector<double>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
-		unsigned int calcsteps; 
+		unsigned int calcsteps;
 				
 	    //functions
 		virtual double sigma(double h) const;
@@ -87,7 +88,7 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 			
 	protected :
 		double basal;
-
+		
 		// Inherited functions
 		virtual double sigma(double h) const; 
 };
