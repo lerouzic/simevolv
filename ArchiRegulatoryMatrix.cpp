@@ -57,8 +57,9 @@ std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x)
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param) 
     : Architecture(param)
     , sall(nb_loc())
+    , recur(param.getpar(INIT_RECURRENCE)-> GetDouble())
     , timesteps(param.getpar(DEV_TIMESTEPS)->GetInt())
-    , calcsteps(param.getpar(DEV_CALCSTEPS) -> GetInt())
+    , calcsteps(param.getpar(DEV_CALCSTEPS) -> GetInt())    
 {
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
@@ -148,8 +149,11 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 		h = prod(St,W);
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			St(i) = this->sigma(h(i));
-			//~ cout << "Phen " << i << " time " << t << ": " << St(i) << "\n";
+			St(i) = recur*St(i) + (1-recur)*(this->sigma(h(i)));
+			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
+			 * It has no sense for the wagner and siegal model, only for the M2 model.
+			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
+			//St(i) = this->sigma(h(i));
 		}
 		if (t > (timesteps-calcsteps)) 
 		{
@@ -357,7 +361,7 @@ double ArchiSiegal::sigma(double h) const
 ArchiM2::ArchiM2(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
-{ 
+{
 	int min = 0;
 	int max = 1;
 	

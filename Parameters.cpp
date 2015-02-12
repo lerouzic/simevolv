@@ -423,6 +423,7 @@ void ParameterSet::initialize()
     parameters[INIT_CONDIAG] = new Parameter_double(0.0, 1.0);
 	parameters[TYPE_SO] = new Parameter_string(SO_options);
 	parameters[INIT_BASAL] = new Parameter_double(0.0, 1.0);
+	parameters[INIT_RECURRENCE] = new Parameter_double(0.0, 1.0);
 	parameters[DEV_TIMESTEPS] = new Parameter_int(0, 100*1000);
 	parameters[DEV_CALCSTEPS] = new Parameter_int(0, 100*1000);
 	parameters[FITNESS_STAB] = new Parameter_string(FS_options);
