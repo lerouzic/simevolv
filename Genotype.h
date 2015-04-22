@@ -50,7 +50,7 @@ class Genotype
 	    Haplotype recombine() const;
 	    Phenotype phenotypic_value(const Genotype&) const;
 	    void draw_mutation();
-	    void make_mutation();
+	    void make_mutation(bool test = false);
 	
 	protected:
 	    Haplotype gam_father;

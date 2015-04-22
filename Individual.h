@@ -54,7 +54,7 @@ class Individual
 	    static Individual mate(const Individual&, const Individual&);
 	    
 	    void draw_mutation();
-	    void make_mutation();
+	    void make_mutation(bool test = false);
 	    	    		
 	    /* Make a clone with some mutations
 		- the first parameter is the number of mutations */	    	    		

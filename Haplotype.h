@@ -49,8 +49,8 @@ class Haplotype
 	    //functions
 	    unsigned int nb_loc() const;
 	    void draw_mutation();				
-	    void make_mutation(); 				
-	    void make_mutation(unsigned int); 
+	    void make_mutation(bool test = false); 				
+	    void make_mutation(unsigned int, bool test = false); 
 	
 	protected :
 	    std::vector<std::shared_ptr<Allele>> haplotype;

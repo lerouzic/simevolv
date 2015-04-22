@@ -118,14 +118,14 @@ void Genotype::draw_mutation()
 
 
 /* force to make a mutation in one of the haplotype */
-void Genotype::make_mutation()
+void Genotype::make_mutation(bool test /*=false*/)
 {
     if (Random::randnum() < 0.5)
     {
-        gam_father.make_mutation();
+        gam_father.make_mutation(test);
     }
     else
     {
-        gam_mother.make_mutation();
+        gam_mother.make_mutation(test);
     }
 }

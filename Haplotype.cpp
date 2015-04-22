@@ -95,17 +95,22 @@ void Haplotype::draw_mutation()
 
 /* force to make a mutation at a random locus 
  * then > make_mutation(loc) */
-void Haplotype::make_mutation()
+void Haplotype::make_mutation(bool test /* = false */)
 {
     int loc = floor(Random::randnum()*nb_loc()); // static_cast<double>(nb_loc())
-	make_mutation(loc);
+	make_mutation(loc, test);
 }
 
 /* force to make a mutation at a chosen locus :
  * replace the locus (vector of allele) by a new one (<allele_mutation)*/
-void Haplotype::make_mutation(unsigned int loc)
+void Haplotype::make_mutation(unsigned int loc, bool test /* = false */)
 {
 	Architecture * archi = Architecture::Get();
-	shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc);
-    haplotype[loc] = a;
+	if (test) {
+		shared_ptr<Allele> a = archi->allele_mutation_test(haplotype[loc], loc);
+		haplotype[loc] = a;		
+	} else {
+		shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc);
+		haplotype[loc] = a;
+	}
 }

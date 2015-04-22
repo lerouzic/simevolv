@@ -43,11 +43,13 @@ Architecture::Architecture(const ParameterSet& param)
     , sall (1) // by default, change for the architecture that needed a vector as allele
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
+    , mutsd_test (vector<double> (0))
 {
     for (unsigned int i = 0; i < nloc; i++)
     {
         mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
+        mutsd.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
 }
 
@@ -131,6 +133,13 @@ double Architecture::mutation_sd(unsigned int locus) const
     return(mutsd[locus]);
 }
 
+/* return the mutation effect for canalization tests at a given locus */
+double Architecture::mutation_sd_test(unsigned int locus) const
+{
+    assert(locus < nloc);
+    return(mutsd_test[locus]);
+}
+
 /* return the recombination rate at a given locus */
 double Architecture::recombination_rate(unsigned int locus) const
 {
@@ -174,5 +183,10 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
 shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 {
     return(templ->make_mutant(mutation_sd(loc)));
+}
+
+shared_ptr<Allele> Architecture::allele_mutation_test(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
+{
+    return(templ->make_mutant(mutation_sd_test(loc)));
 }
 

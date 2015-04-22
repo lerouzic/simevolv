@@ -136,9 +136,9 @@ void Individual::draw_mutation()
 }
 
 /* force to make a mutation in an individual */
-void Individual::make_mutation()
+void Individual::make_mutation(bool test /* = false */)
 {
-    genotype.make_mutation();
+    genotype.make_mutation(test);
     genot_value = Architecture::Get() -> phenotypic_value(genotype);
     //phenotype = Environment::rand_effect(genot_value); // This step is not obvious
     phenotype = genot_value;
@@ -151,7 +151,7 @@ Individual Individual::test_canalization(unsigned int nb_mut, const Population &
 	Individual clone(*this);
 	for (unsigned int mut = 0; mut < nb_mut; mut++) 
 	{
-		clone.make_mutation();
+		clone.make_mutation(true);
 	}
 	clone.update_fitness(pop);	
 	return(clone);
