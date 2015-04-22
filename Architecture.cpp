@@ -49,7 +49,7 @@ Architecture::Architecture(const ParameterSet& param)
     {
         mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
-        mutsd.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
+        mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
 }
 
