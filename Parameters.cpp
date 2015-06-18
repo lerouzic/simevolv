@@ -378,11 +378,14 @@ ParameterSet::~ParameterSet()
 
 void ParameterSet::initialize()
 {
+    // Architecture type
+    parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
+    
     // Simulation parameters
     parameters[SIMUL_GENER] = new Parameter_int(1, 1000*1000);
     parameters[SIMUL_OUTPUT] = new Parameter_int(1, 10*1000);
-    
-    // General genetic parameters
+   
+	// General genetic parameters
     parameters[GENET_NBLOC] = new Parameter_int(1, 100);
     parameters[GENET_MUTRATES] = new Parameter_vector_double(0.0, 1.0);
     parameters[GENET_MUTSD] = new Parameter_vector_double(0.0, 999.9);
@@ -406,10 +409,9 @@ void ParameterSet::initialize()
     parameters[FITNESS_STRENGTH2] = new Parameter_vector_double(-999.9, 999.9);
     parameters[FITNESS_PERIOD] = new Parameter_int(0,100*1000);
     
-    // Architecture type
-    parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
-    
     // Output measurements
+    parameters[OUT_GENO] = new Parameter_string(OG_options);
+    parameters[OUT_UNSTAB] = new Parameter_string(OU_options);
     parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 1000*1000);
     parameters[OUT_CANAL_MUTSD] = new Parameter_vector_double(0.0, 1.0);
     parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 1000*1000);

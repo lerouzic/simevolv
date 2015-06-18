@@ -119,16 +119,14 @@ shared_ptr<Allele> Allele_zero::make_mutant(double mutsd) const
 		if (allele[i] != 0.0) 
 			non_zero.push_back(i);
 	}
-	// This can't be a shared_ptr<Allele> since we need to access the protected member of the base
-	// class. C++ is sometimes a bit too subtle... 
+	// This can't be a shared_ptr<Allele> since we need to access the protected member of the base class. C++ is sometimes a bit too subtle... 
     shared_ptr<Allele_zero> a(new Allele_zero(*this));	 
 	if (non_zero.size() > 0) {
 		int mutated_site = non_zero[floor(non_zero.size()*Random::randnum())];
 		double modifier = mutsd * Random::randgauss();
 		a->allele[mutated_site] += modifier;		
 	}
-	// Note: if all sites are 0, no mutation, but
-	// we create a new Allele instance.
+	// Note: if all sites are 0, no mutation, but we create a new Allele instance.
 	
     return(dynamic_pointer_cast<Allele>(a));
 }

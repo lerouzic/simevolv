@@ -36,7 +36,7 @@ using namespace std;
 
 // convert a boost vector into a regulat std::vector and vice-versa
 template<class T>
-std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x) 
+std::vector<T> boost_to_std_vector(const boost::numeric::ublas::vector<T> & x) 
 {
 	// not very fast, optimize with std::copy if necessary
 	std::vector<T> ans;
@@ -46,7 +46,6 @@ std::vector<T> boost_to_std(const boost::numeric::ublas::vector<T> & x)
 	}
 	return(ans);
 }
-
 
 
 ///////////////////// Class ArchiRegulatoryMatrix //////////////////////////////////
@@ -136,7 +135,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	{
         for (unsigned int j=0; j<nloc; j++) 
         {
-            W(i,j) = matrix[i][j];
+            W(i,j) = matrix[i][j];            
         }
 	}
 	
@@ -147,6 +146,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
 		h = prod(St,W);
+		
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
 			St(i) = recur*St(i) + (1-recur)*(this->sigma(h(i)));
@@ -157,10 +157,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 		}
 		if (t > (timesteps-calcsteps)) 
 		{
-			unstability.push_back(boost_to_std(St));
+			unstability.push_back(boost_to_std_vector(St));
 		}
 	}
-
+	
 	// output (from ublas to std)
 	InvertedMStat stat_steps(unstability);
 	vector<double> Sf_mean = stat_steps.means();
@@ -172,8 +172,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 
 // Protected functions
 
-/* Theoretically useless. Just in case, running the model on the base class
- just calls the identity function (no sigmoid)*/
+/* Theoretically useless. Just in case, running the model on the base class just calls the identity function (no sigmoid)*/
 double ArchiRegulatoryMatrix::sigma(double h) const 
 {
 	return(h);
@@ -181,12 +180,9 @@ double ArchiRegulatoryMatrix::sigma(double h) const
 
 //static unsigned int count_init = 0; // debug instruction
 
-/* initialization of the connectivity matrix
- * depend off tne connectivity value */
+/* initialization of the connectivity matrix depend off the connectivity value */
 void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
-{
-	//count_init++; // debug instruction;
-	
+{	
 	double connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
 	double connectivity_diag = param.getpar(INIT_CONDIAG)->GetDouble();
 	
@@ -215,7 +211,6 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 		}
 		connectivity_matrix.push_back(allele_pattern);		
 	}
-	//std::cout << count_init << "\n";  // debug instruction
 }
 
 
@@ -246,6 +241,7 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 	}
 	else if (type_so==SO_med)
 	{
+		cerr << "Median So has no real significance in Wagner model." << endl << endl;
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
 			So.push_back((min+max)/2);			
@@ -271,11 +267,12 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 	}
 	else
 	{
-		cerr <<	"Basal So cannot be used in Wagner model : switch to Median So." << endl;
-		cerr << "Median So has no real significance in Wagner model." << endl << endl;
+		cerr <<	"Basal So cannot be used in Wagner model : switch to random binary !" << endl;
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			So.push_back((min+max)/2);
+			double s = Random::randnum();
+			if (s < 0.5) { So.push_back(min); }
+			else { So.push_back(max); }
 		}	
 	}
 }
@@ -303,7 +300,7 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 { 
 	int min = -1;
 	int max = 1;
-	
+		
 	string type_so = param.getpar(TYPE_SO)->GetString();
     if (type_so==SO_min)
     {
@@ -408,7 +405,7 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			So.push_back(basal);
+			So.push_back(basal);	
 		}
 	}
 }

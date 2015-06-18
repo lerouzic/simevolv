@@ -62,8 +62,8 @@ class Individual
 	
 	public :
 	    Genotype genotype;
-	    Phenotype genot_value; // a bit counterintutive, and problematic for the future. 
-	    Phenotype phenotype;
+	    Phenotype genot_value; // raw phenotype
+	    Phenotype phenotype; // phenotype + environmental effect 
 	    double fitness;
 };
 

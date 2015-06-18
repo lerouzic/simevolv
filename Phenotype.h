@@ -26,11 +26,11 @@
 class Phenovec: private std::vector<double>
 {
 	friend std::ostream& operator << (std::ostream&, const Phenovec &);
-	friend void outformat(std::ostream &, const Phenovec &, 
-		unsigned int width=12, unsigned int precision=5, std::string sep="");
+	friend void outformat(std::ostream &, const Phenovec &, unsigned int width=12, unsigned int precision=5, std::string sep="");
 		
     typedef double T;
     typedef std::vector<double> vector;
+    
 public:
     using vector::push_back;
     using vector::operator[];
@@ -109,7 +109,7 @@ class PhenotypeStat
 		static std::vector<std::vector<double>> transpose_phen_matrix(const std::vector<Phenotype> &);
 		static std::vector<std::vector<double>> transpose_unstabphen_matrix(const std::vector<Phenotype> &);
 		static std::vector<std::vector<double>> transpose_phenovec_matrix(const std::vector<Phenovec> &);
-		
+				
 	protected:
 		MultivariateStat * pheno;
 		MultivariateStat * unstab;

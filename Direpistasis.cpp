@@ -38,7 +38,7 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	for (unsigned int i = 0; i < pop.size(); i++) 
 	{
 		DoubleMutantcollection dmutcol(mutants1, mutants2, pop.pop[i], pop);
-					// We can do this because Direpistasis is a friend of Population
+		// We can do this because Direpistasis is a friend of Population
 
 		dir_ind.push_back(individual_direpi(dmutcol));
 		fit_dir.push_back(individual_fitdir(dmutcol));
@@ -49,8 +49,7 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	
 	UnivariateStat fit_stat(fit_dir);
 	fit_epi_mean = fit_stat.mean();
-	fit_epi_var = fit_stat.var();
-	
+	fit_epi_var = fit_stat.var();	
 }
 
 Phenovec Direpistasis::phen_direpistasis() const
@@ -94,8 +93,7 @@ Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol)
 			sd_m.push_back(sqrt(mut2_var_phen[i][t]));
 		}
 		
-		// Step 2: compute the regression between the standard deviation of the effect of the 2nd mutation
-		// vs. the effect of the first mutation
+		// Step 2: compute the regression between the standard deviation of the effect of the 2nd mutation vs. the effect of the first mutation
 		vector<vector<double> > temp_stat;
 		temp_stat.push_back(y1_t);
 		temp_stat.push_back(sd_m);

@@ -59,8 +59,7 @@ Architecture::Architecture(const ParameterSet& param)
 /* put the existence of the architecture to non-existent */
 Architecture* Architecture::instance = NULL;
 
-/* initialization of the global architecture of the genetic system,
- * depending on the architecture type */
+/* initialization of the global architecture of the genetic system, depending on the architecture type */
 void Architecture::initialize(const ParameterSet& param)
 {
     if (Architecture::instance != NULL)
@@ -178,8 +177,7 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
     return(a);
 }
 
-/* force to make a mutation at one position of the allele :
- * replace the value at the mutated site by a new value */
+/* force to make a mutation at one position of the allele : replace the value at the mutated site by a new value */
 shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 {
     return(templ->make_mutant(mutation_sd(loc)));

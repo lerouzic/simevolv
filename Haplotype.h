@@ -26,6 +26,8 @@
 
 class Haplotype
 {
+    friend class Individual;
+	friend class Population;
     friend class Genotype;
     friend class Architecture;
     friend class ArchiAdditive;

@@ -25,6 +25,8 @@
 
 class Genotype
 {
+    friend class Individual;
+	friend class Population;
     friend class Architecture;
     friend class ArchiAdditive;
     friend class ArchiMultilinear;
