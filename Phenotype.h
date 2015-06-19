@@ -113,17 +113,10 @@ class PhenotypeStat
 		
 		unsigned int dimensionality() const;
 		
-<<<<<<< HEAD
 		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
 		static std::vector<std::vector<double> > transpose_unstabphen_matrix(const std::vector<Phenotype> &);
 		static std::vector<std::vector<double> > transpose_phenovec_matrix(const std::vector<Phenovec> &);
 		
-=======
-		static std::vector<std::vector<double>> transpose_phen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double>> transpose_unstabphen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double>> transpose_phenovec_matrix(const std::vector<Phenovec> &);
-				
->>>>>>> 33616252b60e659ae37d009ea6a88d36a97c71d6
 	protected:
 		MultivariateStat * pheno;
 		MultivariateStat * unstab;
