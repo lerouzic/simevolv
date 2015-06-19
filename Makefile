@@ -41,9 +41,9 @@ OBJDIR_RELEASE = obj/Release
 DEP_RELEASE = 
 OUT_RELEASE = bin/Release/Simul_Prog
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/Random.o $(OBJDIR_DEBUG)/Population.o $(OBJDIR_DEBUG)/Parameters.o $(OBJDIR_DEBUG)/OutputFormat.o $(OBJDIR_DEBUG)/Individual.o $(OBJDIR_DEBUG)/Haplotype.o $(OBJDIR_DEBUG)/Allele.o $(OBJDIR_DEBUG)/Genotype.o $(OBJDIR_DEBUG)/Phenotype.o  $(OBJDIR_DEBUG)/GeneticMap.o $(OBJDIR_DEBUG)/Fitness.o $(OBJDIR_DEBUG)/Environment.o $(OBJDIR_DEBUG)/Canalization.o $(OBJDIR_DEBUG)/Heritability.o $(OBJDIR_DEBUG)/Statistics.o $(OBJDIR_DEBUG)/Architecture.o $(OBJDIR_DEBUG)/ArchiMultilinear.o $(OBJDIR_DEBUG)/ArchiAdditive.o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o $(OBJDIR_DEBUG)/Direpistasis.o $(OBJDIR_DEBUG)/Mutantcollection.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/Random.o $(OBJDIR_DEBUG)/Population.o $(OBJDIR_DEBUG)/Parameters.o $(OBJDIR_DEBUG)/OutputFormat.o $(OBJDIR_DEBUG)/Individual.o $(OBJDIR_DEBUG)/Haplotype.o $(OBJDIR_DEBUG)/Allele.o $(OBJDIR_DEBUG)/Genotype.o $(OBJDIR_DEBUG)/Phenotype.o  $(OBJDIR_DEBUG)/GeneticMap.o $(OBJDIR_DEBUG)/Fitness.o $(OBJDIR_DEBUG)/Environment.o $(OBJDIR_DEBUG)/Canalization.o $(OBJDIR_DEBUG)/Heritability.o $(OBJDIR_DEBUG)/Statistics.o $(OBJDIR_DEBUG)/Architecture.o $(OBJDIR_DEBUG)/ArchiMultilinear.o $(OBJDIR_DEBUG)/ArchiAdditive.o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o $(OBJDIR_DEBUG)/ArchiBoolean.o $(OBJDIR_DEBUG)/Direpistasis.o $(OBJDIR_DEBUG)/Mutantcollection.o
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Random.o $(OBJDIR_RELEASE)/Population.o $(OBJDIR_RELEASE)/Parameters.o $(OBJDIR_RELEASE)/OutputFormat.o $(OBJDIR_RELEASE)/Individual.o $(OBJDIR_RELEASE)/Haplotype.o $(OBJDIR_RELEASE)/Allele.o $(OBJDIR_RELEASE)/Genotype.o $(OBJDIR_RELEASE)/Phenotype.o $(OBJDIR_RELEASE)/GeneticMap.o $(OBJDIR_RELEASE)/Fitness.o $(OBJDIR_RELEASE)/Environment.o $(OBJDIR_RELEASE)/Canalization.o $(OBJDIR_RELEASE)/Heritability.o $(OBJDIR_RELEASE)/Statistics.o $(OBJDIR_RELEASE)/Architecture.o $(OBJDIR_RELEASE)/ArchiMultilinear.o $(OBJDIR_RELEASE)/ArchiAdditive.o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o $(OBJDIR_RELEASE)/Direpistasis.o $(OBJDIR_RELEASE)/Mutantcollection.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Random.o $(OBJDIR_RELEASE)/Population.o $(OBJDIR_RELEASE)/Parameters.o $(OBJDIR_RELEASE)/OutputFormat.o $(OBJDIR_RELEASE)/Individual.o $(OBJDIR_RELEASE)/Haplotype.o $(OBJDIR_RELEASE)/Allele.o $(OBJDIR_RELEASE)/Genotype.o $(OBJDIR_RELEASE)/Phenotype.o $(OBJDIR_RELEASE)/GeneticMap.o $(OBJDIR_RELEASE)/Fitness.o $(OBJDIR_RELEASE)/Environment.o $(OBJDIR_RELEASE)/Canalization.o $(OBJDIR_RELEASE)/Heritability.o $(OBJDIR_RELEASE)/Statistics.o $(OBJDIR_RELEASE)/Architecture.o $(OBJDIR_RELEASE)/ArchiMultilinear.o $(OBJDIR_RELEASE)/ArchiAdditive.o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o $(OBJDIR_RELEASE)/ArchiBoolean.o $(OBJDIR_RELEASE)/Direpistasis.o $(OBJDIR_RELEASE)/Mutantcollection.o
 
 all: debug release
 
@@ -126,6 +126,8 @@ $(OBJDIR_DEBUG)/ArchiAdditive.o: ArchiAdditive.cpp
 $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o
 
+$(OBJDIR_DEBUG)/ArchiBoolean.o: ArchiBoolean.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiBoolean.cpp -o $(OBJDIR_DEBUG)/ArchiBoolean.o
 
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
@@ -208,6 +210,9 @@ $(OBJDIR_RELEASE)/ArchiAdditive.o: ArchiAdditive.cpp
 
 $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o
+
+$(OBJDIR_RELEASE)/ArchiBoolean.o: ArchiBoolean.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiBoolean.cpp -o $(OBJDIR_RELEASE)/ArchiBoolean.o
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
