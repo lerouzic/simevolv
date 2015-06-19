@@ -22,10 +22,9 @@
 #include <vector>
 
 
-/* This class is devoted to the estimation of the canalization (or genetic robustness) of the 
-	genetic architecture in a population. 
-	This is achieved by computing the variance of the effect of random mutations in the population.
-	he smaller this variance, the more robustness the population displays. 
+/* This class is devoted to the estimation of the canalization (or genetic robustness) of the genetic architecture in a population. 
+This is achieved by computing the variance of the effect of random mutations in the population.
+The smaller this variance, the more robustness the population displays. 
 */
 	
 	
@@ -33,8 +32,7 @@ class Canalization
 {
 	public:
 		// The constructor parameters are the number of canalization tests, and the current population
-		// The database is filled in the constructor, meaning that most of the computation time will be
-		// spent here. 
+		// The database is filled in the constructor, meaning that most of the computation time will be spent here. 
 		Canalization(unsigned int, const Population &);
 		~Canalization() { }
 						

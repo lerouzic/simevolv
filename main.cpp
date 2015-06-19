@@ -53,15 +53,16 @@ int main(int argc, char *argv[])
 	notify(vm);
 
 	// First thing to do: set the output
-	ostream* pt_output = &cout; 	/* Default: the output goes to std::cout */
+	ostream* pt_output = &cout; 		/* Default: the output goes to std::cout */
 	ofstream file_out;
+	
 	if (vm.count("output")) 
 	{
 		file_out.open(output_file.c_str());
 		pt_output = &file_out;
 	}
-
-    if (vm.count("help")) 
+	
+	if (vm.count("help")) 
     {
 		*pt_output << "Command line help" << endl;
 		*pt_output << desc << endl;
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
     Population pop(param);
     unsigned int maxgen = param.getpar(SIMUL_GENER)->GetInt();
     unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
+    
     for (unsigned int generation = 1; generation <= maxgen; generation++)
     {
         Fitness::fluctuate(generation);
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
             pop.write(*pt_output, generation);
         }
         
-        if (generation < maxgen) {
+		if (generation < maxgen) {
 			Population offsp = pop.reproduce();
             pop = offsp;
         }
@@ -118,6 +120,6 @@ int main(int argc, char *argv[])
 		param.warning_multicalls();
 	}
 	
-	file_out.close(); // This probably does not harm if the file is not open
+	file_out.close();	// This probably does not harm if the file is not open
 	return(EXIT_SUCCESS);
 }

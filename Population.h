@@ -68,6 +68,8 @@ class Population
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
+	    std::string out_geno;
+	    std::string out_unstab;
 };
 
 #endif // POPULATION_H_INCLUDED

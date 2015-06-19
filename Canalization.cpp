@@ -34,12 +34,10 @@ Canalization::Canalization(unsigned int can_tests, const Population & pop)
 	phen_ready = false;
 	fit_ready = false;
 
-	// In theory, this should not be necessary. In practice, something in the population changes
-	// and the Fitness function complains
+	// In theory, this should not be necessary. In practice, something in the population changes and the Fitness function complains
 	Fitness::update(pop);
 	
-	// Fills the database of the object: a collection of reference ("wild") individuals
-	// (the individuals of the population), and for each wild individual, nb_tests mutants. 
+	// Fills the database of the object: a collection of reference ("wild") individuals (the individuals of the population), and for each wild individual, nb_tests mutants. 
 	if (can_tests > 0) 
 	{
 		for (unsigned int i = 0; i < pop.size(); i++) 
@@ -83,9 +81,7 @@ double Canalization::fitness_canalization()
 // Internal functions
 
 /* Sets a new reference individual
-Note that, in practice, reference individuals are never used in
-the calculation. Yet, it is mandatory to provide them, as they indicate
-that the next mutants will concern another individual.*/ 
+Note that, in practice, reference individuals are never used in the calculation. Yet, it is mandatory to provide them, as they indicate that the next mutants will concern another individual.*/ 
 void Canalization::reference_indiv(Individual ind)
 {
 	reference.push_back(ind);
@@ -93,10 +89,7 @@ void Canalization::reference_indiv(Individual ind)
 	mutants.push_back(tmp);
 }
 
-/* Adds a new mutant in the database. Note that reference individuals and
-corresponding mutants have to be entered sequencially, which is not
-very conveninent (no way to enter first all reference individuals, and 
-then all mutants. Nevermind, this is internal code. */
+/* Adds a new mutant in the database. Note that reference individuals and corresponding mutants have to be entered sequencially, which is not very conveninent (no way to enter first all reference individuals, and then all mutants. Nevermind, this is internal code. */
 void Canalization::mutant_indiv(Individual ind) 
 {
 	assert(!(phen_ready || fit_ready));
@@ -156,8 +149,7 @@ void Canalization::process_phen()
 void Canalization::process_fit() 
 {
 	// canalization scores for fitness. 
-	// The algorithm is very similar to the one for phenotypes, except that
-	// fitnesses are unidimensional. 
+	// The algorithm is very similar to the one for phenotypes, except that fitnesses are unidimensional. 
 	assert(!mutants.empty());
 	assert(!reference.empty());	
 	

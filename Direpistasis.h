@@ -24,10 +24,8 @@
 /* Directional epistasis
 	Directional epistasis is estimated by performing two rounds of mutations. 
 	1) mutants are generated (the effect of mutation on the phenotype is m1)
-	2) previous mutants are mutated again, the variance of the effect of the second mutation is 
- 	  Var(m2|m1) = Var(m1)(1+e m1)^2, where e is the directionality of epistasis. 
-	The algorithm performs a linear regression (on the square root of Var(m2|m1) depending on m1), the slope being
-	sqrt(Var(m1)) e m1
+	2) previous mutants are mutated again, the variance of the effect of the second mutation is Var(m2|m1) = Var(m1)(1+e m1)^2, where e is the directionality of epistasis. 
+	The algorithm performs a linear regression (on the square root of Var(m2|m1) depending on m1), the slope being sqrt(Var(m1)) e m1
 */
 
 

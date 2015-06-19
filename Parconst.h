@@ -41,6 +41,8 @@ const std::string FITNESS_OPTIMUM2 = "FITNESS_OPTIMUM2";
 const std::string FITNESS_PERIOD = "FITNESS_PERIOD";
 const std::string FITNESS_STAB = "FITNESS_STAB";            /* Type of stability selection */
 const std::string FITNESS_STABSTR = "FITNESS_STABSTR";      /* Strenght of selection on stability */
+const std::string OUT_GENO = "OUT_GENO";					/* Output for the genotype */
+const std::string OUT_UNSTAB = "OUT_UNSTAB";				/* Output for the phenotypic unstability */
 const std::string OUT_CANAL_TESTS = "OUT_CANAL_TESTS";
 const std::string OUT_CANAL_MUTSD = "OUT_CANAL_MUTSD";
 const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
@@ -112,6 +114,16 @@ const std::string AR_m2 = "m2";
 const std::string AR_Boolean = "boolean";
 const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2)(AR_Boolean);
 
+// Output for the genotype 
+const std::string OG_yes = "yes";
+const std::string OG_no = "no";
+const std::vector<std::string> OG_options = boost::assign::list_of (OG_yes)(OG_no);
+
+// Output for the phenotypic unstability
+const std::string OU_yes = "yes";
+const std::string OU_no = "no";
+const std::vector<std::string> OU_options = boost::assign::list_of (OU_yes)(OU_no);
+
 // Initial vector type
 const std::string SO_min = "minimum";
 const std::string SO_max = "maximum";
@@ -125,5 +137,7 @@ const std::vector<std::string> SO_options = boost::assign::list_of (SO_min)(SO_m
 const std::string TA_norm = "normal";
 const std::string TA_zero = "zero";
 const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero);
+
+
 
 #endif // PARCONST_H_INCLUDED

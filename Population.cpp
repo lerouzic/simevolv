@@ -44,6 +44,8 @@ Population::Population()
 	: nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
+	, out_geno("no")
+	, out_unstab("no")
 {
 }
 
@@ -52,6 +54,8 @@ Population::Population(const Population & copy)
     , nb_canal_test(copy.nb_canal_test)
     , nb_herit_test(copy.nb_herit_test)
     , nb_direpi_test(copy.nb_direpi_test)
+    , out_geno(copy.out_geno)
+	, out_unstab(copy.out_unstab)
 {
 }
 
@@ -60,6 +64,8 @@ Population::Population(const std::vector<Individual>& vecindiv)
     , nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
+	, out_geno("no")
+	, out_unstab("no")
 {
 }
 
@@ -78,6 +84,8 @@ Population & Population::operator=(const Population& copy)
     nb_canal_test = copy.nb_canal_test; 
     nb_herit_test = copy.nb_herit_test;
     nb_direpi_test = copy.nb_direpi_test;
+    out_geno = copy.out_geno;
+	out_unstab = copy.out_unstab;
     return(*this);
 }
 
@@ -96,6 +104,8 @@ void Population::initialize(const ParameterSet& param)
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
+    out_geno = param.getpar(OUT_GENO)->GetString();
+    out_unstab = param.getpar(OUT_UNSTAB)->GetString();
     update();
 }
 
@@ -248,47 +258,60 @@ void Population::make_mutation()
 // output
 
 /* Final summary of an analysis */
-/* This is the function that will generate the output file */
+/* This is the function that will generate the output file for the simulation */
 /* Note that it is not only a display function: some potentially heavy calculation is run here */
 void Population::write(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
-	vector<Phenotype> gen;
 	vector<double> fit;
+	vector<Phenotype> genot;
 	
-	// stores vectors of phenotypic values, genotypic values, and fitnesses. 
-	for (unsigned int i = 0; i < pop.size(); i++) {
+	// stores vectors of phenotypic values, genotypic values, fitnesses. 
+	for (unsigned int i = 0 ; i < pop.size(); i++) 
+	{
 		phen.push_back(pop[i].get_phenotype());
-		gen.push_back(pop[i].get_genot_value());
 		fit.push_back(pop[i].get_fitness());
+				
+		vector<double> matrix_vector_indiv;
+        for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
+        {
+            vector<double> tmp = Allele::combine_mean(*pop[i].genotype.gam_father.haplotype[loc], *pop[i].genotype.gam_mother.haplotype[loc]);
+            for (unsigned int i = 0 ; i < tmp.size(); i++)
+            {
+                matrix_vector_indiv.push_back(tmp[i]);
+            }
+        }
+       genot.push_back(Phenotype(matrix_vector_indiv)); 	
 	}
-	
+			 
 	// Calls the multidimensional statistical routines for phenotypic and genotypic values
 	// Calls the unidimensional routine for fitnesses. 
 	PhenotypeStat phenstat(phen);
-	PhenotypeStat genstat(gen);
-	UnivariateStat fitstat(fit);	
-	
+	UnivariateStat fitstat(fit);
+	PhenotypeStat matstat(genot);	
+			
 	/* First generation: need to write the headers. 
 	   This is not extremely clean. 
-       * No warranty that the function is called all the time at the first
-         generation. If not, there will be no headers.
-       * This cannot be disabled, which can be annoying. 
-       * There is no double check that the headers actually match with the
-         content of the columns. This part of the code needs to be carefully
-         synchronized with the rest of the function! */
+       No warranty that the function is called all the time at the first generation. If not, there will be no headers.
+       This cannot be disabled, which can be annoying. 
+       There is no double check that the headers actually match with the content of the columns. This part of the code needs to be carefully synchronized with the rest of the function! */
 	if (generation==1)
 	{ 
 		outformat(out, "Gen");
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 		{
 			outformat(out, i+1, "MPhen");
-			outformat(out, i+1, "MUnstab");
-
 		}
 		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 		{
 			outformat(out, i+1, "VPhen");
+		}
+		if (out_unstab == OU_yes) 
+		{
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			{
+				outformat(out, i+1, "MUnstab");
+			}
 		}
 		outformat(out, "MFit");
 		outformat(out, "VFit");
@@ -320,6 +343,17 @@ void Population::write(ostream & out, int generation) const
 			}
 			outformat(out, "DirFit");
 		}
+		if (out_geno == OG_yes) 
+		{
+			for (unsigned int i = 0; i < matstat.dimensionality() ; i++)
+			{
+				outformat(out, i+1, "MeanAll");
+			}
+			for (unsigned int i = 0; i < matstat.dimensionality() ; i++)
+			{
+				outformat(out, i+1, "VarAll");
+			}
+		}
 		out << endl; 
    	}
 		
@@ -334,22 +368,28 @@ void Population::write(ostream & out, int generation) const
 	 * following column: fitness canalization score (if enabled)
 	 * n following columns: heritability for the n phenotypes (if enabled)
 	 * following column: heritability for fitness (if enabled)
+	 * n following colums: w-matrix means
+	 * n following colums: w-matrix variances
   */
 	
-
 	outformat(out, generation);
 	Phenovec mm = phenstat.means_phen();
-	Phenovec mm2 = phenstat.means_unstab();
 	for (unsigned int i = 0; i < mm.size(); i++)
 	{
-		//out << mm[i] << "(" << mm2[i] << ")" << "\t";  //debug
 		outformat(out, mm[i]);
-		outformat(out, mm2[i]);
 	}
 	Phenovec vv = phenstat.vars_phen();
 	for (unsigned int i = 0; i < vv.size(); i++)
 	{
 		outformat(out, vv[i]);
+	}
+	if (out_unstab == OU_yes) 
+	{
+		Phenovec mm2 = phenstat.means_unstab();
+		for (unsigned int i = 0; i < mm.size(); i++)
+		{
+			outformat(out, mm2[i]);
+		}
 	}
     outformat(out, fitstat.mean());
     outformat(out, fitstat.var());
@@ -375,5 +415,19 @@ void Population::write(ostream & out, int generation) const
 		outformat(out, dir_test.phen_direpistasis());
 		outformat(out, dir_test.fitness_direpistasis());
 	}
-    out << '\n';
+	if (out_geno == OG_yes) 
+	{
+		Phenovec wm = matstat.means_phen();
+		Phenovec wv = matstat.vars_phen();
+		for (unsigned int i = 0; i < wm.size(); i++)
+		{
+			outformat(out,wm[i]);
+		}
+		for (unsigned int i = 0; i < wv.size(); i++)
+		{
+			outformat(out,wv[i]);
+		}
+	}
+	out << '\n';
+
 }
