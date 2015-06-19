@@ -19,12 +19,12 @@
 #include <vector>
 
 
-void outformat(std::ostream &, const double, unsigned int width=12, unsigned int precision=5, const std::string & sep="");
-void outformat(std::ostream &, const int, unsigned int width=12, const std::string & sep="");
+void outformat(std::ostream &, const double, unsigned int width=13, unsigned int precision=5, const std::string & sep="");
+void outformat(std::ostream &, const int, unsigned int width=13, const std::string & sep="");
 
-void outformat(std::ostream &, const std::vector<double> &, unsigned int width=12, unsigned int precision=5, const std::string & sep="");
+void outformat(std::ostream &, const std::vector<double> &, unsigned int width=13, unsigned int precision=5, const std::string & sep="");
 
-void outformat(std::ostream &, const std::string &, unsigned int width=12, const std::string & sep="");
-void outformat(std::ostream &, unsigned int, const std::string &, unsigned int width=12, const std::string & sep="");
+void outformat(std::ostream &, const std::string &, unsigned int width=13, const std::string & sep="");
+void outformat(std::ostream &, unsigned int, const std::string &, unsigned int width=13, const std::string & sep="");
 
 #endif // OUTPUTFORMAT_H_INCLUDED

@@ -34,12 +34,13 @@ class Haplotype
     friend class ArchiWagner;
     friend class ArchiSiegal; 
     friend class ArchiM2;
+    friend class ArchiBoolean;
 
 	public :
 	    //constructors/destructor
 	    Haplotype(const ParameterSet &);
 	    Haplotype(const Haplotype &);
-	    Haplotype(const std::vector<std::shared_ptr<Allele>> &);
+	    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
 		~Haplotype() {}
 	
 	    //operator overload
@@ -53,7 +54,7 @@ class Haplotype
 	    void make_mutation(unsigned int, bool test = false); 
 	
 	protected :
-	    std::vector<std::shared_ptr<Allele>> haplotype;
+	    std::vector<std::shared_ptr<Allele> > haplotype;
 };
 
 #endif // HAPLOTYPE_H_INCLUDED

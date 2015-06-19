@@ -419,6 +419,12 @@ void ParameterSet::initialize()
     parameters[GENET_EPSILON2] = new Parameter_gaussian(-999.9, 999.9, 999.9);
     parameters[GENET_EPSILON3] = new Parameter_gaussian(-999.9, 999.9, 999.9);
     
+    //Boolean architecture
+    parameters[MATRIX_DENS] = new Parameter_double(0.0, 1.0);
+    parameters[LOG_OPERATOR_DENS] = new Parameter_double(0.0, 1.0);
+    parameters[PHEN_NBLOC] = new Parameter_int(1, 100);
+    parameters[SCALE] = new Parameter_string(SC_options);
+    
     // Regulatory architecture
     parameters[INIT_CONNECT] = new Parameter_double(0.0, 1.0);
     parameters[INIT_CONDIAG] = new Parameter_double(0.0, 1.0);

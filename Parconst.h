@@ -50,6 +50,12 @@ const std::string OUT_DIREPI_TESTS= "OUT_DIREPI_TESTS";
 const std::string GENET_EPSILON2 = "GENET_EPSILON2";
 const std::string GENET_EPSILON3 = "GENET_EPSILON3";
 
+// BOOLEAN ARCHITECTURE
+const std::string MATRIX_DENS = "MATRIX_DENS";
+const std::string LOG_OPERATOR_DENS = "LOG_OPERATOR_DENS";
+const std::string PHEN_NBLOC = "PHEN_NBLOC";
+const std::string SCALE = "SCALE";
+
 // REGULATORY ARCHITECTURE
 const std::string INIT_CONNECT = "INIT_CONNECT";
 const std::string INIT_CONDIAG = "INIT_CONDIAG";
@@ -59,7 +65,12 @@ const std::string INIT_RECURRENCE = "INIT_RECURRENCE";
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
 const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
 
-
+//Initial scale for boolean architecture
+const std::string SC_int = "integer";
+const std::string SC_vector = "vector";
+const std::string SC_dec = "decimal";
+const std::string SC_combi = "combined";
+const std::vector<std::string> SC_options = boost::assign::list_of (SC_int)(SC_vector)(SC_dec)(SC_combi);
 
 // Initial clonal status
 const std::string CL_clonal = "clonal";
@@ -98,7 +109,8 @@ const std::string AR_mult = "multilinear";
 const std::string AR_wagner = "wagner";
 const std::string AR_siegal = "siegal";
 const std::string AR_m2 = "m2";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2);
+const std::string AR_Boolean = "boolean";
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2)(AR_Boolean);
 
 // Initial vector type
 const std::string SO_min = "minimum";

@@ -87,6 +87,22 @@ vector<double> Allele::combine_mean(const Allele & a1, const Allele & a2)
 	return(ans);
 }
 
+//Allele combination used in the Boolean Architecture. Combines the two alleles by using an OR function
+vector<double> Allele::combine_OR(const Allele & a1, const Allele & a2)
+{
+    vector<double> ans;
+    
+    unsigned int all_size =  a1.allele.size();
+    for (unsigned int sa = 0; sa < all_size; sa++)
+    {
+        if(a1.allele[sa]||a2.allele[sa])
+            ans.push_back(1);
+        else
+            ans.push_back(0);
+    }
+    return(ans);
+}
+
 shared_ptr<Allele> Allele::make_mutant(double mutsd) const
 {
     int mutated_site = floor(allele.size()*Random::randnum());
@@ -96,6 +112,16 @@ shared_ptr<Allele> Allele::make_mutant(double mutsd) const
     return(a);
 }
 
+//functions to create mutants used in the Boolean Architecture. Uses a NOT function.
+shared_ptr<Allele> Allele::make_boolean_mutant() const
+{
+    int mutated_site = floor(allele.size()*Random::randnum());
+    shared_ptr<Allele> a(new Allele(*this));
+    
+    a->allele[mutated_site] = 1 - a->allele[mutated_site];
+    
+    return(a);
+}
 
 
 /******************** DERIVED CLASSES *********************************/

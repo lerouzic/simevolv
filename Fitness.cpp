@@ -626,7 +626,8 @@ double Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const P
 	
 	if (optimum.size() < phenotype.dimensionality())
 	{
-		optimum = Fitness::expand_vec(optimum, phenotype.dimensionality());	
+		optimum = Fitness::expand_vec(optimum, phenotype.dimensionality());
+        
 	}
 	
 	double departure = phenotype.get_pheno(trait) - optimum[trait];

@@ -31,6 +31,7 @@ class Allele
     friend class ArchiWagner;
     friend class ArchiSiegal; 
     friend class ArchiM2;
+    friend class ArchiBoolean;
 	
 	public :
 	    //constructors/destructor
@@ -46,8 +47,10 @@ class Allele
 	    unsigned int all_size() const;
 		static std::vector<double> combine_add(const Allele &, const Allele &);
 		static std::vector<double> combine_mean(const Allele &, const Allele &);
+        static std::vector<double> combine_OR(const Allele &, const Allele &);
 		
 		virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
+        virtual std::shared_ptr<Allele> make_boolean_mutant() const;
 	
 	protected :
 	    std::vector<double> allele;

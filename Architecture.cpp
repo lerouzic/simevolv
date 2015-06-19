@@ -17,6 +17,7 @@
 #include "ArchiAdditive.h"
 #include "ArchiMultilinear.h"
 #include "ArchiRegulatoryMatrix.h"
+#include "ArchiBoolean.h"
 #include "Parconst.h"
 #include "Random.h"
 
@@ -91,6 +92,8 @@ void Architecture::initialize(const ParameterSet& param)
     {
 		Architecture::instance = new ArchiM2(param);
     }
+    else if(type_archi==AR_Boolean)
+        Architecture::instance = new ArchiBoolean(param);
     else
     {
         cerr << "Wrong architecture type" << endl;

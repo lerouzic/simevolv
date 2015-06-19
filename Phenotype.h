@@ -21,13 +21,19 @@
 #include <iostream>
 #include <vector>
 
+class Phenovec;
+void outformat(std::ostream &, const Phenovec &,
+                      unsigned int width=13, unsigned int precision=5, std::string sep="");
+class Phenotype;
+void outformat(std::ostream &, const Phenotype &,
+                      unsigned int width=13, unsigned int precision=5, std::string sep="");
 
 // Phenovec is "just" a vector of double, storing phenotypic values for several characters
 class Phenovec: private std::vector<double>
 {
 	friend std::ostream& operator << (std::ostream&, const Phenovec &);
 	friend void outformat(std::ostream &, const Phenovec &, 
-		unsigned int width=12, unsigned int precision=5, std::string sep="");
+		unsigned int width, unsigned int precision, std::string sep);
 		
     typedef double T;
     typedef std::vector<double> vector;
@@ -49,7 +55,7 @@ class Phenotype
 {
 	friend std::ostream& operator << (std::ostream&, const Phenotype&);
 	friend void outformat(std::ostream &, const Phenotype &, 
-			unsigned int width=12, unsigned int precision=5, std::string sep="");
+			unsigned int width, unsigned int precision, std::string sep);
 	friend class Environment;
 	
 	public:
@@ -106,9 +112,9 @@ class PhenotypeStat
 		
 		unsigned int dimensionality() const;
 		
-		static std::vector<std::vector<double>> transpose_phen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double>> transpose_unstabphen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double>> transpose_phenovec_matrix(const std::vector<Phenovec> &);
+		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
+		static std::vector<std::vector<double> > transpose_unstabphen_matrix(const std::vector<Phenotype> &);
+		static std::vector<std::vector<double> > transpose_phenovec_matrix(const std::vector<Phenovec> &);
 		
 	protected:
 		MultivariateStat * pheno;
