@@ -124,6 +124,8 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     offspring.nb_canal_test = nb_canal_test; 
     offspring.nb_herit_test = nb_herit_test;
     offspring.nb_direpi_test = nb_direpi_test;
+    offspring.out_geno = out_geno;
+    offspring.out_unstab = out_unstab;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<double> cumul_fit = cumul_fitness();
@@ -386,7 +388,7 @@ void Population::write(ostream & out, int generation) const
 	if (out_unstab == OU_yes) 
 	{
 		Phenovec mm2 = phenstat.means_unstab();
-		for (unsigned int i = 0; i < mm.size(); i++)
+		for (unsigned int i = 0; i < mm2.size(); i++)
 		{
 			outformat(out, mm2[i]);
 		}
