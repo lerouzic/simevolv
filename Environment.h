@@ -33,11 +33,14 @@ class Environment
 	    static void initialize(const ParameterSet&);
 	
 	    // functions
-	    static Phenotype rand_effect(Phenotype);
-	    static double get_sd();
+		static double init_disturb();
+		static double dynam_disturb();
+		static double final_disturb();
 	
 	private:
-	    double sd;	
+	    double sd_init;
+	    double sd_dynam;
+	    double sd_final;	
 };
 
 #endif // ENVIRONMENT_H_INCLUDED

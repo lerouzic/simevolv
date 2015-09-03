@@ -61,9 +61,9 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop)
 		result.father_phen = Father.get_phenotype();
 		result.mother_phen = Mother.get_phenotype();
 		result.offspring_phen = Offspring.get_phenotype();
-		result.father_gen = Father.get_genot_value();
-		result.mother_gen = Mother.get_genot_value();
-		result.offspring_gen = Offspring.get_genot_value();
+		result.father_gen = Father.get_phenotype();
+		result.mother_gen = Mother.get_phenotype();
+		result.offspring_gen = Offspring.get_phenotype();
 		result.father_fit = Father.get_fitness();
 		result.mother_fit = Mother.get_fitness();
 		result.offspring_fit = Offspring.get_fitness();

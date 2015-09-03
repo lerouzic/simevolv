@@ -51,7 +51,7 @@ class Architecture  	/* Pure virtual class */
 	    double recombination_rate(unsigned int) const;
 	    		
 		// to be defined by inherited classes 
-	    virtual Phenotype phenotypic_value(const Genotype&) const = 0; // no default
+	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const = 0; // no default
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
 	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
 	    virtual std::shared_ptr<Allele> allele_mutation_test(const std::shared_ptr<Allele>, unsigned int loc = 0) const;

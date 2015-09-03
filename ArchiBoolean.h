@@ -43,7 +43,7 @@ class ArchiBoolean : public Architecture
     // debug/check
    // virtual std::string print_epsilon2() const;
     
-    virtual Phenotype phenotypic_value(const Genotype&) const;
+    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
     virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
     virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
     virtual std::shared_ptr<Allele> allele_mutation_test(const std::shared_ptr<Allele>, unsigned int loc = 0) const;

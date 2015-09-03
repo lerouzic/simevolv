@@ -14,6 +14,7 @@
 
 
 #include "ArchiMultilinear.h"
+#include "Environment.h"
 
 #include "Parconst.h"
 
@@ -216,7 +217,7 @@ string ArchiMultilinear::print_epsilon3() const
 
 /* calculate the phenotypic function depending on the genotype 
 	here : sum of the genotypic values, correlation with epistasis values */
-Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool envir) const
 {
     vector<double> sumloc(nloc);
     double phenotype = 0.0;
@@ -250,5 +251,7 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype) const
             }
         }
     }
+    if (envir) 
+		phenotype += Environment::final_disturb();
     return(Phenotype(phenotype));
 }

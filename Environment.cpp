@@ -30,7 +30,9 @@ using namespace std;
 
 /* constructor using the parameters from the parameters files */
 Environment::Environment(const ParameterSet & param)
-    : sd(param.getpar(ENVIRO_SD)->GetDouble())
+    : sd_init(param.getpar(ENVIRO_SDINIT)->GetDouble())
+    , sd_dynam(param.getpar(ENVIRO_SDDYNAM)->GetDouble())
+    , sd_final(param.getpar(ENVIRO_SDFINAL)->GetDouble())
 {
 }
 
@@ -50,24 +52,27 @@ void Environment::initialize(const ParameterSet & param)
     Environment::instance = new Environment(param);
 }
 
-
-// functions
-
-/* modify the genotypic value by adding an environmental effect 
- * (Probably not very efficient, but this will probably not be used for complex 
- * architectures in which the environmental effect is correlated to the genotype) */
-Phenotype Environment::rand_effect(Phenotype genot_values)
-{	 
-    assert (Environment::instance != NULL);
-    for (unsigned int i = 0; i < genot_values.dimensionality(); i++) {
-		genot_values.add_to_pheno(i, Environment::instance->sd*Random::randgauss());
-	}
-    return(genot_values);
+double Environment::init_disturb() 
+{
+	if (instance->sd_init == 0.)
+		return(0.0);
+	else
+		return(instance->sd_init*Random::randgauss());
+	
 }
 
-/* return the effect of environmental modification */
-double Environment::get_sd()
+double Environment::dynam_disturb() 
 {
-    assert (Environment::instance != NULL);
-    return(Environment::instance->sd);
+	if (instance->sd_dynam == 0.)
+		return(0.0);
+	else
+		return(instance->sd_dynam*Random::randgauss());
+}
+
+double Environment::final_disturb() 
+{
+	if (instance->sd_final == 0.)
+		return(0.0);
+	else
+		return(instance->sd_final*Random::randgauss());
 }

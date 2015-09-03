@@ -44,7 +44,7 @@ class ArchiMultilinear : public Architecture
 	    virtual std::string print_epsilon2() const;
 	    virtual std::string print_epsilon3() const;
 	
-	    virtual Phenotype phenotypic_value(const Genotype&) const;
+	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
 	
 	protected :
 	    std::vector<std::vector<double>> epsilon2;

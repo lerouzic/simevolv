@@ -13,6 +13,7 @@
 
 
 #include "ArchiAdditive.h"
+#include "Environment.h"
 
 #include "Parconst.h"
 
@@ -42,7 +43,7 @@ ArchiAdditive::ArchiAdditive(const ParameterSet& param)
 
 /* calculate the phenotypic function depending on the genotype 
  * here : sum of the genotypic values */
-Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir) const
 {
     vector<double> phenotype(sall);
 
@@ -56,6 +57,10 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype) const
 		for (unsigned int all = 0; all < sall; all++)
 			phenotype[all] += sumloc[all];
     }
+    
+    for (unsigned int all = 0; all < sall; all++)
+		if (envir)
+			phenotype[all] += Environment::final_disturb();
 
     return(Phenotype(phenotype));
 }

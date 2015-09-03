@@ -124,7 +124,8 @@ shared_ptr<Allele> ArchiBoolean::allele_init(const ParameterSet & param, unsigne
 
 /* calculate the phenotypic function depending on the genotype
 	here : boolean logic operations between loci of the genotype */
-Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) const
+	// Warning: the variable "envir" has no effect in this model. 
 {
     double phenotype_calc =1;
     vector<double> phenotype(0);

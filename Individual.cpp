@@ -17,7 +17,6 @@
 
 #include "Population.h"
 #include "Fitness.h"
-#include "Environment.h"
 #include "Architecture.h"
 
 #include <vector>
@@ -45,7 +44,6 @@ Individual::Individual(const ParameterSet& param)
 
 Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
-    , genot_value(copy.genot_value)
     , phenotype(copy.phenotype)
     , fitness(copy.fitness)
 {
@@ -63,7 +61,6 @@ Individual & Individual::operator= (const Individual& copy)
         return (*this);
 
     genotype=copy.genotype;
-    genot_value=copy.genot_value;
     phenotype=copy.phenotype;
     fitness=copy.fitness;
 
@@ -77,8 +74,7 @@ Individual & Individual::operator= (const Individual& copy)
 void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
-    genot_value = archi -> phenotypic_value(genotype);
-    phenotype = Environment::rand_effect(genot_value);
+    phenotype = archi -> phenotypic_value(genotype, true);
     fitness = 0;
 }
 
@@ -96,10 +92,7 @@ double Individual::get_fitness() const
     return(fitness);
 }
 
-Phenotype Individual::get_genot_value() const
-{
-	return(genot_value);
-}
+
 
 Phenotype Individual::get_phenotype() const
 {
@@ -145,8 +138,7 @@ Haplotype Individual::produce_gamete() const
 void Individual::draw_mutation()
 {
     genotype.draw_mutation();
-    genot_value = Architecture::Get() -> phenotypic_value(genotype);
-    phenotype = genot_value;
+    phenotype = Architecture::Get() -> phenotypic_value(genotype, true);
     fitness = 0.0;
 }
 
@@ -154,9 +146,7 @@ void Individual::draw_mutation()
 void Individual::make_mutation(bool test /* = false */)
 {
     genotype.make_mutation(test);
-    genot_value = Architecture::Get() -> phenotypic_value(genotype);
-    //phenotype = Environment::rand_effect(genot_value); // This step is not obvious
-    phenotype = genot_value;
+    phenotype = Architecture::Get() -> phenotypic_value(genotype, true);
     fitness = 0.0;
 } 
 

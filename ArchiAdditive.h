@@ -33,7 +33,7 @@ class ArchiAdditive : public Architecture
 	    friend std::ostream& operator << (std::ostream&, const Architecture&);
 	
 	    //functions
-	    virtual Phenotype phenotypic_value(const Genotype&) const;
+	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
 };
 
 #endif // ARCHIADDITIVE_H_INCLUDED

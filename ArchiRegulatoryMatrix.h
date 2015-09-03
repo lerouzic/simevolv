@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <boost/numeric/ublas/vector.hpp>
 
 
 class ArchiRegulatoryMatrix : public Architecture
@@ -32,7 +33,7 @@ class ArchiRegulatoryMatrix : public Architecture
 		
 		// functions 
 		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
-		virtual Phenotype phenotypic_value(const Genotype&) const;
+		virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
 	
 	protected :
 		unsigned int sall;
@@ -45,6 +46,9 @@ class ArchiRegulatoryMatrix : public Architecture
 	    //functions
 		virtual double sigma(double h) const;
 		void init_connectivity_matrix(const ParameterSet &);		
+		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
+		virtual void haircut(std::vector<double> & vec) const;
+		
 };
 
 class ArchiWagner : public ArchiRegulatoryMatrix
@@ -59,6 +63,8 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	protected :
 		// Inherited functions
 		virtual double sigma(double h) const;
+		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
+		virtual void haircut(std::vector<double> & vec) const;				
 };	
 
 class ArchiSiegal : public ArchiRegulatoryMatrix
@@ -75,6 +81,8 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
+		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;	
+		virtual void haircut(std::vector<double> & vec) const;	
 };
 
 class ArchiM2 : public ArchiRegulatoryMatrix
@@ -91,6 +99,8 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
+		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
+		virtual void haircut(std::vector<double> & vec) const;
 };
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

@@ -48,7 +48,6 @@ class Individual
 		// getters
 	    double get_fitness() const;
 	    Phenotype get_phenotype() const;
-	    Phenotype get_genot_value() const;
 	    std::string write_debug(unsigned int) const;
 	    
 	    // reproduction
@@ -64,7 +63,6 @@ class Individual
 	
 	public :
 	    Genotype genotype;
-	    Phenotype genot_value; // raw phenotype
 	    Phenotype phenotype; // phenotype + environmental effect 
 	    double fitness;
 };

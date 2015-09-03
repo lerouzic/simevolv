@@ -26,7 +26,7 @@ struct MiniIndividual
 {
 	public:
 		MiniIndividual(const MiniIndividual & mini) : phen(mini.phen), fitness(mini.fitness) { }
-		MiniIndividual(const Individual & ind) : phen(ind.get_genot_value()), fitness(ind.get_fitness()) { }
+		MiniIndividual(const Individual & ind) : phen(ind.get_phenotype()), fitness(ind.get_fitness()) { }
 				
 		Phenotype phen;
 		double fitness;

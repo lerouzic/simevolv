@@ -17,6 +17,7 @@
 #include "Parconst.h"
 #include "Random.h"
 #include "Statistics.h"
+#include "Environment.h"
 
 #include <vector>
 #include <iomanip>
@@ -112,7 +113,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
     return(a);
 }
 
-Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) const
+Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir) const
 {
 	// creation of the W matrix;
 	std::vector<std::vector<double>> matrix;
@@ -129,7 +130,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	for (unsigned int i = 0 ; i<nloc ; i++)
 	{
 		St(i) = So[i];
+		if (envir)
+			St(i) += Environment::init_disturb();
 	}
+	haircut(St);
 	
 	for (unsigned int i=0; i<nloc; i++) 
 	{
@@ -154,7 +158,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
 			//St(i) = this->sigma(h(i));
+			St(i) += Environment::dynam_disturb();
 		}
+		haircut(St);
+		
 		if (t > (timesteps-calcsteps)) 
 		{
 			unstability.push_back(boost_to_std_vector(St));
@@ -165,6 +172,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype) con
 	InvertedMStat stat_steps(unstability);
 	vector<double> Sf_mean = stat_steps.means();
 	vector<double> Sf_var = stat_steps.vars();
+	
+	for (unsigned int i = 0; i < Sf_mean.size(); i++)
+		Sf_mean[i] += Environment::final_disturb();
+	haircut(Sf_mean);
 	
 	return Phenotype(Sf_mean, Sf_var);
 }
@@ -213,6 +224,13 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 	}
 }
 
+void ArchiRegulatoryMatrix::haircut(boost::numeric::ublas::vector<double> & vec) const 
+{
+}
+
+void ArchiRegulatoryMatrix::haircut(vector<double> & vec) const 
+{
+}
 
 //////////////////////////// INHERITED CLASSES //////////////////////////////////
 
@@ -293,6 +311,21 @@ double ArchiWagner::sigma(double h) const
 	}
 }	
 
+void ArchiWagner::haircut(boost::numeric::ublas::vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec(i) < -1.) vec(i) = -1.;
+		else if (vec(i) > 1.) vec(i) = 1.;
+	}
+}
+
+void ArchiWagner::haircut(vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec[i] < -1.) vec[i] = -1.;
+		else if (vec[i] > 1.) vec[i] = 1.;
+	}
+}
 
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
@@ -354,6 +387,22 @@ double ArchiSiegal::sigma(double h) const
 	return ((2. / (1. + exp(-basal*h)) ) -1.);
 }
 
+void ArchiSiegal::haircut(boost::numeric::ublas::vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec(i) < -1.) vec(i) = -1.;
+		else if (vec(i) > 1.) vec(i) = 1.;
+	}
+}
+
+void ArchiSiegal::haircut(std::vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec[i] < -1.) vec[i] = -1.;
+		else if (vec[i] > 1.) vec[i] = 1.;
+	}
+}
+
 
 ArchiM2::ArchiM2(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
@@ -413,4 +462,20 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 double ArchiM2::sigma(double h) const 
 {
 	return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
+}
+
+void ArchiM2::haircut(boost::numeric::ublas::vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec(i) < 0.) vec(i) = 0.;
+		else if (vec(i) > 1.) vec(i) = 1.;
+	}
+}
+
+void ArchiM2::haircut(std::vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		if (vec[i] < 0.) vec[i] = 0.;
+		else if (vec[i] > 1.) vec[i] = 1.;
+	}
 }

@@ -140,7 +140,7 @@ void Canalization::process_phen()
 		vector<Phenotype> data_i;
 		for (unsigned int j = 0; j < mutants[i].size(); j++) 
 		{ // mutant # j
-			data_i.push_back(mutants[i][j].get_genot_value());
+			data_i.push_back(mutants[i][j].get_phenotype());
 		}
 		PhenotypeStat stat_i(data_i);
 		
