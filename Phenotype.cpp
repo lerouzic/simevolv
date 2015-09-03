@@ -295,3 +295,61 @@ vector<vector<double>> PhenotypeStat::transpose_phenovec_matrix(const vector<Phe
 	return(ans);
 }
 
+////////////////////////////////// BivariatePhenovecStat
+
+BivariatePhenovecStat::BivariatePhenovecStat(const vector<Phenovec> & v1, const vector<Phenovec> & v2)
+{
+	assert(!v1.empty());
+	assert(!v2.empty());
+	assert(v1.size() > 1);
+	assert(v2.size() > 1);
+	assert(v1.size() == v2.size());
+	assert(v1[0].dimensionality() == v2[0].dimensionality());
+	
+	for (unsigned int i = 0; i < v1[0].dimensionality(); i++) { // loop on the genes
+		vector<double> vv1, vv2;
+		for (unsigned int j = 0; j < v1.size(); j++) { // loop on individuals
+			vv1.push_back(v1[j][i]);
+			vv2.push_back(v2[j][i]);
+		}
+		vector<vector<double>> tmp;
+		tmp.push_back(vv1);
+		tmp.push_back(vv2);
+		cache.push_back(new MultivariateStat(tmp));
+	}
+}
+
+BivariatePhenovecStat::~BivariatePhenovecStat() {
+	for (unsigned int i = 0; i < cache.size(); i++) {
+		delete cache[i];
+	}
+}
+
+Phenovec BivariatePhenovecStat::means(unsigned int index) const {
+	assert (index < 2); // Bivariate only
+	vector<double> tmp;
+	for (unsigned int i = 0; i < cache.size(); i++) {
+		tmp.push_back(cache[i]->mean(index));
+	}
+	return(tmp);
+}
+
+Phenovec BivariatePhenovecStat::vars(unsigned int index) const {
+	assert (index < 2); // Bivariate only
+	vector<double> tmp;
+	for (unsigned int i = 0; i < cache.size(); i++) {
+		tmp.push_back(cache[i]->var(index));
+	}
+	return(tmp);
+}
+
+Phenovec BivariatePhenovecStat::cov(unsigned int index1, unsigned int index2) const {
+	assert(index1 < 2);
+	assert(index2 < 2);
+	assert(index1 != index2);
+	vector<double> tmp;
+	for (unsigned int i = 0; i < cache.size(); i++) {
+		tmp.push_back(cache[i]->cov(index1, index2));
+	}
+	return(tmp);
+}

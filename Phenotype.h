@@ -122,4 +122,22 @@ class PhenotypeStat
 		MultivariateStat * unstab;
 };
 
+class BivariatePhenovecStat 
+{
+	// At one point it might be useful to make it multivariate (TODO)
+	public:
+		// constructors
+		BivariatePhenovecStat() = delete;
+		BivariatePhenovecStat(const std::vector<Phenovec>&, const std::vector<Phenovec>&); // This is only bivariate
+		~BivariatePhenovecStat();
+	
+		// functions
+		Phenovec means(unsigned int) const;
+		Phenovec vars(unsigned int) const;
+		Phenovec cov(unsigned int, unsigned int) const;
+		
+	protected:
+		std::vector<MultivariateStat *> cache;
+};
+
 #endif // PHENOTYPE_H_INCLUDED
