@@ -112,6 +112,13 @@ int main(int argc, char *argv[])
 			Population offsp = pop.reproduce();
             pop = offsp;
         }
+        // Quick and dirty: send some debugging/detailed information into a specific file
+        /*if (generation==maxgen) {
+			ofstream tmp_out("debug.txt");
+			ostream & out = tmp_out;
+			pop.write_debug(out);
+			tmp_out.close();
+		}*/
     }
     
     if (vm.count("parcheck")) 

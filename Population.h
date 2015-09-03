@@ -50,6 +50,7 @@ class Population
 	    	
 	    //output
 	    void write(std::ostream &, int) const;
+	    void write_debug(std::ostream &) const;
 	
 	protected :
 		// internal functions

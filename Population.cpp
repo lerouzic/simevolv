@@ -438,3 +438,11 @@ void Population::write(ostream & out, int generation) const
 	out << '\n';
 
 }
+
+void Population::write_debug(ostream & out) const 
+{
+	for (unsigned int i = 0; i < size(); i ++) {
+		out << "Indiv" << i << "\t" << "Gam1" << "\t" << pop[i].write_debug(1) << endl;
+		out << "Indiv" << i << "\t" << "Gam2" << "\t" << pop[i].write_debug(2) << endl;
+	}
+}

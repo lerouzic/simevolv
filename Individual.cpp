@@ -21,6 +21,7 @@
 #include "Architecture.h"
 
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -103,6 +104,20 @@ Phenotype Individual::get_genot_value() const
 Phenotype Individual::get_phenotype() const
 {
     return(phenotype);
+}
+
+string Individual::write_debug(unsigned int gam) const 
+{
+	assert ((gam==1) || (gam==2));
+	// Dirty but convenient: write any debug information into a string.
+	ostringstream o;
+	
+	if (gam==1) 
+		o << genotype.gam_father.write_debug();
+	else
+		o << genotype.gam_mother.write_debug();
+	
+	return(o.str());
 }
 
 /* create a new individual from the paternal and maternal gametes */

@@ -20,6 +20,7 @@
 #include "Parameters.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <memory> // shared_ptr
 
@@ -54,6 +55,8 @@ class Haplotype
 	    void draw_mutation();				
 	    void make_mutation(bool test = false); 				
 	    void make_mutation(unsigned int, bool test = false); 
+	    
+	    std::string write_debug() const;
 	
 	protected :
 	    std::vector<std::shared_ptr<Allele> > haplotype;

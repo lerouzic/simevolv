@@ -22,6 +22,7 @@
 #include "Parameters.h"
 
 #include <iostream>
+#include <string>
 
 
 class Population;
@@ -48,6 +49,7 @@ class Individual
 	    double get_fitness() const;
 	    Phenotype get_phenotype() const;
 	    Phenotype get_genot_value() const;
+	    std::string write_debug(unsigned int) const;
 	    
 	    // reproduction
 	    Haplotype produce_gamete() const;

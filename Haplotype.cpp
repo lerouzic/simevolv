@@ -114,3 +114,15 @@ void Haplotype::make_mutation(unsigned int loc, bool test /* = false */)
 		haplotype[loc] = a;
 	}
 }
+
+string Haplotype::write_debug() const
+{
+	ostringstream o;
+	for (unsigned int i = 0; i < haplotype.size(); i++) {
+		o << "All" << i << ": qq";
+		for (unsigned int j = 0; j < haplotype[i]->allele.size(); j++) {
+			o << haplotype[i]->allele[j] << " ";
+		}
+	}
+	return(o.str());
+}
