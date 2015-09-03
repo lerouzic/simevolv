@@ -32,6 +32,7 @@ using namespace std;
 Canalization::Canalization(unsigned int can_tests, const Population & pop)
 {
 	phen_ready = false;
+	cov_ready = false;
 	fit_ready = false;
 
 	// In theory, this should not be necessary. In practice, something in the population changes and the Fitness function complains
@@ -64,6 +65,17 @@ Phenotype Canalization::phen_canalization()
 	}
 	
 	return(mean_of_var);
+}
+
+/* Get the covariances between network unstability and canalization score (variance among mutants) */
+Phenotype Canalization::cov_canalization()
+{
+	if (!cov_ready)
+	{
+		process_cov();
+	}
+	
+	return(cov_can);
 }
 
 /*	Get the canalization scores for fitness (the average of mutant variances) */
@@ -171,4 +183,28 @@ void Canalization::process_fit()
 	indiv_fitness_var = stat_fit.vars();
 	
 	fit_ready = true;
+}
+
+void Canalization::process_cov()
+{
+	// Calculation of covariances:
+	// * Covariance between canalization and unstability
+	
+	assert(!mutants.empty());
+	assert(!reference.empty());	// probably unnecessary
+	if (!phen_ready) 
+	{
+		process_phen();
+	}
+	vector<Phenovec> unstab;
+	vector<Phenovec> can;
+	for (unsigned int i = 0; i < reference.size(); i++) {
+		unstab.push_back(reference[i].get_phenotype().get_unstab());
+		can.push_back(var_per_indiv[i].get_pheno());
+	}
+	BivariatePhenovecStat bivtmp(unstab, can);
+	
+	cov_can = bivtmp.cov(0,1);
+		
+	cov_ready = true;
 }

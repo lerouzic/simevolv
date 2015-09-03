@@ -327,6 +327,10 @@ void Population::write(ostream & out, int generation) const
 			{
 				outformat(out, i+1, "CanPhen");
 			}
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			{
+				outformat(out, i+1, "CanCov");
+			}			
 			outformat(out, "CanFit");
 		}
 		if (nb_herit_test > 0)
@@ -401,6 +405,7 @@ void Population::write(ostream & out, int generation) const
 		// Runs the canalization tests
 		Canalization can_test(nb_canal_test, *this);
 		outformat(out, can_test.phen_canalization());
+		outformat(out, can_test.cov_canalization());		
 		outformat(out, can_test.fitness_canalization());
 	}    
 	if (nb_herit_test > 0) 

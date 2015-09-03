@@ -38,6 +38,7 @@ class Canalization
 						
 		// get the canalization scores
 		Phenotype phen_canalization();
+		Phenotype cov_canalization();
 		double fitness_canalization();
 				
 	protected:
@@ -48,6 +49,7 @@ class Canalization
 		// run the calculation
 		void process();	
 		void process_phen();
+		void process_cov();
 		void process_fit();
 		
 		// Storage of temporary information
@@ -62,10 +64,13 @@ class Canalization
 		Phenotype mean_of_var;
 		Phenotype var_of_var;
 		
+		Phenotype cov_can;
+		
 		std::vector<double> indiv_fitness_mean;
 		std::vector<double> indiv_fitness_var;
 		
 		bool phen_ready;
+		bool cov_ready;
 		bool fit_ready;
 };
 
