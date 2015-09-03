@@ -41,7 +41,8 @@ using namespace std;
 
 /* default constructor (necessary a build a population individual by individual, but might reflect a design error) */ 
 Population::Population()
-	: nb_canal_test(0)
+	: selfing_rate(0.0)	
+	, nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
 	, out_geno("no")
@@ -51,6 +52,7 @@ Population::Population()
 
 Population::Population(const Population & copy)
     : pop(copy.pop)
+	, selfing_rate(copy.selfing_rate)    
     , nb_canal_test(copy.nb_canal_test)
     , nb_herit_test(copy.nb_herit_test)
     , nb_direpi_test(copy.nb_direpi_test)
@@ -61,6 +63,7 @@ Population::Population(const Population & copy)
 
 Population::Population(const std::vector<Individual>& vecindiv)
     : pop(vecindiv)
+	, selfing_rate(0.0)    
     , nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
@@ -81,6 +84,7 @@ Population & Population::operator=(const Population& copy)
         return(*this);
 
     pop = copy.pop;
+ 	selfing_rate = copy.selfing_rate;   
     nb_canal_test = copy.nb_canal_test; 
     nb_herit_test = copy.nb_herit_test;
     nb_direpi_test = copy.nb_direpi_test;
@@ -101,6 +105,7 @@ void Population::initialize(const ParameterSet& param)
         Individual indiv(param);
         pop.push_back(indiv);
     }
+    selfing_rate = param.getpar(GENET_SELFING)->GetDouble();    
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
@@ -121,6 +126,7 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     // Information about the number of canalization, heritability, and directionality tests
     // is transmitted to the offspring. Strange design, but the Population
     // class does not save a copy of the parameter set. 
+    offspring.selfing_rate = selfing_rate;    
     offspring.nb_canal_test = nb_canal_test; 
     offspring.nb_herit_test = nb_herit_test;
     offspring.nb_direpi_test = nb_direpi_test;
@@ -140,9 +146,14 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     {
 		// Each offspring results from a cross between two random parents.
 		// (Hermaphrodite, sexual individuals)
-        offspring.pop.push_back(Individual::mate(
-			this->pick_parent(cumul_fit),
-            this->pick_parent(cumul_fit)));
+		
+		const Individual & firstpar = this->pick_parent(cumul_fit);
+		
+		if (Random::randnum() < selfing_rate) {
+			offspring.pop.push_back(Individual::mate(firstpar, firstpar));
+		} else {
+			offspring.pop.push_back(Individual::mate(firstpar, this->pick_parent(cumul_fit)));
+		}
     }
     offspring.update();
     return(offspring);

@@ -66,6 +66,7 @@ class Population
 	    long int stl_search_fit_table(double, const std::vector<double>&) const;		
 	
 	    std::vector<Individual> pop;
+	    double selfing_rate;	    
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
