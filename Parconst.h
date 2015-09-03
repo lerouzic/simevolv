@@ -24,6 +24,7 @@ const std::string TYPE_ARCHI = "TYPE_ARCHI";				/* Architecture types */
 const std::string SIMUL_GENER = "SIMUL_GENER"; 
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
 const std::string GENET_NBLOC = "GENET_NBLOC";
+const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
@@ -73,6 +74,11 @@ const std::string SC_vector = "vector";
 const std::string SC_dec = "decimal";
 const std::string SC_combi = "combined";
 const std::vector<std::string> SC_options = boost::assign::list_of (SC_int)(SC_vector)(SC_dec)(SC_combi);
+
+// Mutation type 
+const std::string MT_individual = "individual";
+const std::string MT_locus = "locus";
+const std::vector<std::string> MT_options = boost::assign::list_of (MT_individual)(MT_locus);
 
 // Initial clonal status
 const std::string CL_clonal = "clonal";

@@ -387,6 +387,7 @@ void ParameterSet::initialize()
    
 	// General genetic parameters
     parameters[GENET_NBLOC] = new Parameter_int(1, 100);
+    parameters[GENET_MUTTYPE] = new Parameter_string(MT_options);
     parameters[GENET_MUTRATES] = new Parameter_vector_double(0.0, 1.0);
     parameters[GENET_MUTSD] = new Parameter_vector_double(0.0, 999.9);
     parameters[GENET_RECRATES] = new Parameter_vector_double(0.0, 0.5);

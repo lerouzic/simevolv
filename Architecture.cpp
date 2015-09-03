@@ -48,7 +48,10 @@ Architecture::Architecture(const ParameterSet& param)
 {
     for (unsigned int i = 0; i < nloc; i++)
     {
-        mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
+		if (param.getpar(GENET_MUTTYPE)->GetString() == MT_locus)
+			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
+		else 
+			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<double>(nloc));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
         mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
