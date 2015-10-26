@@ -325,6 +325,10 @@ void Population::write(ostream & out, int generation) const
 			{
 				outformat(out, i+1, "MUnstab");
 			}
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			{
+				outformat(out, i+1, "VUnstab");
+			}
 		}
 		outformat(out, "MFit");
 		outformat(out, "VFit");
@@ -336,7 +340,11 @@ void Population::write(ostream & out, int generation) const
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 			{
-				outformat(out, i+1, "CanPhen");
+				outformat(out, i+1, "MCan");
+			}
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			{
+				outformat(out, i+1, "VCan");
 			}
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
 			{
@@ -378,10 +386,14 @@ void Population::write(ostream & out, int generation) const
 	 * Col 1: generation number
 	 * n following columns: phenotypic means
 	 * n following columns: phenotypic variances
+	 * n following columns: unstability means (if enabled)
+	 * n following columns: unstability variances (if enabled)
 	 * following column: fitness mean
 	 * following column: fitness variance
 	 * following column: fitness optimum. If not relevant, something meaningless will be written anyway
-	 * n following columns: phenotype canalization score (if enabled)
+	 * n following columns: canalization means(if enabled)
+	 * n following columns: canalization variances (if enabled)
+	 * n following columns: covariance between canalization and unstability (if enabled)
 	 * following column: fitness canalization score (if enabled)
 	 * n following columns: heritability for the n phenotypes (if enabled)
 	 * following column: heritability for fitness (if enabled)
@@ -407,6 +419,11 @@ void Population::write(ostream & out, int generation) const
 		{
 			outformat(out, mm2[i]);
 		}
+		Phenovec vv2 = phenstat.vars_unstab();
+		for (unsigned int i = 0; i < vv2.size(); i++)
+		{
+			outformat(out, vv2[i]);
+		}
 	}
     outformat(out, fitstat.mean());
     outformat(out, fitstat.var());
@@ -415,7 +432,9 @@ void Population::write(ostream & out, int generation) const
     {
 		// Runs the canalization tests
 		Canalization can_test(nb_canal_test, *this);
-		outformat(out, can_test.phen_canalization());
+		outformat(out, can_test.meanphen_canalization());
+		outformat(out, can_test.varphen_canalization());
+		
 		outformat(out, can_test.cov_canalization());		
 		outformat(out, can_test.fitness_canalization());
 	}    

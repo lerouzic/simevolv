@@ -57,7 +57,7 @@ Canalization::Canalization(unsigned int can_tests, const Population & pop)
 // User interface.
 
 /* Get the phenotypic canalization scores (i.e. the average across individuals of mutant variances) */
-Phenotype Canalization::phen_canalization()
+Phenotype Canalization::meanphen_canalization()
 {
 	if (!phen_ready) 
 	{
@@ -66,6 +66,17 @@ Phenotype Canalization::phen_canalization()
 	
 	return(mean_of_var);
 }
+
+Phenotype Canalization::varphen_canalization()
+{
+	if (!phen_ready) 
+	{
+		process_phen();
+	}
+	
+	return(var_of_var);
+}
+
 
 /* Get the covariances between network unstability and canalization score (variance among mutants) */
 Phenotype Canalization::cov_canalization()
@@ -205,6 +216,5 @@ void Canalization::process_cov()
 	BivariatePhenovecStat bivtmp(unstab, can);
 	
 	cov_can = bivtmp.cov(0,1);
-		
 	cov_ready = true;
 }

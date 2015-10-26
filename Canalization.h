@@ -37,7 +37,8 @@ class Canalization
 		~Canalization() { }
 						
 		// get the canalization scores
-		Phenotype phen_canalization();
+		Phenotype meanphen_canalization();
+		Phenotype varphen_canalization();
 		Phenotype cov_canalization();
 		double fitness_canalization();
 				
