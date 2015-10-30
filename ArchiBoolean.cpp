@@ -143,11 +143,11 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) 
 //Implementation of AND and OR using the multilinear model (formulas)
 //AND: z=y1*y2*....*yn
 //OR: (By definition it is a NOT AND) z=1-(1-y1)(1-y2)...(1-yn)
-    for(int locp = 0;locp<ploc; locp++){
+    for(unsigned int locp = 0;locp<ploc; locp++){
         phenotype_calc=1;
         // 0 == AND || 1 == OR
         if(logic_operator[locp]==0){
-            for(int locg = 0; locg<nloc;locg++){
+            for(unsigned int locg = 0; locg<nloc;locg++){
                 if(bucket_matrix[locp][locg]==1){
                     phenotype_calc = phenotype_calc*y[locg][0];
                 }
@@ -155,7 +155,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) 
             phenotype.push_back(phenotype_calc);
         }
         else if(logic_operator[locp]==1){
-            for(int locg = 0; locg<nloc;locg++){
+            for(unsigned int locg = 0; locg<nloc;locg++){
                 if(bucket_matrix[locp][locg]==1){
                     phenotype_calc = phenotype_calc*(1-y[locg][0]);
                 }
@@ -175,7 +175,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) 
     }
     else if(type==SC_int){
     
-        for(int i=0;i<phenotype.size();i++)
+        for(unsigned int i=0;i<phenotype.size();i++)
         {
             phenotypesum=phenotypesum + phenotype[i];
         }
@@ -183,7 +183,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) 
         return(Phenotype(phenotypesum));
     }
     else if(type==SC_dec){
-        for(int i=0;i<phenotype.size();i++)
+        for(unsigned int i=0;i<phenotype.size();i++)
         {
             phenotypesum=phenotypesum + (phenotype[phenotype.size()-i-1]*pow(2,i));
         }
@@ -192,7 +192,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir) 
     }
     else if(type==SC_combi){
       
-        for(int i=0;i<phenotype.size();i++)
+        for(unsigned int i=0;i<phenotype.size();i++)
         {
             phenotypesum=phenotypesum + phenotype[i];
         }
