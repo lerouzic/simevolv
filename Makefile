@@ -13,7 +13,7 @@ LD = g++
 WINDRES = windres
 
 INC = 
-CFLAGS = -Wall -std=c++11
+CFLAGS = -Wall -std=c++11 -MMD -MP
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = 
@@ -133,7 +133,8 @@ clean_debug:
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
 	rm -rf bin/Debug
 	rm -rf $(OBJDIR_DEBUG)
-
+	rm -rf $(OBJDIR_DEBUG:cpp=.d)
+	
 before_release: 
 	test -d bin/Release || mkdir -p bin/Release
 	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
@@ -218,6 +219,10 @@ clean_release:
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
 	rm -rf bin/Release
 	rm -rf $(OBJDIR_RELEASE)
+	rm -rf $(OBJDIR_RELEASE:cpp=.d)
+	
 
 .PHONY: before_debug after_debug clean_debug before_release after_release clean_release
 
+-include $(OBJ_DEBUG:.o=.d) 
+-include $(OBJ_RELEASE:.o=.d) 
