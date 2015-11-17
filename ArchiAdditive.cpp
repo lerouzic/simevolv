@@ -24,9 +24,12 @@
 #include <cassert>
 #include <algorithm>
 
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/export.hpp>
+
+BOOST_CLASS_EXPORT(ArchiAdditive)
+
 using namespace std;
-
-
 
 // constructors and destuctor
 
@@ -36,6 +39,19 @@ ArchiAdditive::ArchiAdditive(const ParameterSet& param)
 {
 	// Nothing to do here.
 	// mutrate and mutsd are already intialized in the constructor of the parent class
+}
+
+ArchiAdditive::~ArchiAdditive()
+{
+	// iofile is not empty when the param constructor have been called 
+	// and the FILE_ARCHI option was provided.
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+		// streams closed along with the destructors
+	}
 }
 
 
@@ -64,3 +80,4 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir)
 
     return(Phenotype(phenotype));
 }
+

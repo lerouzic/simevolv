@@ -71,6 +71,9 @@ const std::string INIT_RECURRENCE = "INIT_RECURRENCE";
 const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
 const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
 
+// INPUT/OUTPUT
+const std::string FILE_ARCHI = "FILE_ARCHI";
+
 //Initial scale for boolean architecture
 const std::string SC_int = "integer";
 const std::string SC_vector = "vector";

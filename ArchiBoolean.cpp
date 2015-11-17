@@ -27,9 +27,12 @@
 #include <cassert>
 #include <algorithm>
 
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/vector.hpp>
+
 using namespace std;
 
-
+BOOST_CLASS_EXPORT(ArchiBoolean)
 
 // constructors and destuctor
 
@@ -70,6 +73,16 @@ ArchiBoolean::ArchiBoolean(const ParameterSet& param)
         else
             logic_operator.push_back(0);
     }
+}
+
+ArchiBoolean::~ArchiBoolean()
+{
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+	}	
 }
 
 // functions

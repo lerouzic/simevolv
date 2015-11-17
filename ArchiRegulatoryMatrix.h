@@ -21,15 +21,16 @@
 #include <iostream>
 #include <boost/numeric/ublas/vector.hpp>
 
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/vector.hpp>
 
 class ArchiRegulatoryMatrix : public Architecture
 {
 	public :
 	    //constructors/destructor
-	    ArchiRegulatoryMatrix() = delete; 	// should not be used (C++11)
 	    ArchiRegulatoryMatrix(const ArchiRegulatoryMatrix&) = delete;  
 	    ArchiRegulatoryMatrix(const ParameterSet&);
-	    virtual ~ArchiRegulatoryMatrix() {}
+	    virtual ~ArchiRegulatoryMatrix() = 0; // So that the class is abstract
 		
 		// functions 
 		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
@@ -49,32 +50,61 @@ class ArchiRegulatoryMatrix : public Architecture
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
 		virtual void haircut(std::vector<double> & vec) const;
 		
+	protected:
+		ArchiRegulatoryMatrix() {}
+		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);			
 };
+
+template<class Archive>
+void ArchiRegulatoryMatrix::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<Architecture>(*this);	
+	ar & sall;
+	ar & So;
+	ar & recur;
+	ar & connectivity_matrix;
+	ar & timesteps;
+	ar & calcsteps;
+}
 
 class ArchiWagner : public ArchiRegulatoryMatrix
 {
 	public :
 	    //constructors/destructor
-	    ArchiWagner() = delete;
 	    ArchiWagner(const ArchiWagner &) = delete;
 	    ArchiWagner(const ParameterSet&);
-	    virtual ~ArchiWagner() {}
+	    virtual ~ArchiWagner();
 		
 	protected :
 		// Inherited functions
 		virtual double sigma(double h) const;
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
-		virtual void haircut(std::vector<double> & vec) const;				
-};	
+		virtual void haircut(std::vector<double> & vec) const;	
+		
+	protected:
+		ArchiWagner() {}
+		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);					
+};
+
+template<class Archive>
+void ArchiWagner::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
+}
 
 class ArchiSiegal : public ArchiRegulatoryMatrix
 {
 	public : 
 		//constructors/destructor
-	    ArchiSiegal() = delete;
 		ArchiSiegal(const ArchiSiegal &) = delete;
 	    ArchiSiegal(const ParameterSet&);
-	    virtual ~ArchiSiegal() {}
+	    virtual ~ArchiSiegal();
 
 	protected :
 		double basal;
@@ -83,16 +113,30 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		virtual double sigma(double h) const; 
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;	
 		virtual void haircut(std::vector<double> & vec) const;	
+		
+	protected:
+		ArchiSiegal() {}
+		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);					
 };
+
+template<class Archive>
+void ArchiSiegal::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
+	ar & basal;
+}		
+
 
 class ArchiM2 : public ArchiRegulatoryMatrix
 {
 	public : 
 		//constructors/destructor
-	    ArchiM2() = delete;
 	    ArchiM2(const ArchiM2 &) = delete;
 	    ArchiM2(const ParameterSet&);
-	    virtual ~ArchiM2() {}
+	    virtual ~ArchiM2();
 			
 	protected :
 		double basal;
@@ -101,6 +145,20 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		virtual double sigma(double h) const; 
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
 		virtual void haircut(std::vector<double> & vec) const;
+		
+	protected:
+		ArchiM2() {}
+
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);			
 };
+
+template<class Archive>
+void ArchiM2::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
+	ar & basal;
+}
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

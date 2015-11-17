@@ -33,7 +33,12 @@
 
 using namespace std;
 
+BOOST_CLASS_EXPORT(ArchiRegulatoryMatrix)
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(ArchiRegulatoryMatrix)
 
+BOOST_CLASS_EXPORT(ArchiWagner)
+BOOST_CLASS_EXPORT(ArchiSiegal)
+BOOST_CLASS_EXPORT(ArchiM2)
 
 // convert a boost vector into a regulat std::vector and vice-versa
 template<class T>
@@ -63,6 +68,11 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
 {
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
+
+ArchiRegulatoryMatrix::~ArchiRegulatoryMatrix()
+{
+}
+
 
 // functions
 
@@ -295,6 +305,20 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 	}
 }
 
+ArchiWagner::~ArchiWagner()
+{
+	// iofile is not empty when the param constructor have been called 
+	// and the FILE_ARCHI option was provided.
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+		// streams closed along with the destructors
+	}
+}
+
+
 double ArchiWagner::sigma(double h) const 
 {
 	if (h<0)
@@ -381,6 +405,20 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 		}
 	}
 }
+
+ArchiSiegal::~ArchiSiegal()
+{
+	// iofile is not empty when the param constructor have been called 
+	// and the FILE_ARCHI option was provided.
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+		// streams closed along with the destructors
+	}
+}
+
 
 double ArchiSiegal::sigma(double h) const 
 {
@@ -477,5 +515,18 @@ void ArchiM2::haircut(std::vector<double> & vec) const
 	for (unsigned int i = 0; i < vec.size(); i++) {
 		if (vec[i] < 0.) vec[i] = 0.;
 		else if (vec[i] > 1.) vec[i] = 1.;
+	}
+}
+
+ArchiM2::~ArchiM2()
+{
+	// iofile is not empty when the param constructor have been called 
+	// and the FILE_ARCHI option was provided.
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+		// streams closed along with the destructors
 	}
 }

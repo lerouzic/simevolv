@@ -19,9 +19,12 @@
 
 #include <cassert>
 
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/export.hpp>
+
+BOOST_CLASS_EXPORT(GeneticMap)
+
 using namespace std;
-
-
 
 // constructors and destructor
 

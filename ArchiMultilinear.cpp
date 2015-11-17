@@ -26,8 +26,12 @@
 #include <cassert>
 #include <algorithm>
 
-using namespace std;
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/vector.hpp>
 
+BOOST_CLASS_EXPORT(ArchiMultilinear)
+
+using namespace std;
 
 
 // constructors and destuctor
@@ -62,6 +66,18 @@ ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     flag_epistasis3 = !param.getpar(GENET_EPSILON3)->is_nil();
 }
 
+ArchiMultilinear::~ArchiMultilinear()
+{
+	// iofile is not empty when the param constructor have been called 
+	// and the FILE_ARCHI option was provided.
+	if (iofile != "") {
+		ofstream os(iofile);
+		boost::archive::text_oarchive oa(os);
+		Architecture * tmp = this;
+		oa << tmp;
+		// streams closed along with the destructors
+	}
+}
 
 // functions
 
@@ -166,55 +182,6 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
     epsilon3[loc1][loc2-loc1-1][loc3-loc2-1] = value;
 }
 
-/* print the values of 2nd-order epistasis */
-string ArchiMultilinear::print_epsilon2() const
-{
-    ostringstream out;
-
-    out << "\t";
-    for (unsigned int loc2 = 1; loc2 < nb_loc(); loc2++)
-        out << "Loc" << loc2 << "\t";
-    out << endl;
-    for (unsigned int loc1 = 0; loc1 < nb_loc()-1; loc1++)
-    {
-        out << "Loc" << loc1 << "\t";
-        for (unsigned int i = 0; i < loc1; i++)
-            out << "\t";
-        for (unsigned int loc2 = loc1+1; loc2 < nb_loc(); loc2++)
-        {
-            out << setiosflags(ios::fixed) << setprecision(3) << get_epsilon2(loc1, loc2) << "\t";
-        }
-        out << endl;
-    }
-    return(out.str());
-}
-
-/* print the values of 3nd-order epistasis */
-string ArchiMultilinear::print_epsilon3() const
-{
-    ostringstream out;
-
-    for (unsigned int loc1 = 0; loc1 < nb_loc() -2; loc1++)
-    {
-        out << "* Locus " << loc1 << endl;
-        out << "\t";
-        for (unsigned int loc3 = loc1+2; loc3 < nb_loc(); loc3++)
-            out << "Loc" << loc3 << "\t";
-        out << endl;
-        for (unsigned int loc2 = loc1+1; loc2 < nb_loc()-1; loc2++)
-        {
-            out << "Loc" << loc2 << "\t";
-            for (unsigned int i = 0; i < loc2-loc1-1; i++)
-                out << "\t";
-            for (unsigned int loc3 = loc2+1; loc3 < nb_loc(); loc3++)
-                out << setiosflags(ios::fixed) << setprecision(3) << get_epsilon3(loc1, loc2, loc3) << "\t";
-            out << endl;
-        }
-        out << endl;
-    }
-    return(out.str());
-}
-
 /* calculate the phenotypic function depending on the genotype 
 	here : sum of the genotypic values, correlation with epistasis values */
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool envir) const
@@ -255,3 +222,4 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
 		phenotype += Environment::final_disturb();
     return(Phenotype(phenotype));
 }
+

@@ -19,21 +19,30 @@
 
 #include <iostream>
 
-
 class ArchiAdditive : public Architecture
-{
+{	
 	public :
 	    //constructors/destructor
-	    ArchiAdditive() = delete;
 	    ArchiAdditive(const Architecture&) = delete;
 	    ArchiAdditive(const ParameterSet&);
-	    virtual ~ArchiAdditive() {}
-	
-	    // operator overload
-	    friend std::ostream& operator << (std::ostream&, const Architecture&);
+	    virtual ~ArchiAdditive();
 	
 	    //functions
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
+	    
+	protected:
+	    ArchiAdditive() { }	
+	
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);
 };
+
+template<class Archive>
+void ArchiAdditive::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<Architecture>(*this);
+	// nothing to do here
+}
 
 #endif // ARCHIADDITIVE_H_INCLUDED

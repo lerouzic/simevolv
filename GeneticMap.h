@@ -20,6 +20,8 @@
 
 #include <vector>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 class GeneticMap 
 {
@@ -36,6 +38,16 @@ class GeneticMap
 	
 	protected:
 	    std::vector<double> recrate;
+	    
+	private:
+		friend class boost::serialization::access;	
+		template<class Archive> void serialize(Archive &, const unsigned int);
 };
+
+template<class Archive>
+void GeneticMap::serialize(Archive & ar, const unsigned int version) 
+{
+	ar & recrate;
+}
 
 #endif // GENETICMAP_H_INCLUDED

@@ -34,6 +34,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	string input_file;
+	string archi_file;
 	string output_file;
 	long int seed;
 
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
     desc.add_options()
       ("help,h", "Print help messages")
       ("parameter,p", po::value<string>(&input_file), "Parameter file")
+      ("architecture,a", po::value<string>(&archi_file), "Architecture file")
       ("output,o", po::value<string>(&output_file), "Output file")
       ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
       ("template,t", "Print a template for the parameter file")
@@ -92,7 +94,13 @@ int main(int argc, char *argv[])
 		Random::initialize();
 	}
 
-    Architecture::initialize(param);
+	if (vm.count("architecture")) 
+	{
+		Architecture::initialize(archi_file);
+	} else {
+		Architecture::initialize(param);
+	}
+	
     Fitness::initialize(param);
     Environment::initialize(param);
 
@@ -127,6 +135,7 @@ int main(int argc, char *argv[])
 		param.warning_multicalls();
 	}
 	
+	Architecture::terminate();    // This allows to write the architecture content in a file if necessary
 	file_out.close();	// This probably does not harm if the file is not open
 	return(EXIT_SUCCESS);
 }

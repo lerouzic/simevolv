@@ -21,16 +21,12 @@
 #include <iostream>
 
 class ArchiMultilinear : public Architecture
-{
+{	
 	public :
 	    //constructors/destructor
-	    ArchiMultilinear() = delete;
 	    ArchiMultilinear(const Architecture&) = delete;
 	    ArchiMultilinear(const ParameterSet&);
-	    virtual ~ArchiMultilinear() {}
-	
-	    // operator overload
-	    friend std::ostream& operator << (std::ostream&, const Architecture&);
+	    virtual ~ArchiMultilinear();
 	
 	    // getters
 	    virtual double get_epsilon2(unsigned int, unsigned int) const;
@@ -39,10 +35,6 @@ class ArchiMultilinear : public Architecture
 	    // setters
 	    virtual void set_epsilon2(unsigned int, unsigned int, double);
 	    virtual void set_epsilon3(unsigned int, unsigned int, unsigned int, double);
-	    
-	    // debug/check
-	    virtual std::string print_epsilon2() const;
-	    virtual std::string print_epsilon3() const;
 	
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
 	
@@ -55,7 +47,24 @@ class ArchiMultilinear : public Architecture
 		// flags to speed up calculations
 	    virtual bool is_epistasis() const {return((is_epistasis2()) || (is_epistasis3()));}
 	    virtual bool is_epistasis2() const {return(flag_epistasis2);}
-	    virtual bool is_epistasis3() const {return(flag_epistasis3);}	    
+	    virtual bool is_epistasis3() const {return(flag_epistasis3);}	
+	    
+	protected:
+		ArchiMultilinear() {}
+		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);	        
 };
+
+template<class Archive>
+void ArchiMultilinear::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<Architecture>(*this);	
+	ar & flag_epistasis2;
+	ar & flag_epistasis3;
+	ar & epsilon2;
+	ar & epsilon3;
+}
 
 #endif // ARCHIMULTILINEAR_H_INCLUDED

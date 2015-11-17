@@ -24,6 +24,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <cmath>
 #include <algorithm>
@@ -31,9 +32,13 @@
 #include <vector>
 #include <memory>
 
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/export.hpp>
+
+BOOST_CLASS_EXPORT(Architecture)
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Architecture)
+
 using namespace std;
-
-
 
 // constructors/destructor
 
@@ -45,6 +50,7 @@ Architecture::Architecture(const ParameterSet& param)
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
     , mutsd_test (vector<double> (0))
+    , iofile ("")
 {
     for (unsigned int i = 0; i < nloc; i++)
     {
@@ -55,8 +61,15 @@ Architecture::Architecture(const ParameterSet& param)
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
         mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
+    
+    // This happens only when the param constructor is called.
+    if (param.exists(FILE_ARCHI))
+		iofile = param.getpar(FILE_ARCHI) -> GetString();
 }
 
+Architecture::~Architecture() 
+{
+}
 
 // instance and initialization
 
@@ -73,14 +86,15 @@ void Architecture::initialize(const ParameterSet& param)
         Architecture::instance = NULL;
     }
 
-    string type_archi = param.getpar(TYPE_ARCHI) -> GetString();
+	string type_archi = param.getpar(TYPE_ARCHI)->GetString();
+
     if (type_archi==AR_add)
     {
-        Architecture::instance = new ArchiAdditive(param);
+		Architecture::instance = new ArchiAdditive(param);
     }
     else if (type_archi==AR_mult)
-    {
-        Architecture::instance = new ArchiMultilinear(param);
+    {		
+		Architecture::instance = new ArchiMultilinear(param);
     }
     else if (type_archi==AR_wagner)
     {
@@ -101,6 +115,39 @@ void Architecture::initialize(const ParameterSet& param)
         cerr << "Wrong architecture type" << endl;
         exit(EXIT_FAILURE);
     }
+
+    if (Architecture::instance == NULL) {
+		cerr << "Error when creating the genetic architecture." << endl;
+		exit(EXIT_FAILURE);
+	}
+}
+
+/* Reads the serialized architecture file */
+void Architecture::initialize (const string & archi_file) 
+{	
+    if (Architecture::instance != NULL)
+    {
+		cerr << "Strange, the Architecture was already intialized. This should not happen." << endl;
+        delete Architecture::instance;
+        Architecture::instance = NULL;
+    }
+    
+    try {
+		ifstream infile(archi_file);
+		if (infile.good()) {
+			boost::archive::text_iarchive ar(infile);
+			ar >> Architecture::instance;
+		}
+	}
+	catch (std::exception & e)
+	{
+		cerr << "Exception " << e.what() << " when reading architecture file " << archi_file << endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...) {
+		cerr << "Error when reading architecture file " << archi_file << endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 Architecture* Architecture::Get()
@@ -109,6 +156,10 @@ Architecture* Architecture::Get()
     return(Architecture::instance);
 }
 
+void Architecture::terminate() 
+{
+	delete Architecture::instance;
+}
 
 // functions
 
@@ -193,4 +244,3 @@ shared_ptr<Allele> Architecture::allele_mutation_test(const shared_ptr<Allele> t
 {
     return(templ->make_mutant(mutation_sd_test(loc)));
 }
-

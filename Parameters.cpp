@@ -295,6 +295,14 @@ bool Parameter_gaussian::is_initialized() const
 }
 	
 
+
+Parameter_string::Parameter_string()
+	: Parameter()
+	, possible_values()
+	, value("NotInitialized")
+{
+}
+
 Parameter_string::Parameter_string(const vector<string> posval)
 	: Parameter()
 	, possible_values(posval)
@@ -328,7 +336,8 @@ void Parameter_string::write(ostream & out) const
 
 void Parameter_string::Set(string v) 
 {
-	if (find(possible_values.begin(), possible_values.end(), v) != possible_values.end()) 
+	if ((possible_values.empty()) || 
+		find(possible_values.begin(), possible_values.end(), v) != possible_values.end()) 
 	{
 		value = v;
 		initialized=true;
@@ -441,6 +450,9 @@ void ParameterSet::initialize()
 	parameters[DEV_CALCSTEPS] = new Parameter_int(0, 100*1000);
 	parameters[FITNESS_STAB] = new Parameter_string(FS_options);
     parameters[FITNESS_STABSTR] = new Parameter_vector_double(0.0, 1000.*1000.);
+    
+    // Input/Output
+    parameters[FILE_ARCHI] = new Parameter_string();
 }
 
 void ParameterSet::write(ostream & out) const
@@ -479,7 +491,7 @@ void ParameterSet::read(const string & file)
 
 const Parameter * ParameterSet::getpar(const string & tag) const
 {
-	if (parameters.count(tag) == 0) 
+	if (!exists(tag)) 
 	{
 		cerr << "Parameter " << tag << " is missing." << endl;
 		exit(EXIT_FAILURE); 
@@ -487,6 +499,11 @@ const Parameter * ParameterSet::getpar(const string & tag) const
     const Parameter * ans = parameters.find(tag)->second;
     
     return(ans);
+}
+
+bool ParameterSet::exists(const string & tag) const
+{
+	return((parameters.count(tag) != 0) && (parameters.find(tag)->second->is_initialized()));
 }
 
 void ParameterSet::warning_unused() const 

@@ -17,7 +17,7 @@ CFLAGS = -Wall -std=c++11 -MMD -MP
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = 
-LDFLAGS = -lgsl -lgslcblas -lboost_program_options
+LDFLAGS = -lgsl -lgslcblas -lboost_program_options -lboost_serialization
 
 INC_DEBUG = $(INC)
 CFLAGS_DEBUG = $(CFLAGS) -g -p

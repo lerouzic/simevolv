@@ -153,6 +153,7 @@ class Parameter_string: public Parameter
 {
 	public:
 	    // constructors/destructor
+	    Parameter_string();
 	    Parameter_string(const std::vector<std::string>);
 	    ~Parameter_string() {}
 	    
@@ -190,6 +191,7 @@ class ParameterSet
 	
 	    // function
 	    const Parameter * getpar(const std::string&) const;
+	    bool exists(const std::string&) const;
 	    
 	    // consistency checks
 	    void warning_unused() const;

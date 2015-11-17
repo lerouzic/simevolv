@@ -1,4 +1,3 @@
-// Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
 // Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>
 // Copyright 2015      Christine Mayer     <christine.mayer@ibv.uio.no>
@@ -25,10 +24,9 @@ class ArchiBoolean : public Architecture
 {
     public :
     //constructors/destructor
-    ArchiBoolean() = delete;
     ArchiBoolean(const Architecture&) = delete;
     ArchiBoolean(const ParameterSet&);
-    virtual ~ArchiBoolean() {}
+    virtual ~ArchiBoolean();
     
     // operator overload
     friend std::ostream& operator << (std::ostream&, const Architecture&);
@@ -53,6 +51,23 @@ class ArchiBoolean : public Architecture
     std::vector<double> logic_operator;
     unsigned int ploc;
     std::string type;
+    
+	protected:
+		ArchiBoolean() {}
+		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive &, const unsigned int);	        
 };
+
+template<class Archive>
+void ArchiBoolean::serialize(Archive & ar, const unsigned int version)
+{
+	ar & boost::serialization::base_object<Architecture>(*this);	
+	ar & bucket_matrix;
+	ar & logic_operator;
+	ar & ploc;
+	ar & type;
+}
 
 #endif // ARCHIBoolean_H_INCLUDED
