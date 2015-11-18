@@ -37,7 +37,7 @@ Fitness::Fitness(const ParameterSet& param)
 	string type = param.getpar(FITNESS_TYPE)->GetString();
 	string fluct_type = param.getpar(FITNESS_FLUCT)->GetString();
 	string stab_type = param.getpar(FITNESS_STAB)->GetString();
-	
+		
 	if (type == FT_nosel) 
 	{
 		fitphen = new Fitness_Phenotype_Noselection(param);
@@ -124,17 +124,14 @@ Fitness::~Fitness()
 }
 
 /* This static function can be used to initialize or reinitialize the Fitness
-   single instance with the parameter set.
-   Note: I am not sure that the reinitialization from the parameter set can be useful
-   in any context. A warning is displayed, but it could be removed if a legitimate use 
-   was discovered. */
+   single instance with the parameter set. */
 void Fitness::initialize(const ParameterSet& param)
 {
     if (Fitness::instance != NULL)
     {
         delete Fitness::instance;
         Fitness::instance = NULL;
-		cerr << "Warning: Fitness is initialized several times." << endl;
+		// cerr << "Warning: Fitness is initialized several times." << endl;
     }
     Fitness::instance = new Fitness(param);
 }

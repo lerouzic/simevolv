@@ -52,15 +52,7 @@ Architecture::Architecture(const ParameterSet& param)
     , mutsd_test (vector<double> (0))
     , iofile ("")
 {
-    for (unsigned int i = 0; i < nloc; i++)
-    {
-		if (param.getpar(GENET_MUTTYPE)->GetString() == MT_locus)
-			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
-		else 
-			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<double>(nloc));
-        mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
-        mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
-    }
+	update_param_internal(param);
     
     // This happens only when the param constructor is called.
     if (param.exists(FILE_ARCHI))
@@ -148,6 +140,13 @@ void Architecture::initialize (const string & archi_file)
 		cerr << "Error when reading architecture file " << archi_file << endl;
 		exit(EXIT_FAILURE);
 	}
+}
+
+// Updates the parameter values (at least, those that can change meaningfully during simulation)
+void Architecture::update_param(const ParameterSet& param)
+{
+	Architecture * archi = Architecture::Get();
+	archi-> update_param_internal(param);
 }
 
 Architecture* Architecture::Get()
@@ -243,4 +242,23 @@ shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ,
 shared_ptr<Allele> Architecture::allele_mutation_test(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 {
     return(templ->make_mutant(mutation_sd_test(loc)));
+}
+
+/* Updates parameters when the parameter set changes. 
+ * Only parameters that are meaningful to change are updated */
+void Architecture::update_param_internal(const ParameterSet& param)
+{
+	mutrate.clear();
+	mutsd.clear();
+	mutsd_test.clear();
+	
+    for (unsigned int i = 0; i < nloc; i++)
+    {
+		if (param.getpar(GENET_MUTTYPE)->GetString() == MT_locus)
+			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
+		else 
+			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<double>(nloc));
+        mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
+        mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
+    }
 }

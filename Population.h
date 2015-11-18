@@ -40,6 +40,7 @@ class Population
 	    //operator overload
 	    Population& operator = (const Population&); 
 	
+		void update_param(const ParameterSet&);
 	    Population reproduce(long int offspr_number = 0) const;
 	    
 	    Phenovec mean_phenotype() const; // Probably used by the Fitness class only

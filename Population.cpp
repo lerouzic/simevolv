@@ -105,15 +105,25 @@ void Population::initialize(const ParameterSet& param)
         Individual indiv(param);
         pop.push_back(indiv);
     }
+    // Parameters that may change during simulation
+	update_param(param);
+	// Parameters that cannot change
+    out_geno = param.getpar(OUT_GENO)->GetString(); 
+    out_unstab = param.getpar(OUT_UNSTAB)->GetString();
+    
+    // Computes fitness etc. 
+    update();
+}
+
+/* Set up parameters. This may happen during initialization
+ * or afterwards when the parameter file changes. */
+void Population::update_param(const ParameterSet & param)
+{
     selfing_rate = param.getpar(GENET_SELFING)->GetDouble();    
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
-    out_geno = param.getpar(OUT_GENO)->GetString();
-    out_unstab = param.getpar(OUT_UNSTAB)->GetString();
-    update();
 }
-
 
 // functions
 
@@ -250,7 +260,7 @@ long int Population::stl_search_fit_table(double rnum, const vector<double>& cum
 /* determines if there will be a mutation in the population */
 /* (just calls draw_mutation() on every single individual, not very original) */
 /* Note: probably useless, as real mutations in simulations are drawn during
- * sexual reproduction */
+ * reproduction */
 void Population::draw_mutation()
 {
     for (unsigned int i = 0; i < pop.size(); i++) {

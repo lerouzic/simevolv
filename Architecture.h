@@ -41,6 +41,7 @@ class Architecture  	/* Pure virtual class */
 	    // instance / initialization
 	    static void initialize(const ParameterSet&); // from the parameter file
 	    static void initialize(const std::string&);  // from the architecture file
+	    static void update_param(const ParameterSet&);
 	    
 	    static /* const */ Architecture* Get();
 	    static void terminate();
@@ -72,6 +73,7 @@ class Architecture  	/* Pure virtual class */
 	    std::string iofile; // this should not be serialized
 	    
 		Architecture() {} // default constructor necessary for serialization
+	    virtual void update_param_internal(const ParameterSet&);		
 	
 	private:
 		friend class boost::serialization::access;

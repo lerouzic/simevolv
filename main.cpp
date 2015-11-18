@@ -85,14 +85,14 @@ int main(int argc, char *argv[])
 		return(EXIT_FAILURE);
 	}
 
-	ParameterSet param(input_file);
-
     if (vm.count("seed")) 
     {
 		Random::initialize(seed);
 	} else {
 		Random::initialize();
 	}
+
+	ParameterSet param(input_file);
 
 	if (vm.count("architecture")) 
 	{
@@ -101,33 +101,63 @@ int main(int argc, char *argv[])
 		Architecture::initialize(param);
 	}
 	
-    Fitness::initialize(param);
-    Environment::initialize(param);
-
+	unsigned int global_generation = 1;
+	
+	// This is needed for the initial population
+	// (explaining the unfortunate code duplication later)
+	Fitness::initialize(param);
+	Environment::initialize(param);
+	
     Population pop(param);
-    unsigned int maxgen = param.getpar(SIMUL_GENER)->GetInt();
-    unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
     
-    for (unsigned int generation = 1; generation <= maxgen; generation++)
-    {
-        Fitness::fluctuate(generation);
-        if ((generation == 1) || (generation == maxgen) || (generation % intervgen == 0))
-        {
-            pop.write(*pt_output, generation);
-        }
+	string next_parfile = "";    
+    
+	do { // while next_parfile == ""
+		if (param.exists(FILE_NEXTPAR)) {
+			if (next_parfile == param.getpar(FILE_NEXTPAR)->GetString()) {
+				// Otherwise it is very easy to loop forever!
+				next_parfile = "";
+			} else {
+				next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
+			}
+		}
+	
+		// Partially duplicated code -- probably harmless, but not elegant
+		if (global_generation > 1) {
+			Fitness::initialize(param);
+			Environment::initialize(param);
+			Architecture::update_param(param);		
+			pop.update_param(param);
+		}
+
+		unsigned int maxgen = param.getpar(SIMUL_GENER)->GetInt();
+		unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
+		    
+		for (unsigned int local_generation = 1; local_generation <= maxgen; local_generation++, global_generation++)
+		{
+			Fitness::fluctuate(local_generation);
+			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
+			{
+				pop.write(*pt_output, global_generation);
+			}
         
-		if (generation < maxgen) {
-			Population offsp = pop.reproduce();
-            pop = offsp;
-        }
-        // Quick and dirty: send some debugging/detailed information into a specific file
-        /*if (generation==maxgen) {
-			ofstream tmp_out("debug.txt");
-			ostream & out = tmp_out;
-			pop.write_debug(out);
-			tmp_out.close();
-		}*/
-    }
+			if ((local_generation < maxgen) || (next_parfile != "")) {
+				// no need to compute a new population if the simulation is over
+				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
+				pop = offsp;
+			}
+	        // Quick and dirty: send some debugging/detailed information into a specific file
+	        /*if (generation==maxgen) {
+				ofstream tmp_out("debug.txt");
+				ostream & out = tmp_out;
+				pop.write_debug(out);
+				tmp_out.close();
+			}*/
+		}
+		if (next_parfile != "") {
+			param.read(next_parfile);
+		}
+    } while (next_parfile != "");
     
     if (vm.count("parcheck")) 
     {

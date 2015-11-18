@@ -73,6 +73,8 @@ const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
 
 // INPUT/OUTPUT
 const std::string FILE_ARCHI = "FILE_ARCHI";
+const std::string FILE_NEXTPAR = "FILE_NEXTPAR";
+
 
 //Initial scale for boolean architecture
 const std::string SC_int = "integer";

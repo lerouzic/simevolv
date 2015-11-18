@@ -164,6 +164,7 @@ Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
 
 void Parameter_vector_double::read(istream & i)
 {
+	value.clear();
     double val;
     while (i >> val)
     {
@@ -453,6 +454,7 @@ void ParameterSet::initialize()
     
     // Input/Output
     parameters[FILE_ARCHI] = new Parameter_string();
+    parameters[FILE_NEXTPAR] = new Parameter_string();
 }
 
 void ParameterSet::write(ostream & out) const
