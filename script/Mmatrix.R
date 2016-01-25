@@ -1,6 +1,4 @@
-script.dir <- dirname(sys.frame(1)$ofile)
-
-source(paste(script.dir, "netw.R", sep="/"))
+source("netw.R")
 
 Mmatrix.MonteCarlo.ij.run <- function(W, sdmut, i, j, what="mean", ...) {
 	stopifnot(i > 0, i <= ncol(W), j > 0, j <= ncol(W))
