@@ -28,7 +28,7 @@ class ArchiAdditive : public Architecture
 	    virtual ~ArchiAdditive();
 	
 	    //functions
-	    virtual Phenotype phenotypic_value(const Genotype&, bool envir) const;
+	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &) const;
 	    
 	protected:
 	    ArchiAdditive() { }	

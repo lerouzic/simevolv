@@ -18,6 +18,7 @@
 #include "Population.h"
 #include "Fitness.h"
 #include "Architecture.h"
+#include "Parconst.h"
 
 #include <vector>
 #include <sstream>
@@ -35,9 +36,17 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
     initialize();
 }
 
+Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, 
+	const EpigeneticInfo& epimother)
+	: genotype(gam_father, gam_mother), epiinfo(epimother)
+{
+	initialize();
+}
+
 /* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
 	: genotype(param)
+	, epigenet(param.getpar(GENET_EPIGENET)-> GetDouble())
 {
     initialize();
 }
@@ -46,6 +55,7 @@ Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
     , phenotype(copy.phenotype)
     , fitness(copy.fitness)
+    , epiinfo(copy.epiinfo)
 {
 }
 
@@ -57,12 +67,15 @@ Individual::~Individual()
 
 Individual & Individual::operator= (const Individual& copy)
 {
+	// Warning: the epigenetic info is not updated
+	// Does Individual::operator = makes sense at all? 
     if (this == &copy)
         return (*this);
 
     genotype=copy.genotype;
     phenotype=copy.phenotype;
     fitness=copy.fitness;
+    // epiinfo=copy.epiinfo;
 
     return(*this);
 }
@@ -74,10 +87,16 @@ Individual & Individual::operator= (const Individual& copy)
 void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
-    phenotype = archi -> phenotypic_value(genotype, true);
+    phenotype = archi -> phenotypic_value(genotype, true, epiinfo);
     fitness = 0;
+    
+    // So far, the epigenetic factor does not evolve).
+    // If epiinfo is not initialized (no mother = first generation)
+    // its value has already been set from the parameter set. 
+    // otherwise, we just copy the mother's factor. 
+    if (epiinfo.is_defined())
+		epigenet = epiinfo.get_epigenet(); 
 }
-
 
 // functions
 void Individual::update_fitness(const Population & pop)
@@ -92,7 +111,10 @@ double Individual::get_fitness() const
     return(fitness);
 }
 
-
+double Individual::get_epigenet() const
+{
+	return(epigenet);
+}
 
 Phenotype Individual::get_phenotype() const
 {
@@ -113,10 +135,18 @@ string Individual::write_debug(unsigned int gam) const
 	return(o.str());
 }
 
+EpigeneticInfo Individual::make_epiinfo() const
+// Object EpigeneticInfo created by the mother
+// to be stored in the offspring
+{
+	EpigeneticInfo epi(epigenet, phenotype);
+	return(epi);
+}
+
 /* create a new individual from the paternal and maternal gametes */
 Individual Individual::mate(const Individual& father, const Individual& mother)
 {
-    Individual offspring(father.produce_gamete(), mother.produce_gamete());
+    Individual offspring(father.produce_gamete(), mother.produce_gamete(), mother.make_epiinfo());
     return(offspring);
 }
 
@@ -138,7 +168,7 @@ Haplotype Individual::produce_gamete() const
 void Individual::draw_mutation()
 {
     genotype.draw_mutation();
-    phenotype = Architecture::Get() -> phenotypic_value(genotype, true);
+    phenotype = Architecture::Get() -> phenotypic_value(genotype, true, epiinfo);
     fitness = 0.0;
 }
 
@@ -146,7 +176,7 @@ void Individual::draw_mutation()
 void Individual::make_mutation(bool test /* = false */)
 {
     genotype.make_mutation(test);
-    phenotype = Architecture::Get() -> phenotypic_value(genotype, true);
+    phenotype = Architecture::Get() -> phenotypic_value(genotype, true, epiinfo);
     fitness = 0.0;
 } 
 

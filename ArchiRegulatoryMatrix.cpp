@@ -123,7 +123,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
     return(a);
 }
 
-Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir) const
+Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi) const
 {
 	// creation of the W matrix;
 	std::vector<std::vector<double>> matrix;
@@ -137,11 +137,19 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	boost::numeric::ublas::vector<double> St(nloc);
 	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
 	
+	// Initial state of the network
 	for (unsigned int i = 0 ; i<nloc ; i++)
 	{
-		St(i) = So[i];
-		if (envir)
+		// Warning: the following does not really make sense 
+		// with binary network models!!
+		// Here comes the epigenetic transmission
+		if (epi.is_defined()) { 
+			St(i) = epi.get_epigenet()*epi.get_phenotype()[i] + (1.-epi.get_epigenet())*So[i];
+		}
+		
+		if (envir) {
 			St(i) += Environment::init_disturb();
+		}
 	}
 	haircut(St);
 	

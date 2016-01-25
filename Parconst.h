@@ -29,6 +29,7 @@ const std::string GENET_MUTRATES = "GENET_MUTRATES";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
 const std::string GENET_SELFING = "GENET_SELFING";
+const std::string GENET_EPIGENET = "GENET_EPIGENET";
 const std::string INIT_PSIZE = "INIT_PSIZE";
 const std::string INIT_ALLELES = "INIT_ALLELES";
 const std::string TYPE_ALLELES = "TYPE_ALLELES";			/* Mutation type for the alleles */
