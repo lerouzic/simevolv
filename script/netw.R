@@ -3,11 +3,11 @@ sigma.M2 <- function(x, a) {
 }
 
 
-model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=FALSE, decay=1.0) {
+model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=FALSE, decay=1.0, microSdE=0) {
 	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
 	sto[,1] <- S0
 	for (i in 1:steps) {
-		S0 <- S0*(1-decay)+decay*sigma.M2((S0 %*% W), a)
+		S0 <- S0*(1-decay)+decay*sigma.M2((S0 %*% W + rnorm(length(S0), 0, sd=microSdE)), a) 			
 		sto[,i+1] <- S0
 	}
 	ans <- list()
