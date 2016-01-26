@@ -287,6 +287,7 @@ void Population::write(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
 	vector<double> fit;
+	vector<double> epi;
 	vector<Phenotype> genot;
 	
 	// stores vectors of phenotypic values, genotypic values, fitnesses. 
@@ -294,6 +295,7 @@ void Population::write(ostream & out, int generation) const
 	{
 		phen.push_back(pop[i].get_phenotype());
 		fit.push_back(pop[i].get_fitness());
+		epi.push_back(pop[i].get_epigenet());
 				
 		vector<double> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
@@ -311,6 +313,7 @@ void Population::write(ostream & out, int generation) const
 	// Calls the unidimensional routine for fitnesses. 
 	PhenotypeStat phenstat(phen);
 	UnivariateStat fitstat(fit);
+	UnivariateStat epistat(epi);
 	PhenotypeStat matstat(genot);	
 			
 	/* First generation: need to write the headers. 
@@ -346,6 +349,8 @@ void Population::write(ostream & out, int generation) const
 		{
 			outformat(out, opt+1, "FitOpt");
 		}
+		outformat(out, "MEpi");
+		outformat(out, "VEpi");		
 		if (nb_canal_test > 0) 
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
@@ -401,6 +406,8 @@ void Population::write(ostream & out, int generation) const
 	 * following column: fitness mean
 	 * following column: fitness variance
 	 * following column: fitness optimum. If not relevant, something meaningless will be written anyway
+	 * following column: epigenetic mean
+	 * following column: epigenetic variance
 	 * n following columns: canalization means(if enabled)
 	 * n following columns: canalization variances (if enabled)
 	 * n following columns: covariance between canalization and unstability (if enabled)
@@ -438,6 +445,8 @@ void Population::write(ostream & out, int generation) const
     outformat(out, fitstat.mean());
     outformat(out, fitstat.var());
     outformat(out, Fitness::current_optimum());
+    outformat(out, epistat.mean());
+    outformat(out, epistat.var());
     if (nb_canal_test > 0) 
     {
 		// Runs the canalization tests
