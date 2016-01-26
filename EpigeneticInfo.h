@@ -24,15 +24,15 @@ class EpigeneticInfo {
 		EpigeneticInfo(const double, const Phenotype &);
 		EpigeneticInfo(const Individual &);
 		virtual ~ EpigeneticInfo();
-		EpigeneticInfo & operator = (const EpigeneticInfo) = delete;
+		EpigeneticInfo & operator = (const EpigeneticInfo &);
 			
 		virtual double get_epigenet() const;
 		virtual Phenotype get_phenotype() const;
 		virtual bool is_defined() const;
 	
 	protected:
-		const double epigenet;
-		const Phenotype mother_phen;
+		double epigenet;
+		Phenotype mother_phen;
 		
 };
 

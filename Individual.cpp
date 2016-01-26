@@ -55,6 +55,7 @@ Individual::Individual(const Individual& copy)
     : genotype(copy.genotype)
     , phenotype(copy.phenotype)
     , fitness(copy.fitness)
+    , epigenet(copy.epigenet)
     , epiinfo(copy.epiinfo)
 {
 }
@@ -65,17 +66,16 @@ Individual::~Individual()
 
 // operator overload
 
-Individual & Individual::operator= (const Individual& copy)
+Individual & Individual::operator = (const Individual& copy)
 {
-	// Warning: the epigenetic info is not updated
-	// Does Individual::operator = makes sense at all? 
     if (this == &copy)
         return (*this);
 
     genotype=copy.genotype;
     phenotype=copy.phenotype;
     fitness=copy.fitness;
-    // epiinfo=copy.epiinfo;
+    epigenet=copy.epigenet;
+    epiinfo=copy.epiinfo;
 
     return(*this);
 }
@@ -95,7 +95,7 @@ void Individual::initialize()
     // its value has already been set from the parameter set. 
     // otherwise, we just copy the mother's factor. 
     if (epiinfo.is_defined())
-		epigenet = epiinfo.get_epigenet(); 
+		epigenet = epiinfo.get_epigenet();
 }
 
 // functions

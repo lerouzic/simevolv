@@ -56,6 +56,17 @@ double EpigeneticInfo::get_epigenet() const
 	return(epigenet);
 }
 
+EpigeneticInfo & EpigeneticInfo::operator = (const EpigeneticInfo& copy) 
+{
+	if (this == &copy)
+		return (*this);
+		
+	epigenet = copy.epigenet;
+	mother_phen = copy.mother_phen;
+	
+	return(*this);
+}
+
 Phenotype EpigeneticInfo::get_phenotype() const
 {
 	return(mother_phen);
