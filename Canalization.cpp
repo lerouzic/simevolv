@@ -108,8 +108,10 @@ Note that, in practice, reference individuals are never used in the calculation.
 void Canalization::reference_indiv(Individual ind)
 {
 	reference.push_back(ind);
-	vector<Individual> tmp;
+	vector<Phenotype> tmp;
 	mutants.push_back(tmp);
+	vector<double> tmpfit;
+	mutants_fit.push_back(tmpfit);
 }
 
 /* Adds a new mutant in the database. Note that reference individuals and corresponding mutants have to be entered sequencially, which is not very conveninent (no way to enter first all reference individuals, and then all mutants. Nevermind, this is internal code. */
@@ -117,7 +119,9 @@ void Canalization::mutant_indiv(Individual ind)
 {
 	assert(!(phen_ready || fit_ready));
 	assert(!mutants.empty());
-	mutants[mutants.size()-1].push_back(ind);
+	assert(!mutants_fit.empty());
+	mutants[mutants.size()-1].push_back(ind.get_phenotype());
+	mutants_fit[mutants.size()-1].push_back(ind.get_fitness());
 }
 
 void Canalization::process() 
@@ -151,7 +155,7 @@ void Canalization::process_phen()
 		vector<Phenotype> data_i;
 		for (unsigned int j = 0; j < mutants[i].size(); j++) 
 		{ // mutant # j
-			data_i.push_back(mutants[i][j].get_phenotype());
+			data_i.push_back(mutants[i][j]);
 		}
 		PhenotypeStat stat_i(data_i);
 		
@@ -173,17 +177,17 @@ void Canalization::process_fit()
 {
 	// canalization scores for fitness. 
 	// The algorithm is very similar to the one for phenotypes, except that fitnesses are unidimensional. 
-	assert(!mutants.empty());
+	assert(!mutants_fit.empty());
 	assert(!reference.empty());	
 	
 	vector<vector<double> > dat;
 	
-	for (unsigned int i = 0; i < mutants.size(); i++) 
+	for (unsigned int i = 0; i < mutants_fit.size(); i++) 
 	{
 		vector<double> tmp;
-		for (unsigned int j = 0; j < mutants[i].size(); j++) 
+		for (unsigned int j = 0; j < mutants_fit[i].size(); j++) 
 		{
-			tmp.push_back(mutants[i][j].get_fitness());
+			tmp.push_back(mutants_fit[i][j]);
 		}
 		dat.push_back(tmp);
 	}

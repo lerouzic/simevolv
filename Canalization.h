@@ -55,8 +55,9 @@ class Canalization
 		
 		// Storage of temporary information
 		std::vector<Individual> reference;
-		std::vector<std::vector<Individual> > mutants;
-		
+		std::vector<std::vector<Phenotype> > mutants;
+		std::vector<std::vector<double> > mutants_fit;
+	
 		std::vector<Phenotype> mean_per_indiv;
 		Phenotype mean_of_mean;
 		Phenotype var_of_mean;
