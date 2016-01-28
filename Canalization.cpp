@@ -152,7 +152,12 @@ void Canalization::process_phen()
 	
 	for (unsigned int i = 0; i < mutants.size(); i++) 
 	{ // individual # i
-		PhenotypeStat stat_i(mutants[i]);
+		vector<Phenotype> data_i;
+		for (unsigned int j = 0; j < mutants[i].size(); j++) 
+		{ // mutant # j
+			data_i.push_back(mutants[i][j]);
+		}
+		PhenotypeStat stat_i(data_i);
 		
 		mean_per_indiv.push_back(stat_i.means_phen());
 		var_per_indiv.push_back(stat_i.vars_phen());
