@@ -20,6 +20,7 @@
 #include "Haplotype.h"
 #include "Genotype.h"
 #include "Parameters.h"
+#include "EpigeneticInfo.h"
 
 #include <iostream>
 #include <string>
@@ -29,10 +30,12 @@ class Population;
 
 class Individual
 {
+	friend class Population;	
 	public :
 	    // constructors/destructor
 	    Individual() = delete;
 	    Individual(const Haplotype&, const Haplotype&);
+	    Individual(const Haplotype&, const Haplotype&, const EpigeneticInfo&);
 	    Individual(const Individual&);
 	    Individual(const ParameterSet&);
 	    virtual ~Individual();
@@ -47,8 +50,10 @@ class Individual
 
 		// getters
 	    double get_fitness() const;
+	    double get_epigenet() const;
 	    Phenotype get_phenotype() const;
 	    std::string write_debug(unsigned int) const;
+	    EpigeneticInfo make_epiinfo() const;
 	    
 	    // reproduction
 	    Haplotype produce_gamete() const;
@@ -61,10 +66,13 @@ class Individual
 		- the first parameter is the number of mutations */	    	    		
 	    Individual test_canalization(unsigned int, const Population &) const;  
 	
-	public :
+	protected :
 	    Genotype genotype;
 	    Phenotype phenotype; // phenotype + environmental effect 
 	    double fitness;
+	    double epigenet; // to be transmitted to the offspring
+	    
+	    EpigeneticInfo epiinfo; // from the mother
 };
 
 #endif // INDIVIDUAL_H_INCLUDED

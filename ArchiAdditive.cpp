@@ -59,8 +59,9 @@ ArchiAdditive::~ArchiAdditive()
 
 /* calculate the phenotypic function depending on the genotype 
  * here : sum of the genotypic values */
-Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir) const
+Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi) const
 {
+	// Epigenetic transmission not implemented yet!
     vector<double> phenotype(sall);
 
 	for (unsigned int all = 0; all < sall; all++)

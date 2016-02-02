@@ -22,6 +22,7 @@
 #include <cassert>
 #include <vector>
 #include <iomanip>
+#include <cmath> // log function
 
 using namespace std;
 
@@ -29,7 +30,8 @@ using namespace std;
 
 // Constructors 
 
-Canalization::Canalization(unsigned int can_tests, const Population & pop)
+Canalization::Canalization(unsigned int can_tests, const string & outc, const Population & pop)
+	: out_canal(outc)
 {
 	phen_ready = false;
 	cov_ready = false;
@@ -147,15 +149,36 @@ void Canalization::process_phen()
 
 	// Here is the calculation of the canalization score itself. 
 	// The algorithm computes the mean and variance across mutants in each reference individual. 
-	// It then computes both the mean and the variance of these means and variances.
+	// Two ways of measuring canalization are implemented (out_canal parameter):
+	//  * OUT_mut computes the variance among mutants
+	//  * OUT_can computes -log(variance among mutants)
+	// It then computes both the mean and the variance of these canalization scores. 
 	// Everything is stored, and the chosen index is returns by other "getter" functions.
 	
 	for (unsigned int i = 0; i < mutants.size(); i++) 
 	{ // individual # i
-		PhenotypeStat stat_i(mutants[i]);
+		vector<Phenotype> data_i;
+		for (unsigned int j = 0; j < mutants[i].size(); j++) 
+		{ // mutant # j
+			data_i.push_back(mutants[i][j]);
+		}
+		PhenotypeStat stat_i(data_i);
 		
 		mean_per_indiv.push_back(stat_i.means_phen());
-		var_per_indiv.push_back(stat_i.vars_phen());
+		if (out_canal == OC_mut) {
+			var_per_indiv.push_back(stat_i.vars_phen());
+		} else if (out_canal == OC_can) {
+			Phenovec vars = stat_i.vars_phen();
+			vector<double> mlogvar;
+			for (unsigned int i = 0; i < vars.size(); i++) {
+				if (vars[i] < 1e-9) { // a large amont of numerical issues are avoided this way.
+					mlogvar.push_back(20.0);
+				} else {
+					mlogvar.push_back(-log(vars[i]));
+				}
+			}
+			var_per_indiv.push_back(mlogvar);
+		} 
 	}	
 	PhenotypeStat stat_m(mean_per_indiv);
 	PhenotypeStat stat_v(var_per_indiv);
