@@ -47,6 +47,7 @@ Population::Population()
 	, nb_direpi_test(0)
 	, out_geno("no")
 	, out_unstab("no")
+	, out_canal(OC_mut)
 {
 }
 
@@ -58,6 +59,7 @@ Population::Population(const Population & copy)
     , nb_direpi_test(copy.nb_direpi_test)
     , out_geno(copy.out_geno)
 	, out_unstab(copy.out_unstab)
+	, out_canal(copy.out_canal)
 {
 }
 
@@ -69,6 +71,7 @@ Population::Population(const std::vector<Individual>& vecindiv)
 	, nb_direpi_test(0)
 	, out_geno("no")
 	, out_unstab("no")
+	, out_canal(OC_mut)
 {
 }
 
@@ -90,6 +93,7 @@ Population & Population::operator=(const Population& copy)
     nb_direpi_test = copy.nb_direpi_test;
     out_geno = copy.out_geno;
 	out_unstab = copy.out_unstab;
+	out_canal = copy.out_canal;
     return(*this);
 }
 
@@ -110,6 +114,8 @@ void Population::initialize(const ParameterSet& param)
 	// Parameters that cannot change
     out_geno = param.getpar(OUT_GENO)->GetString(); 
     out_unstab = param.getpar(OUT_UNSTAB)->GetString();
+    
+    out_canal = param.getpar(OUT_CANAL)->GetString();
     
     // Computes fitness etc. 
     update();
@@ -142,6 +148,7 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     offspring.nb_direpi_test = nb_direpi_test;
     offspring.out_geno = out_geno;
     offspring.out_unstab = out_unstab;
+    offspring.out_canal = out_canal;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<double> cumul_fit = cumul_fitness();
@@ -450,7 +457,7 @@ void Population::write(ostream & out, int generation) const
     if (nb_canal_test > 0) 
     {
 		// Runs the canalization tests
-		Canalization can_test(nb_canal_test, *this);
+		Canalization can_test(nb_canal_test, out_canal, *this);
 		outformat(out, can_test.meanphen_canalization());
 		outformat(out, can_test.varphen_canalization());
 		

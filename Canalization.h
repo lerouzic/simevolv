@@ -20,6 +20,7 @@
 #include "Population.h"
 
 #include <vector>
+#include <string>
 
 
 /* This class is devoted to the estimation of the canalization (or genetic robustness) of the genetic architecture in a population. 
@@ -33,7 +34,7 @@ class Canalization
 	public:
 		// The constructor parameters are the number of canalization tests, and the current population
 		// The database is filled in the constructor, meaning that most of the computation time will be spent here. 
-		Canalization(unsigned int, const Population &);
+		Canalization(unsigned int, const std::string &, const Population &);
 		~Canalization() { }
 						
 		// get the canalization scores
@@ -43,6 +44,7 @@ class Canalization
 		double fitness_canalization();
 				
 	protected:
+		std::string out_canal;
 		// fill the object
 		void reference_indiv(Individual);
 		void mutant_indiv (Individual);

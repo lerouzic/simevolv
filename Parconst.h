@@ -48,6 +48,7 @@ const std::string FITNESS_STAB = "FITNESS_STAB";            /* Type of stability
 const std::string FITNESS_STABSTR = "FITNESS_STABSTR";      /* Strenght of selection on stability */
 const std::string OUT_GENO = "OUT_GENO";					/* Output for the genotype */
 const std::string OUT_UNSTAB = "OUT_UNSTAB";				/* Output for the phenotypic unstability */
+const std::string OUT_CANAL = "OUT_CANAL"; 					/* The way canalization scores are calculated */
 const std::string OUT_CANAL_TESTS = "OUT_CANAL_TESTS";
 const std::string OUT_CANAL_MUTSD = "OUT_CANAL_MUTSD";
 const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
@@ -138,6 +139,10 @@ const std::vector<std::string> OG_options = boost::assign::list_of (OG_yes)(OG_n
 const std::string OU_yes = "yes";
 const std::string OU_no = "no";
 const std::vector<std::string> OU_options = boost::assign::list_of (OU_yes)(OU_no);
+
+const std::string OC_mut = "mut";
+const std::string OC_can = "can";
+const std::vector<std::string> OC_options = boost::assign::list_of (OC_mut)(OC_can);
 
 // Initial vector type
 const std::string SO_min = "minimum";
