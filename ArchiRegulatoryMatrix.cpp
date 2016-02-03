@@ -180,7 +180,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		}
 		haircut(St);
 		
-		if (t > (timesteps-calcsteps)) 
+		if (t >= (timesteps-calcsteps)) 
 		{
 			unstability.push_back(boost_to_std_vector(St));
 		}
