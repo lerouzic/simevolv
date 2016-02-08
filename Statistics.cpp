@@ -286,3 +286,45 @@ vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vect
 	return(ans);
 }
 
+////////////////////////// FastIMStat //////////////////////////////////
+
+// Fast (and non-exhaustive) version if InvertedMStat, just for 
+// internal calculation in the Network models
+
+FastIMStat::FastIMStat(const vector<vector<double>> & dd)
+	: timesteps(dd.size())
+{
+	// data is a vector of expression values. 
+	assert(!dd.empty());
+	assert(!dd[0].empty());
+	size_t numphen = dd[0].size();
+	for (size_t i = 0; i < numphen; i++) {
+		double sx = 0.0;
+		double sx2 = 0.0;
+		for (size_t j = 0; j < timesteps; j++) {
+			sx += dd[j][i];
+			sx2 += dd[j][i]*dd[j][i];
+		}
+		sumx.push_back(sx);
+		sumx2.push_back(sx2);
+	}
+}
+
+vector<double> FastIMStat::means() const 
+{
+	vector<double> ans;
+	for (size_t j = 0; j < sumx.size(); j++) {
+		ans.push_back(sumx[j]/timesteps);
+	}
+	return(ans);
+}
+
+vector<double> FastIMStat::vars() const
+{
+	vector<double> ans;
+	for (size_t j = 0; j < sumx.size(); j++) {
+		double m = sumx[j]/timesteps;
+		ans.push_back(sumx2[j]/timesteps - m*m);
+	}
+	return(ans);
+}

@@ -89,4 +89,18 @@ class InvertedMStat: public MultivariateStat
 		static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
 };
 
+class FastIMStat
+{
+	public: 
+		FastIMStat(const std::vector<std::vector<double>> &);
+		
+		std::vector<double> means() const;
+		std::vector<double> vars() const;
+		
+	protected:
+		size_t timesteps;
+		std::vector<double> sumx;
+		std::vector<double> sumx2;
+};
+
 #endif // STATISTICS_H_INCLUDED

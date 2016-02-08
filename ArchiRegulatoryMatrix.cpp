@@ -45,11 +45,12 @@ template<class T>
 std::vector<T> boost_to_std_vector(const boost::numeric::ublas::vector<T> & x) 
 {
 	// not very fast, optimize with std::copy if necessary
-	std::vector<T> ans;
-	for (unsigned int i = 0; i < x.size(); i++) 
-	{
-		ans.push_back(x(i));
-	}
+	std::vector<T> ans(x.size());
+	//~ for (unsigned int i = 0; i < x.size(); i++) 
+	//~ {
+		//~ ans.push_back(x(i));
+	//~ }
+	copy(x.begin(), x.end(), ans.begin());
 	return(ans);
 }
 
@@ -145,6 +146,8 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		// Here comes the epigenetic transmission
 		if (epi.is_defined()) { 
 			St(i) = epi.get_epigenet()*epi.get_phenotype()[i] + (1.-epi.get_epigenet())*So[i];
+		} else {
+			St(i) = So[i];
 		}
 		
 		if (envir) {
@@ -171,12 +174,13 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			St(i) = recur*St(i) + (1-recur)*(this->sigma(h(i)));
+			double St_i = recur*St(i) + (1.-recur)*(this->sigma(h(i)));
 			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
 			//St(i) = this->sigma(h(i));
-			St(i) += Environment::dynam_disturb();
+			St_i += Environment::dynam_disturb();
+			St(i) = St_i;
 		}
 		haircut(St);
 		
@@ -187,7 +191,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	}
 	
 	// output (from ublas to std)
-	InvertedMStat stat_steps(unstability);
+	FastIMStat stat_steps(unstability);
 	vector<double> Sf_mean = stat_steps.means();
 	vector<double> Sf_var = stat_steps.vars();
 	
@@ -244,9 +248,19 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 
 void ArchiRegulatoryMatrix::haircut(boost::numeric::ublas::vector<double> & vec) const 
 {
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		this->haircut(vec(i));
+	}
 }
 
 void ArchiRegulatoryMatrix::haircut(vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		this->haircut(vec[i]);
+	}
+}
+
+void ArchiRegulatoryMatrix::haircut(double & d) const
 {
 }
 
@@ -343,20 +357,10 @@ double ArchiWagner::sigma(double h) const
 	}
 }	
 
-void ArchiWagner::haircut(boost::numeric::ublas::vector<double> & vec) const 
+void ArchiWagner::haircut(double & d) const 
 {
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec(i) < -1.) vec(i) = -1.;
-		else if (vec(i) > 1.) vec(i) = 1.;
-	}
-}
-
-void ArchiWagner::haircut(vector<double> & vec) const 
-{
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec[i] < -1.) vec[i] = -1.;
-		else if (vec[i] > 1.) vec[i] = 1.;
-	}
+	if (d < -1.) d = -1.;
+	else if (d > 1.) d = 1.;
 }
 
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
@@ -433,20 +437,10 @@ double ArchiSiegal::sigma(double h) const
 	return ((2. / (1. + exp(-basal*h)) ) -1.);
 }
 
-void ArchiSiegal::haircut(boost::numeric::ublas::vector<double> & vec) const 
+void ArchiSiegal::haircut(double & d) const 
 {
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec(i) < -1.) vec(i) = -1.;
-		else if (vec(i) > 1.) vec(i) = 1.;
-	}
-}
-
-void ArchiSiegal::haircut(std::vector<double> & vec) const 
-{
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec[i] < -1.) vec[i] = -1.;
-		else if (vec[i] > 1.) vec[i] = 1.;
-	}
+	if (d < -1.) d = -1.;
+	else if (d > 1.) d = 1.;
 }
 
 
@@ -510,21 +504,12 @@ double ArchiM2::sigma(double h) const
 	return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
 }
 
-void ArchiM2::haircut(boost::numeric::ublas::vector<double> & vec) const 
+void ArchiM2::haircut(double & d) const 
 {
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec(i) < 0.) vec(i) = 0.;
-		else if (vec(i) > 1.) vec(i) = 1.;
-	}
+	if (d < 0.) d = 0.;
+	else if (d > 1.) d = 1.;
 }
 
-void ArchiM2::haircut(std::vector<double> & vec) const 
-{
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		if (vec[i] < 0.) vec[i] = 0.;
-		else if (vec[i] > 1.) vec[i] = 1.;
-	}
-}
 
 ArchiM2::~ArchiM2()
 {

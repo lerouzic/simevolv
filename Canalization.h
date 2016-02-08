@@ -46,8 +46,8 @@ class Canalization
 	protected:
 		std::string out_canal;
 		// fill the object
-		void reference_indiv(Individual);
-		void mutant_indiv (Individual);
+		void reference_indiv(const Individual&);
+		void mutant_indiv (const Individual&);
 		
 		// run the calculation
 		void process();	
