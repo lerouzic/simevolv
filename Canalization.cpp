@@ -107,7 +107,7 @@ double Canalization::fitness_canalization()
 
 /* Sets a new reference individual
 Note that, in practice, reference individuals are never used in the calculation. Yet, it is mandatory to provide them, as they indicate that the next mutants will concern another individual.*/ 
-void Canalization::reference_indiv(Individual ind)
+void Canalization::reference_indiv(const Individual & ind)
 {
 	reference.push_back(ind);
 	vector<Phenotype> tmp;
@@ -117,7 +117,7 @@ void Canalization::reference_indiv(Individual ind)
 }
 
 /* Adds a new mutant in the database. Note that reference individuals and corresponding mutants have to be entered sequencially, which is not very conveninent (no way to enter first all reference individuals, and then all mutants. Nevermind, this is internal code. */
-void Canalization::mutant_indiv(Individual ind) 
+void Canalization::mutant_indiv(const Individual & ind) 
 {
 	assert(!(phen_ready || fit_ready));
 	assert(!mutants.empty());
@@ -157,12 +157,7 @@ void Canalization::process_phen()
 	
 	for (unsigned int i = 0; i < mutants.size(); i++) 
 	{ // individual # i
-		vector<Phenotype> data_i;
-		for (unsigned int j = 0; j < mutants[i].size(); j++) 
-		{ // mutant # j
-			data_i.push_back(mutants[i][j]);
-		}
-		PhenotypeStat stat_i(data_i);
+		PhenotypeStat stat_i(mutants[i]);
 		
 		mean_per_indiv.push_back(stat_i.means_phen());
 		if (out_canal == OC_mut) {
