@@ -49,6 +49,7 @@ class ArchiRegulatoryMatrix : public Architecture
 		void init_connectivity_matrix(const ParameterSet &);		
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
 		virtual void haircut(std::vector<double> & vec) const;
+		virtual void haircut(double &) const;
 		
 	protected:
 		ArchiRegulatoryMatrix() {}
@@ -81,8 +82,7 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	protected :
 		// Inherited functions
 		virtual double sigma(double h) const;
-		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
-		virtual void haircut(std::vector<double> & vec) const;	
+		virtual void haircut(double &) const;
 		
 	protected:
 		ArchiWagner() {}
@@ -111,8 +111,7 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
-		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;	
-		virtual void haircut(std::vector<double> & vec) const;	
+		virtual void haircut(double &) const;	
 		
 	protected:
 		ArchiSiegal() {}
@@ -143,8 +142,7 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
-		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
-		virtual void haircut(std::vector<double> & vec) const;
+		virtual void haircut(double &) const;
 		
 	protected:
 		ArchiM2() {}
