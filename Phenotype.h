@@ -109,7 +109,9 @@ class PhenotypeStat
 		Phenovec vars_phen() const; 
 		
 		Phenovec means_unstab() const;
+		Phenovec means_log_unstab() const;		
 		Phenovec vars_unstab() const;
+		Phenovec vars_log_unstab() const;
 		
 		unsigned int dimensionality() const;
 		

@@ -16,8 +16,11 @@
 #include "Phenotype.h"
 
 #include "OutputFormat.h" // for outformat(ostream, -> double <-, ...)
+#include "Parconst.h"
 
 #include <cassert>
+
+#include <cmath> 
 
 using namespace std;
 
@@ -223,13 +226,29 @@ Phenovec PhenotypeStat::vars_phen() const
 Phenovec PhenotypeStat::means_unstab() const 
 {
 	assert(unstab != NULL); 
-	return(unstab->means());
+	
+	return(unstab->means()); 
+}
+
+Phenovec PhenotypeStat::means_log_unstab() const 
+{
+	assert(unstab != NULL); 
+
+	return(unstab->means_log()); 		
 }
 
 Phenovec PhenotypeStat::vars_unstab() const 
 {
 	assert(unstab != NULL); 
-	return(unstab->vars());
+	
+	return(unstab->vars()); 
+}
+
+Phenovec PhenotypeStat::vars_log_unstab() const 
+{
+	assert(unstab != NULL); 
+
+	return(unstab->vars_log()); 		
 }
 
 unsigned int PhenotypeStat::dimensionality() const 

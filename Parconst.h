@@ -18,7 +18,6 @@
 #include <boost/assign/list_of.hpp> // Boost : makes vector initialization easier
 #include <vector>
 
-
 // COMMON PARAMETERS
 const std::string TYPE_ARCHI = "TYPE_ARCHI";				/* Architecture types */
 const std::string SIMUL_GENER = "SIMUL_GENER"; 
@@ -137,8 +136,9 @@ const std::vector<std::string> OG_options = boost::assign::list_of (OG_yes)(OG_n
 
 // Output for the phenotypic unstability
 const std::string OU_yes = "yes";
+const std::string OU_log = "log";
 const std::string OU_no = "no";
-const std::vector<std::string> OU_options = boost::assign::list_of (OU_yes)(OU_no);
+const std::vector<std::string> OU_options = boost::assign::list_of (OU_yes)(OU_log)(OU_no);
 
 const std::string OC_mut = "mut";
 const std::string OC_can = "can";

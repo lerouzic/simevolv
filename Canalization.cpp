@@ -160,20 +160,16 @@ void Canalization::process_phen()
 		PhenotypeStat stat_i(mutants[i]);
 		
 		mean_per_indiv.push_back(stat_i.means_phen());
-		if (out_canal == OC_mut) {
-			var_per_indiv.push_back(stat_i.vars_phen());
-		} else if (out_canal == OC_can) {
-			Phenovec vars = stat_i.vars_phen();
-			vector<double> mlogvar;
-			for (unsigned int i = 0; i < vars.size(); i++) {
-				if (vars[i] < 1e-9) { // a large amont of numerical issues are avoided this way.
-					mlogvar.push_back(20.0);
-				} else {
-					mlogvar.push_back(-log(vars[i]));
-				}
+		Phenovec vphen_i = stat_i.vars_phen();
+		if (out_canal == OC_can) {
+			for (unsigned int k = 0; k < vphen_i.size(); k++) {
+				double tmplog = MINLOG;
+				if (vphen_i[k] > EXPMINLOG) 
+					tmplog = log(vphen_i[k]);
+				vphen_i[k] = tmplog;
 			}
-			var_per_indiv.push_back(mlogvar);
-		} 
+		}
+		var_per_indiv.push_back(vphen_i);		
 	}	
 	PhenotypeStat stat_m(mean_per_indiv);
 	PhenotypeStat stat_v(var_per_indiv);
@@ -182,6 +178,7 @@ void Canalization::process_phen()
 	var_of_mean  = stat_m.vars_phen();
 	mean_of_var  = stat_v.means_phen();
 	var_of_var   = stat_v.vars_phen();
+
 	
 	phen_ready = true;
 }
@@ -206,9 +203,14 @@ void Canalization::process_fit()
 	}
 	
 	MultivariateStat stat_fit(dat);
-	
-	indiv_fitness_mean = stat_fit.means();
-	indiv_fitness_var = stat_fit.vars();
+
+	if (out_canal == OC_can) {	
+		indiv_fitness_mean = stat_fit.means_log();
+		indiv_fitness_var = stat_fit.vars_log();
+	} else {
+		indiv_fitness_mean = stat_fit.means();
+		indiv_fitness_var = stat_fit.vars();		
+	}
 	
 	fit_ready = true;
 }
@@ -217,6 +219,8 @@ void Canalization::process_cov()
 {
 	// Calculation of covariances:
 	// * Covariance between canalization and unstability
+	
+	// WARNING: Log things will not work 
 	
 	assert(!mutants.empty());
 	assert(!reference.empty());	// probably unnecessary

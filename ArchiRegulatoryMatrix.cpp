@@ -448,8 +448,8 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
 {
-	int min = 0;
-	int max = 1;
+	float min = 0;
+	float max = 1;
 	
 	string type_so = param.getpar(TYPE_SO)->GetString();
     if (type_so==SO_min)
