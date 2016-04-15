@@ -18,6 +18,9 @@
 #include <iostream>
 
 
+const double MINLOG = -20.0;
+const double EXPMINLOG = 2.061154e-9; // change both at the same time!
+
 /* Univariate Statistics: provides the mean and variance of a vector of double */
 class UnivariateStat
 {
@@ -29,6 +32,9 @@ class UnivariateStat
 		double mean() const;
 		double var() const;
 		
+		double mean_log() const;
+		double var_log() const;
+		
 	protected:
 		// initialization
 		void initialize();
@@ -37,6 +43,8 @@ class UnivariateStat
 		std::vector<double> data;
 		double sum_i;
 		double sum_i2;
+		double sum_log_i;
+		double sum_log_i2;
 };
 
 
@@ -55,13 +63,20 @@ class MultivariateStat
 
 		// get results: vectorized
 		std::vector<double> means() const;
+		std::vector<double> means_log() const;		
 		std::vector<double> vars() const;
-		std::vector<std::vector<double> > vcov() const;
+		std::vector<double> vars_log() const;		
+		std::vector<std::vector<double> > vcov() const;		
+		std::vector<std::vector<double>> vcov_log() const;
 		
 		// ... or as scalars by providing the indexes.
 		double mean(unsigned int) const;
+		double mean_log(unsigned int) const;
 		double var(unsigned int) const;
+		double var_log(unsigned int) const;
 		double cov(unsigned int, unsigned int) const;
+		double cov_log(unsigned int, unsigned int) const;
+		
 		double cor(unsigned int, unsigned int) const;
 		double r2(unsigned int, unsigned int) const;
 		double regression_slope(unsigned int, unsigned int) const; //param 1 = a*param 2 + b
@@ -75,7 +90,9 @@ class MultivariateStat
 	
 		const std::vector<std::vector<double> > data;
 		std::vector<std::vector<double> > sum_ij;
+		std::vector<std::vector<double> > sum_log_ij;
 		std::vector<double> sum_i;
+		std::vector<double> sum_log_i;
 };
 
 
