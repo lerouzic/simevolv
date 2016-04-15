@@ -436,19 +436,31 @@ void Population::write(ostream & out, int generation) const
 	{
 		outformat(out, vv[i]);
 	}
-	if (out_unstab == OU_yes) 
+	if ((out_unstab == OU_yes) || (out_unstab == OU_log))
 	{
-		Phenovec mm2 = phenstat.means_unstab();
+		Phenovec mm2;
+		if (out_unstab == OU_yes) {
+			mm2 = phenstat.means_unstab();
+		} else {
+			mm2 = phenstat.means_log_unstab();
+		}
 		for (unsigned int i = 0; i < mm2.size(); i++)
 		{
 			outformat(out, mm2[i]);
 		}
-		Phenovec vv2 = phenstat.vars_unstab();
+		
+		Phenovec vv2;
+		if (out_unstab == OU_yes) {
+			vv2 = phenstat.vars_unstab();
+		} else {
+			vv2 = phenstat.vars_log_unstab();
+		}
 		for (unsigned int i = 0; i < vv2.size(); i++)
 		{
 			outformat(out, vv2[i]);
 		}
 	}
+
     outformat(out, fitstat.mean());
     outformat(out, fitstat.var());
     outformat(out, Fitness::current_optimum());
