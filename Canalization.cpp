@@ -26,216 +26,175 @@
 
 using namespace std;
 
-
-
-// Constructors 
-
-GeneticCanalization::GeneticCanalization(unsigned int can_tests, const string & outc, const Population & pop)
-	: out_canal(outc)
+MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual & ref, bool logvar, bool meancentered)
 {
-	phen_ready = false;
-	cov_ready = false;
-	fit_ready = false;
+	vector<Phenotype> phenos(variants.size());
+	vector<double> fitnesses(variants.size());
+	for (auto variant : variants) {
+		phenos.push_back(variant.get_phenotype());
+		fitnesses.push_back(variant.get_fitness());
+	}
+	PhenotypeStat phenostat(phenos);
+	UnivariateStat fitnessstat(fitnesses);
+	
+	Phenovec rawmeanphen = phenostat.means_phen();
+	Phenovec rawvarphen = phenostat.vars_phen();
+	double rawmeanfit = fitnessstat.mean_log();
+	double rawvarfit = fitnessstat.var_log();
+	
+	if (!meancentered) {
+		Phenovec ref_pheno = ref.get_phenotype().get_pheno();
+		for (unsigned int i = 0; i < rawmeanphen.dimensionality(); i++) {
+			rawvarphen[i] = rawvarphen[i] + (rawmeanphen[i] - ref_pheno[i])*(rawmeanphen[i] - ref_pheno[i]);
+		}
+		rawvarfit = rawvarfit + (rawmeanfit - ref.get_fitness())*(rawmeanfit - ref.get_fitness());
+	}
+	
+	if (logvar) {
+		for (unsigned int i = 0; i < rawmeanphen.dimensionality(); i++) {
+			rawvarphen[i] = log(rawvarphen[i]);
+		}
+		rawvarfit = log(rawvarfit);
+	}
+	
+	canpheno = rawvarphen;
+	canfitness = rawvarfit;
+}
 
+
+/**************************** Canalization ***********************************/
+
+Canalization::Canalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
+{
+}
+
+Canalization::~Canalization() { }
+
+Phenovec Canalization::meanpop_canphen() const 
+{
+	vector<Phenovec> phenpop(popcan.size());
+	for (auto minican : popcan)
+		phenpop.push_back(minican.canpheno);
+	PhenotypeStat phenostat(phenpop);
+	return(phenostat.means_phen());
+}
+
+Phenovec Canalization::varpop_canphen() const 
+{
+	vector<Phenovec> phenpop(popcan.size());
+	for (auto minican : popcan)
+		phenpop.push_back(minican.canpheno);
+	PhenotypeStat phenostat(phenpop);
+	return(phenostat.vars_phen());
+}
+
+double Canalization::meangene_meanpop_canphen() const
+{
+	vector<double> meanpop;
+	for (auto i : meanpop_canphen())
+		meanpop.push_back(i);
+	UnivariateStat uvstat(meanpop);
+	return(uvstat.mean());
+}
+
+vector<double> Canalization::meangene_canphen() const
+{
+	vector<double> ans(popcan.size());
+	for (auto minican : popcan) {
+		vector<double> indcan(minican.canpheno.size());
+		for (auto i : minican.canpheno)
+			indcan.push_back(i);
+		UnivariateStat uvstat(indcan);
+		ans.push_back(uvstat.mean());
+	}
+	return(ans);
+}
+
+double Canalization::meanpop_canlogfit() const
+{
+	UnivariateStat uvstat(canlogfit());
+	return(uvstat.mean());
+}
+
+double Canalization::varpop_canlogfit() const
+{
+	UnivariateStat uvstat(canlogfit());
+	return(uvstat.var());
+}
+
+vector<double> Canalization::canlogfit() const
+{
+	vector<double> fitnesses(popcan.size());
+	for (auto minican : popcan) {
+		fitnesses.push_back(minican.canfitness);
+	}
+	return(fitnesses);
+}
+
+/************************ Genetic Canalization ****************************/
+
+GeneticCanalization::GeneticCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, pop, logvar, meancentered)
+{
 	// In theory, this should not be necessary. In practice, something in the population changes and the Fitness function complains
 	Fitness::update(pop);
 	
-	// Fills the database of the object: a collection of reference ("wild") individuals (the individuals of the population), and for each wild individual, nb_tests mutants. 
 	if (can_tests > 0) 
 	{
 		for (unsigned int i = 0; i < pop.size(); i++) 
 		{
-			const Individual & ref = pop.pop[i];
-			reference_indiv(ref);
+			vector<Individual> mutants;			
 			for (unsigned int test = 0; test < can_tests; test++) 
 			{
-				mutant_indiv(ref.test_canalization(1, pop)); // So far: only one mutation per mutant
+				mutants.push_back(pop.pop[i].test_canalization(1, pop)); 
+					// So far: only one mutation per mutant
 			}
-		} 
-	}
-}
-
-
-// User interface.
-
-/* Get the phenotypic canalization scores (i.e. the average across individuals of mutant variances) */
-Phenotype GeneticCanalization::meanphen_canalization()
-{
-	if (!phen_ready) 
-	{
-		process_phen();
-	}
-	
-	return(mean_of_var);
-}
-
-Phenotype GeneticCanalization::varphen_canalization()
-{
-	if (!phen_ready) 
-	{
-		process_phen();
-	}
-	
-	return(var_of_var);
-}
-
-
-/* Get the covariances between network unstability and canalization score (variance among mutants) */
-Phenotype GeneticCanalization::cov_canalization()
-{
-	if (!cov_ready)
-	{
-		process_cov();
-	}
-	
-	return(cov_can);
-}
-
-/*	Get the canalization scores for fitness (the average of mutant variances) */
-double GeneticCanalization::fitness_canalization()
-{
-	if (!fit_ready) 
-	{
-		process_fit();
-	}
-	
-	UnivariateStat st(indiv_fitness_var);
-	return(st.mean());
-}
-
-// Internal functions
-
-/* Sets a new reference individual
-Note that, in practice, reference individuals are never used in the calculation. Yet, it is mandatory to provide them, as they indicate that the next mutants will concern another individual.*/ 
-void GeneticCanalization::reference_indiv(const Individual & ind)
-{
-	reference.push_back(ind);
-	vector<Phenotype> tmp;
-	mutants.push_back(tmp);
-	vector<double> tmpfit;
-	mutants_fit.push_back(tmpfit);
-}
-
-/* Adds a new mutant in the database. Note that reference individuals and corresponding mutants have to be entered sequencially, which is not very conveninent (no way to enter first all reference individuals, and then all mutants. Nevermind, this is internal code. */
-void GeneticCanalization::mutant_indiv(const Individual & ind) 
-{
-	assert(!(phen_ready || fit_ready));
-	assert(!mutants.empty());
-	assert(!mutants_fit.empty());
-	mutants[mutants.size()-1].push_back(ind.get_phenotype());
-	mutants_fit[mutants.size()-1].push_back(ind.get_fitness());
-}
-
-void GeneticCanalization::process() 
-{
-	assert(!mutants.empty());
-	assert(!reference.empty());
-	
-	if (!phen_ready) 
-	{
-		process_phen();
-	}	
-	
-	if (!fit_ready) 
-	{
-		process_fit();
-	}	
-}
-
-void GeneticCanalization::process_phen()
-{
-	assert(!mutants.empty());
-	assert(!reference.empty());	// probably unnecessary
-
-	// Here is the calculation of the canalization score itself. 
-	// The algorithm computes the mean and variance across mutants in each reference individual. 
-	// Two ways of measuring canalization are implemented (out_canal parameter):
-	//  * OUT_mut computes the variance among mutants
-	//  * OUT_can computes -log(variance among mutants)
-	// It then computes both the mean and the variance of these canalization scores. 
-	// Everything is stored, and the chosen index is returns by other "getter" functions.
-	
-	for (unsigned int i = 0; i < mutants.size(); i++) 
-	{ // individual # i
-		PhenotypeStat stat_i(mutants[i]);
-		
-		mean_per_indiv.push_back(stat_i.means_phen());
-		Phenovec vphen_i = stat_i.vars_phen();
-		if (out_canal == OC_can) {
-			for (unsigned int k = 0; k < vphen_i.size(); k++) {
-				double tmplog = MINLOG;
-				if (vphen_i[k] > EXPMINLOG) 
-					tmplog = log(vphen_i[k]);
-				vphen_i[k] = tmplog;
-			}
+			MiniCanIndiv minican(mutants, pop.pop[i], logvar, meancentered);
+			popcan.push_back(minican);
 		}
-		var_per_indiv.push_back(vphen_i);		
-	}	
-	PhenotypeStat stat_m(mean_per_indiv);
-	PhenotypeStat stat_v(var_per_indiv);
-	
-	mean_of_mean = stat_m.means_phen();
-	var_of_mean  = stat_m.vars_phen();
-	mean_of_var  = stat_v.means_phen();
-	var_of_var   = stat_v.vars_phen();
-
-	
-	phen_ready = true;
+	}
 }
 
-void GeneticCanalization::process_fit() 
+/************************ Init Disturbance Canalization **********************/
+
+DisturbCanalization::DisturbCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, pop, logvar, meancentered)
 {
-	// canalization scores for fitness. 
-	// The algorithm is very similar to the one for phenotypes, except that fitnesses are unidimensional. 
-	assert(!mutants_fit.empty());
-	assert(!reference.empty());	
+	Fitness::update(pop);
 	
-	vector<vector<double> > dat;
-	
-	for (unsigned int i = 0; i < mutants_fit.size(); i++) 
+	if (can_tests > 0) 
 	{
-		vector<double> tmp;
-		for (unsigned int j = 0; j < mutants_fit[i].size(); j++) 
+		for (unsigned int i = 0; i < pop.size(); i++) 
 		{
-			tmp.push_back(mutants_fit[i][j]);
+			vector<Individual> variants;			
+			for (unsigned int test = 0; test < can_tests; test++) 
+			{
+				variants.push_back(pop.pop[i].test_disturb(pop)); 
+			}
+			MiniCanIndiv minican(variants, pop.pop[i], logvar, meancentered);
+			popcan.push_back(minican);
 		}
-		dat.push_back(tmp);
 	}
-	
-	MultivariateStat stat_fit(dat);
-
-	if (out_canal == OC_can) {	
-		indiv_fitness_mean = stat_fit.means_log();
-		indiv_fitness_var = stat_fit.vars_log();
-	} else {
-		indiv_fitness_mean = stat_fit.means();
-		indiv_fitness_var = stat_fit.vars();		
-	}
-	
-	fit_ready = true;
 }
 
-void GeneticCanalization::process_cov()
+/************************* Environmental Canalization *************************/
+
+EnviroCanalization::EnviroCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, pop, logvar, meancentered)
 {
-	// Calculation of covariances:
-	// * Covariance between canalization and unstability
+	Fitness::update(pop);
 	
-	// WARNING: Log things will not work 
-	
-	assert(!mutants.empty());
-	assert(!reference.empty());	// probably unnecessary
-	if (!phen_ready) 
+	if (can_tests > 0) 
 	{
-		process_phen();
+		for (unsigned int i = 0; i < pop.size(); i++) 
+		{
+			vector<Individual> variants;			
+			for (unsigned int test = 0; test < can_tests; test++) 
+			{
+				variants.push_back(pop.pop[i].test_enviro(pop)); 
+			}
+			MiniCanIndiv minican(variants, pop.pop[i], logvar, meancentered);
+			popcan.push_back(minican);
+		}
 	}
-	vector<Phenovec> unstab;
-	vector<Phenovec> can;
-	for (unsigned int i = 0; i < reference.size(); i++) {
-		unstab.push_back(reference[i].get_phenotype().get_unstab());
-		can.push_back(var_per_indiv[i].get_pheno());
-	}
-	BivariatePhenovecStat bivtmp(unstab, can);
-	
-	cov_can = bivtmp.cov(0,1);
-	cov_ready = true;
 }

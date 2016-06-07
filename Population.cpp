@@ -47,7 +47,6 @@ Population::Population()
 	, nb_direpi_test(0)
 	, out_geno("no")
 	, out_unstab("no")
-	, out_canal(OC_mut)
 {
 }
 
@@ -59,7 +58,6 @@ Population::Population(const Population & copy)
     , nb_direpi_test(copy.nb_direpi_test)
     , out_geno(copy.out_geno)
 	, out_unstab(copy.out_unstab)
-	, out_canal(copy.out_canal)
 {
 }
 
@@ -71,7 +69,6 @@ Population::Population(const std::vector<Individual>& vecindiv)
 	, nb_direpi_test(0)
 	, out_geno("no")
 	, out_unstab("no")
-	, out_canal(OC_mut)
 {
 }
 
@@ -93,7 +90,6 @@ Population & Population::operator=(const Population& copy)
     nb_direpi_test = copy.nb_direpi_test;
     out_geno = copy.out_geno;
 	out_unstab = copy.out_unstab;
-	out_canal = copy.out_canal;
     return(*this);
 }
 
@@ -114,9 +110,7 @@ void Population::initialize(const ParameterSet& param)
 	// Parameters that cannot change
     out_geno = param.getpar(OUT_GENO)->GetString(); 
     out_unstab = param.getpar(OUT_UNSTAB)->GetString();
-    
-    out_canal = param.getpar(OUT_CANAL)->GetString();
-    
+        
     // Computes fitness etc. 
     update();
 }
@@ -148,7 +142,6 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     offspring.nb_direpi_test = nb_direpi_test;
     offspring.out_geno = out_geno;
     offspring.out_unstab = out_unstab;
-    offspring.out_canal = out_canal;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<double> cumul_fit = cumul_fitness();
@@ -361,18 +354,22 @@ void Population::write(ostream & out, int generation) const
 		if (nb_canal_test > 0) 
 		{
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
-			{
-				outformat(out, i+1, "MCan");
-			}
+				outformat(out, i+1, "MGenCan");
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
-			{
-				outformat(out, i+1, "VCan");
-			}
+				outformat(out, i+1, "VGenCan");
+			outformat(out, "GenCanFit");
+			
 			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
-			{
-				outformat(out, i+1, "CanCov");
-			}			
-			outformat(out, "CanFit");
+				outformat(out, i+1, "MInitCan");
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+				outformat(out, i+1, "VInitCan");
+			outformat(out, "InitCanFit");
+						
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+				outformat(out, i+1, "MDynamCan");
+			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+				outformat(out, i+1, "VDynamCan");
+			outformat(out, "DynamCanFit");
 		}
 		if (nb_herit_test > 0)
 		{	
@@ -417,8 +414,13 @@ void Population::write(ostream & out, int generation) const
 	 * following column: epigenetic variance
 	 * n following columns: canalization means(if enabled)
 	 * n following columns: canalization variances (if enabled)
-	 * n following columns: covariance between canalization and unstability (if enabled)
 	 * following column: fitness canalization score (if enabled)
+	 * n following columns: initdisturb canalization means(if enabled)
+	 * n following columns: initdisturb canalization variances (if enabled)
+	 * following column: fitness initdisturb canalization score (if enabled)
+	 * n following columns: enviro canalization means(if enabled)
+	 * n following columns: enviro canalization variances (if enabled)
+	 * following column: fitness enviro canalization score (if enabled) 
 	 * n following columns: heritability for the n phenotypes (if enabled)
 	 * following column: heritability for fitness (if enabled)
 	 * n following colums: w-matrix means
@@ -469,13 +471,21 @@ void Population::write(ostream & out, int generation) const
     if (nb_canal_test > 0) 
     {
 		// Runs the canalization tests
-		GeneticCanalization can_test(nb_canal_test, out_canal, *this);
-		outformat(out, can_test.meanphen_canalization());
-		outformat(out, can_test.varphen_canalization());
+		GeneticCanalization can_test(nb_canal_test, *this);
+		outformat(out, can_test.meanpop_canphen());
+		outformat(out, can_test.varpop_canphen());
+		outformat(out, can_test.meanpop_canlogfit());
 		
-		outformat(out, can_test.cov_canalization());		
-		outformat(out, can_test.fitness_canalization());
-	}    
+		DisturbCanalization disturb_test(nb_canal_test, *this);
+		outformat(out, disturb_test.meanpop_canphen());
+		outformat(out, disturb_test.varpop_canphen());
+		outformat(out, disturb_test.meanpop_canlogfit());	
+
+		EnviroCanalization enviro_test(nb_canal_test, *this);
+		outformat(out, enviro_test.meanpop_canphen());
+		outformat(out, enviro_test.varpop_canphen());
+		outformat(out, enviro_test.meanpop_canlogfit());	
+	} 
 	if (nb_herit_test > 0) 
 	{
 		// Runs the heritability tests

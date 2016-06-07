@@ -36,7 +36,7 @@ class ArchiMultilinear : public Architecture
 	    virtual void set_epsilon2(unsigned int, unsigned int, double);
 	    virtual void set_epsilon3(unsigned int, unsigned int, unsigned int, double);
 	
-	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &) const;
+	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &, bool sdinittest = false, bool sddynamtest = false) const;
 	
 	protected :
 	    std::vector<std::vector<double>> epsilon2;

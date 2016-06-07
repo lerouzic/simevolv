@@ -137,7 +137,7 @@ shared_ptr<Allele> ArchiBoolean::allele_init(const ParameterSet & param, unsigne
 
 /* calculate the phenotypic function depending on the genotype
 	here : boolean logic operations between loci of the genotype */
-Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi) const
+Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 	// Warning: the variable "envir" has no effect in this model. 
 	// Warning: epigenetic transmission not implemented yet.
 {

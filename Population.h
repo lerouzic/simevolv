@@ -27,6 +27,8 @@
 class Population
 {
 	friend class GeneticCanalization;
+	friend class DisturbCanalization;
+	friend class EnviroCanalization;
 	friend class Heritability;
 	friend class Direpistasis;
 
@@ -75,7 +77,6 @@ class Population
 	    unsigned int nb_direpi_test;
 	    std::string out_geno;
 	    std::string out_unstab;
-	    std::string out_canal;
 };
 
 #endif // POPULATION_H_INCLUDED

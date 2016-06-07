@@ -191,3 +191,21 @@ Individual Individual::test_canalization(unsigned int nb_mut, const Population &
 	clone.update_fitness(pop);	
 	return(clone);
 }
+
+/* tests the impact of initial disturbances: produces clones differing by their initial S */
+Individual Individual::test_disturb(const Population & pop) const
+{
+	Individual clone(*this);
+	clone.phenotype = Architecture::Get() -> phenotypic_value(genotype, true, clone.epiinfo, true, false);
+	clone.update_fitness(pop);
+	return(clone);
+}
+
+/* tests the impact of environmental disturbances during development */
+Individual Individual::test_enviro(const Population & pop) const
+{
+	Individual clone(*this);
+	clone.phenotype = Architecture::Get() -> phenotypic_value(genotype, true, clone.epiinfo, false, true);
+	clone.update_fitness(pop);
+	return(clone);
+}

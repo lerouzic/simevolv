@@ -64,7 +64,11 @@ class Individual
 	    	    		
 	    /* Make a clone with some mutations
 		- the first parameter is the number of mutations */	    	    		
-	    Individual test_canalization(unsigned int, const Population &) const;  
+	    Individual test_canalization(unsigned int, const Population &) const;
+	    
+	    Individual test_disturb(const Population &) const;
+	    
+	    Individual test_enviro(const Population &) const;
 	
 	protected :
 	    Genotype genotype;

@@ -124,7 +124,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
     return(a);
 }
 
-Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi) const
+Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 {
 	// creation of the W matrix;
 	std::vector<std::vector<double>> matrix;

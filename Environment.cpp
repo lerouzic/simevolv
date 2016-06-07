@@ -30,10 +30,22 @@ using namespace std;
 
 /* constructor using the parameters from the parameters files */
 Environment::Environment(const ParameterSet & param)
-    : sd_init(param.getpar(ENVIRO_SDINIT)->GetDouble())
-    , sd_dynam(param.getpar(ENVIRO_SDDYNAM)->GetDouble())
-    , sd_final(param.getpar(ENVIRO_SDFINAL)->GetDouble())
+    : sd_init(0.0)
+    , sd_init_test(0.0)
+    , sd_dynam(0.0)
+    , sd_dynam_test(0.0)
+    , sd_final(0.0)
 {
+	if (param.exists(ENVIRO_SDINIT))
+		sd_init = param.getpar(ENVIRO_SDINIT)->GetDouble();
+	if (param.exists(ENVIRO_SDDYNAM))    
+		sd_dynam = param.getpar(ENVIRO_SDDYNAM)->GetDouble();
+	if (param.exists(ENVIRO_SDFINAL))
+		sd_final = param.getpar(ENVIRO_SDFINAL)->GetDouble();
+	if (param.exists(OUT_CANAL_SDINIT))
+		sd_init_test = param.getpar(OUT_CANAL_SDINIT)->GetDouble();
+	if (param.exists(OUT_CANAL_SDDYNAM))    
+		sd_dynam_test = param.getpar(OUT_CANAL_SDDYNAM)->GetDouble();
 }
 
 // instance and initialization
@@ -52,21 +64,26 @@ void Environment::initialize(const ParameterSet & param)
     Environment::instance = new Environment(param);
 }
 
-double Environment::init_disturb() 
+double Environment::init_disturb(bool test) 
 {
-	if (instance->sd_init == 0.)
+	double sd = instance->sd_init;
+	if (test) sd = instance->sd_init_test;
+	
+	if (sd == 0.)
 		return(0.0);
 	else
-		return(instance->sd_init*Random::randgauss());
-	
+		return(sd*Random::randgauss());
 }
 
-double Environment::dynam_disturb() 
+double Environment::dynam_disturb(bool test) 
 {
-	if (instance->sd_dynam == 0.)
+	double sd = instance->sd_dynam;
+	if (test) sd = instance->sd_dynam_test;
+	
+	if (sd == 0.)
 		return(0.0);
 	else
-		return(instance->sd_dynam*Random::randgauss());
+		return(sd*Random::randgauss());
 }
 
 double Environment::final_disturb() 

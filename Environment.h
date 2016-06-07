@@ -33,13 +33,15 @@ class Environment
 	    static void initialize(const ParameterSet&);
 	
 	    // functions
-		static double init_disturb();
-		static double dynam_disturb();
+		static double init_disturb(bool test = false);
+		static double dynam_disturb(bool test = false);
 		static double final_disturb();
 	
 	private:
 	    double sd_init;
+	    double sd_init_test;
 	    double sd_dynam;
+	    double sd_dynam_test;
 	    double sd_final;	
 };
 

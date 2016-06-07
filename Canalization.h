@@ -28,54 +28,54 @@ This is achieved by computing the variance of the effect of random mutations in 
 The smaller this variance, the more robustness the population displays. 
 */
 	
-	
-class GeneticCanalization
+class MiniCanIndiv 
 {
 	public:
-		// The constructor parameters are the number of canalization tests, and the current population
-		// The database is filled in the constructor, meaning that most of the computation time will be spent here. 
-		GeneticCanalization(unsigned int, const std::string &, const Population &);
-		~GeneticCanalization() { }
-						
-		// get the canalization scores
-		Phenotype meanphen_canalization();
-		Phenotype varphen_canalization();
-		Phenotype cov_canalization();
-		double fitness_canalization();
-				
-	protected:
-		std::string out_canal;
-		// fill the object
-		void reference_indiv(const Individual&);
-		void mutant_indiv (const Individual&);
-		
-		// run the calculation
-		void process();	
-		void process_phen();
-		void process_cov();
-		void process_fit();
-		
-		// Storage of temporary information
-		std::vector<Individual> reference;
-		std::vector<std::vector<Phenotype> > mutants;
-		std::vector<std::vector<double> > mutants_fit;
+		MiniCanIndiv(const std::vector<Individual>&, const Individual &, bool, bool);
+		~MiniCanIndiv() {}
+		Phenovec canpheno;
+		double canfitness;
+};	
 	
-		std::vector<Phenotype> mean_per_indiv;
-		Phenotype mean_of_mean;
-		Phenotype var_of_mean;
+class Canalization // virtual pure
+{
+	public:
+		Canalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
+		virtual ~Canalization() = 0;
+	
+		// get the canalization scores
+		Phenovec meanpop_canphen() const;
+		Phenovec varpop_canphen() const;		
+		double meangene_meanpop_canphen() const;
+		std::vector<double> meangene_canphen() const;
 		
-		std::vector<Phenotype> var_per_indiv;
-		Phenotype mean_of_var;
-		Phenotype var_of_var;
+		double meanpop_canlogfit() const;
+		double varpop_canlogfit() const;
+		std::vector<double> canlogfit() const;
 		
-		Phenotype cov_can;
-		
-		std::vector<double> indiv_fitness_mean;
-		std::vector<double> indiv_fitness_var;
-		
-		bool phen_ready;
-		bool cov_ready;
-		bool fit_ready;
+	protected:		
+		std::vector<MiniCanIndiv> popcan;		
+};
+	
+class GeneticCanalization : public Canalization
+{
+	public:
+		GeneticCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
+		~GeneticCanalization() { }
+};
+
+class DisturbCanalization : public Canalization
+{
+	public:
+		DisturbCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
+		~DisturbCanalization() { }
+};
+
+class EnviroCanalization : public Canalization
+{
+	public:
+		EnviroCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
+		~EnviroCanalization() { }
 };
 
 #endif // CANALIZATION_H_INCLUDED
