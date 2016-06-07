@@ -26,7 +26,7 @@
 
 class Population
 {
-	friend class Canalization;
+	friend class GeneticCanalization;
 	friend class Heritability;
 	friend class Direpistasis;
 

@@ -29,13 +29,13 @@ The smaller this variance, the more robustness the population displays.
 */
 	
 	
-class Canalization
+class GeneticCanalization
 {
 	public:
 		// The constructor parameters are the number of canalization tests, and the current population
 		// The database is filled in the constructor, meaning that most of the computation time will be spent here. 
-		Canalization(unsigned int, const std::string &, const Population &);
-		~Canalization() { }
+		GeneticCanalization(unsigned int, const std::string &, const Population &);
+		~GeneticCanalization() { }
 						
 		// get the canalization scores
 		Phenotype meanphen_canalization();

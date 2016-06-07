@@ -30,7 +30,7 @@ using namespace std;
 
 // Constructors 
 
-Canalization::Canalization(unsigned int can_tests, const string & outc, const Population & pop)
+GeneticCanalization::GeneticCanalization(unsigned int can_tests, const string & outc, const Population & pop)
 	: out_canal(outc)
 {
 	phen_ready = false;
@@ -59,7 +59,7 @@ Canalization::Canalization(unsigned int can_tests, const string & outc, const Po
 // User interface.
 
 /* Get the phenotypic canalization scores (i.e. the average across individuals of mutant variances) */
-Phenotype Canalization::meanphen_canalization()
+Phenotype GeneticCanalization::meanphen_canalization()
 {
 	if (!phen_ready) 
 	{
@@ -69,7 +69,7 @@ Phenotype Canalization::meanphen_canalization()
 	return(mean_of_var);
 }
 
-Phenotype Canalization::varphen_canalization()
+Phenotype GeneticCanalization::varphen_canalization()
 {
 	if (!phen_ready) 
 	{
@@ -81,7 +81,7 @@ Phenotype Canalization::varphen_canalization()
 
 
 /* Get the covariances between network unstability and canalization score (variance among mutants) */
-Phenotype Canalization::cov_canalization()
+Phenotype GeneticCanalization::cov_canalization()
 {
 	if (!cov_ready)
 	{
@@ -92,7 +92,7 @@ Phenotype Canalization::cov_canalization()
 }
 
 /*	Get the canalization scores for fitness (the average of mutant variances) */
-double Canalization::fitness_canalization()
+double GeneticCanalization::fitness_canalization()
 {
 	if (!fit_ready) 
 	{
@@ -107,7 +107,7 @@ double Canalization::fitness_canalization()
 
 /* Sets a new reference individual
 Note that, in practice, reference individuals are never used in the calculation. Yet, it is mandatory to provide them, as they indicate that the next mutants will concern another individual.*/ 
-void Canalization::reference_indiv(const Individual & ind)
+void GeneticCanalization::reference_indiv(const Individual & ind)
 {
 	reference.push_back(ind);
 	vector<Phenotype> tmp;
@@ -117,7 +117,7 @@ void Canalization::reference_indiv(const Individual & ind)
 }
 
 /* Adds a new mutant in the database. Note that reference individuals and corresponding mutants have to be entered sequencially, which is not very conveninent (no way to enter first all reference individuals, and then all mutants. Nevermind, this is internal code. */
-void Canalization::mutant_indiv(const Individual & ind) 
+void GeneticCanalization::mutant_indiv(const Individual & ind) 
 {
 	assert(!(phen_ready || fit_ready));
 	assert(!mutants.empty());
@@ -126,7 +126,7 @@ void Canalization::mutant_indiv(const Individual & ind)
 	mutants_fit[mutants.size()-1].push_back(ind.get_fitness());
 }
 
-void Canalization::process() 
+void GeneticCanalization::process() 
 {
 	assert(!mutants.empty());
 	assert(!reference.empty());
@@ -142,7 +142,7 @@ void Canalization::process()
 	}	
 }
 
-void Canalization::process_phen()
+void GeneticCanalization::process_phen()
 {
 	assert(!mutants.empty());
 	assert(!reference.empty());	// probably unnecessary
@@ -183,7 +183,7 @@ void Canalization::process_phen()
 	phen_ready = true;
 }
 
-void Canalization::process_fit() 
+void GeneticCanalization::process_fit() 
 {
 	// canalization scores for fitness. 
 	// The algorithm is very similar to the one for phenotypes, except that fitnesses are unidimensional. 
@@ -215,7 +215,7 @@ void Canalization::process_fit()
 	fit_ready = true;
 }
 
-void Canalization::process_cov()
+void GeneticCanalization::process_cov()
 {
 	// Calculation of covariances:
 	// * Covariance between canalization and unstability

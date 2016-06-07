@@ -469,7 +469,7 @@ void Population::write(ostream & out, int generation) const
     if (nb_canal_test > 0) 
     {
 		// Runs the canalization tests
-		Canalization can_test(nb_canal_test, out_canal, *this);
+		GeneticCanalization can_test(nb_canal_test, out_canal, *this);
 		outformat(out, can_test.meanphen_canalization());
 		outformat(out, can_test.varphen_canalization());
 		
