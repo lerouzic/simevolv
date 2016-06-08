@@ -18,6 +18,8 @@
 #include <boost/assign/list_of.hpp> // Boost : makes vector initialization easier
 #include <vector>
 
+const double MIN_LOG_VAR = -20.0;
+
 // COMMON PARAMETERS
 const std::string TYPE_ARCHI = "TYPE_ARCHI";				/* Architecture types */
 const std::string SIMUL_GENER = "SIMUL_GENER"; 

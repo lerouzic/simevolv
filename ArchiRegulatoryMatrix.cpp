@@ -125,6 +125,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 }
 
 Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
+	// the envir parameter is useless. 
 {
 	// creation of the W matrix;
 	std::vector<std::vector<double>> matrix;
@@ -150,9 +151,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 			St(i) = So[i];
 		}
 		
-		if (envir) {
-			St(i) += Environment::init_disturb();
-		}
+		St(i) += Environment::init_disturb(sdinittest);
 	}
 	haircut(St);
 	
@@ -179,7 +178,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
 			//St(i) = this->sigma(h(i));
-			St_i += Environment::dynam_disturb();
+			St_i += Environment::dynam_disturb(sddynamtest);
 			St(i) = St_i;
 		}
 		haircut(St);

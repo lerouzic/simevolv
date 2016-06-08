@@ -22,20 +22,20 @@
 #include <cassert>
 #include <vector>
 #include <iomanip>
-#include <cmath> // log function
+#include <cmath> // log function and isnan
 
 using namespace std;
 
 MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual & ref, bool logvar, bool meancentered)
 {
-	vector<Phenotype> phenos(variants.size());
-	vector<double> fitnesses(variants.size());
+	vector<Phenotype> phenos;
+	vector<double> fitnesses;
 	for (auto variant : variants) {
 		phenos.push_back(variant.get_phenotype());
 		fitnesses.push_back(variant.get_fitness());
 	}
 	PhenotypeStat phenostat(phenos);
-	UnivariateStat fitnessstat(fitnesses);
+	UnivariateStat fitnessstat(fitnesses);	
 	
 	Phenovec rawmeanphen = phenostat.means_phen();
 	Phenovec rawvarphen = phenostat.vars_phen();
@@ -53,8 +53,12 @@ MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual
 	if (logvar) {
 		for (unsigned int i = 0; i < rawmeanphen.dimensionality(); i++) {
 			rawvarphen[i] = log(rawvarphen[i]);
+			if ((rawvarphen[i] < MIN_LOG_VAR) || (std::isnan(rawvarphen[i])))
+				rawvarphen[i] = MIN_LOG_VAR;
 		}
 		rawvarfit = log(rawvarfit);
+		if ((rawvarfit < MIN_LOG_VAR) || (std::isnan(rawvarfit)))
+			rawvarfit = MIN_LOG_VAR;
 	}
 	
 	canpheno = rawvarphen;
@@ -72,7 +76,7 @@ Canalization::~Canalization() { }
 
 Phenovec Canalization::meanpop_canphen() const 
 {
-	vector<Phenovec> phenpop(popcan.size());
+	vector<Phenovec> phenpop;
 	for (auto minican : popcan)
 		phenpop.push_back(minican.canpheno);
 	PhenotypeStat phenostat(phenpop);
@@ -81,7 +85,7 @@ Phenovec Canalization::meanpop_canphen() const
 
 Phenovec Canalization::varpop_canphen() const 
 {
-	vector<Phenovec> phenpop(popcan.size());
+	vector<Phenovec> phenpop;
 	for (auto minican : popcan)
 		phenpop.push_back(minican.canpheno);
 	PhenotypeStat phenostat(phenpop);
@@ -99,9 +103,9 @@ double Canalization::meangene_meanpop_canphen() const
 
 vector<double> Canalization::meangene_canphen() const
 {
-	vector<double> ans(popcan.size());
+	vector<double> ans;
 	for (auto minican : popcan) {
-		vector<double> indcan(minican.canpheno.size());
+		vector<double> indcan;
 		for (auto i : minican.canpheno)
 			indcan.push_back(i);
 		UnivariateStat uvstat(indcan);
@@ -124,7 +128,7 @@ double Canalization::varpop_canlogfit() const
 
 vector<double> Canalization::canlogfit() const
 {
-	vector<double> fitnesses(popcan.size());
+	vector<double> fitnesses;
 	for (auto minican : popcan) {
 		fitnesses.push_back(minican.canfitness);
 	}
