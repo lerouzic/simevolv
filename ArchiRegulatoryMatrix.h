@@ -17,7 +17,7 @@
 
 #include "Architecture.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <boost/numeric/ublas/vector.hpp>
 
