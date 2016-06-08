@@ -428,9 +428,9 @@ void ParameterSet::initialize()
     parameters[OUT_GENO] = new Parameter_string(OG_options);
     parameters[OUT_UNSTAB] = new Parameter_string(OU_options);
     parameters[OUT_CANAL_TESTS] = new Parameter_int(0, 1000*1000);
-    parameters[OUT_CANAL_MUTSD] = new Parameter_vector_double(0.0, 10.0);
-    parameters[OUT_CANAL_SDINIT] = new Parameter_vector_double(0.0, 10.0);
-    parameters[OUT_CANAL_SDDYNAM] = new Parameter_vector_double(0.0, 10.0);    
+    parameters[OUT_CANAL_MUTSD] = new Parameter_vector_double(0.0, 999.9);
+    parameters[OUT_CANAL_SDINIT] = new Parameter_double(0.0, 999.9);
+    parameters[OUT_CANAL_SDDYNAM] = new Parameter_double(0.0, 999.9);    
     parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 1000*1000);
     parameters[OUT_DIREPI_TESTS] = new Parameter_int(0, 1000*1000);
         
