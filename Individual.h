@@ -34,8 +34,8 @@ class Individual
 	public :
 	    // constructors/destructor
 	    Individual() = delete;
-	    Individual(const Haplotype&, const Haplotype&);
-	    Individual(const Haplotype&, const Haplotype&, const EpigeneticInfo&);
+	    Individual(const Haplotype&, const Haplotype&, const unsigned int);
+	    Individual(const Haplotype&, const Haplotype&, const unsigned int, const EpigeneticInfo&);
 	    Individual(const Individual&);
 	    Individual(const ParameterSet&);
 	    virtual ~Individual();
@@ -52,7 +52,8 @@ class Individual
 	    double get_fitness() const;
 	    double get_epigenet() const;
 	    Phenotype get_phenotype() const;
-	    std::string write_debug(unsigned int) const;
+	    unsigned int ploidy() const;
+	    
 	    EpigeneticInfo make_epiinfo() const;
 	    
 	    // reproduction
@@ -71,7 +72,7 @@ class Individual
 	    Individual test_enviro(const Population &) const;
 	
 	protected :
-	    Genotype genotype;
+	    Genotype * genotype;
 	    Phenotype phenotype; // phenotype + environmental effect 
 	    double fitness;
 	    double epigenet; // to be transmitted to the offspring

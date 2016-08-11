@@ -30,6 +30,8 @@ class Haplotype
     friend class Individual;
 	friend class Population;
     friend class Genotype;
+    friend class HaploGenotype;
+    friend class DiploGenotype;
     friend class Architecture;
     friend class ArchiAdditive;
     friend class ArchiMultilinear;
@@ -55,6 +57,8 @@ class Haplotype
 	    void draw_mutation();				
 	    void make_mutation(bool test = false); 				
 	    void make_mutation(unsigned int, bool test = false); 
+	    
+	    static Haplotype recombine(const Haplotype &, const Haplotype &);
 	    
 	    std::string write_debug() const;
 	

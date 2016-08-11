@@ -2,6 +2,7 @@ TYPE_ARCHI              m2
 SIMUL_GENER             100
 SIMUL_OUTPUT            10
 GENET_NBLOC             6
+GENET_PLOIDY			2
 GENET_MUTTYPE		locus
 GENET_MUTRATES          0.01
 GENET_MUTSD             0.1

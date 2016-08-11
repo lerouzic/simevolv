@@ -27,6 +27,7 @@ const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
 const std::string GENET_NBLOC = "GENET_NBLOC";
 const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
+const std::string GENET_PLOIDY = "GENET_PLOIDY";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
 const std::string GENET_SELFING = "GENET_SELFING";

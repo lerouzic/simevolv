@@ -192,8 +192,7 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {	
-		vector<double> tmp_sum = Allele::combine_add(
-			*genotype.gam_father.haplotype[loc],*genotype.gam_mother.haplotype[loc]);
+		vector<double> tmp_sum = genotype.combine_at_loc(loc, &Allele::combine_add);
 
         sumloc[loc] = 0.0;
         for (unsigned int all = 0; all < sall; all++)

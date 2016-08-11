@@ -115,6 +115,33 @@ void Haplotype::make_mutation(unsigned int loc, bool test /* = false */)
 	}
 }
 
+
+/* perform the recombination between the the father and the mother haplotype */
+Haplotype Haplotype::recombine(const Haplotype & hap1, const Haplotype & hap2) 
+{
+    Architecture * archi = Architecture::Get();
+
+    Haplotype result(hap1);
+    bool copy1 = Random::randnum() < 0.5 ? true : false;
+    unsigned int nloc = hap1.nb_loc();
+
+    for (unsigned int locus = 0; locus < nloc; locus++)
+    {
+		if (!copy1) 
+		{
+			result.haplotype[locus] = hap2.haplotype[locus];
+		}
+		if ((locus < nloc - 1) && (Random::randnum() < archi -> recombination_rate(locus)))
+        { 
+            copy1 = !copy1;
+        }
+	}
+
+    return(result);
+}
+
+
+
 string Haplotype::write_debug() const
 {
 	ostringstream o;

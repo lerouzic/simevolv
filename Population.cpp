@@ -300,7 +300,8 @@ void Population::write(ostream & out, int generation) const
 		vector<double> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
         {
-            vector<double> tmp = Allele::combine_mean(*pop[i].genotype.gam_father.haplotype[loc], *pop[i].genotype.gam_mother.haplotype[loc]);
+            vector<double> tmp = pop[i].genotype->combine_at_loc(loc, &Allele::combine_mean);
+
             for (unsigned int i = 0 ; i < tmp.size(); i++)
             {
                 matrix_vector_indiv.push_back(tmp[i]);
@@ -515,12 +516,4 @@ void Population::write(ostream & out, int generation) const
 	}
 	out << '\n';
 
-}
-
-void Population::write_debug(ostream & out) const 
-{
-	for (unsigned int i = 0; i < size(); i ++) {
-		out << "Indiv" << i << "\t" << "Gam1" << "\t" << pop[i].write_debug(1) << endl;
-		out << "Indiv" << i << "\t" << "Gam2" << "\t" << pop[i].write_debug(2) << endl;
-	}
 }

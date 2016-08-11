@@ -150,7 +150,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
     vector<vector<double>> y;
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
-     y.push_back(Allele::combine_OR(*genotype.gam_father.haplotype[loc],*genotype.gam_mother.haplotype[loc]));
+		y.push_back(genotype.combine_at_loc(loc, &Allele::combine_OR));
     }
 
     

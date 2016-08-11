@@ -123,6 +123,10 @@ shared_ptr<Allele> Allele::make_boolean_mutant() const
     return(a);
 }
 
+std::vector<double> Allele::get_raw() const
+{
+	return(allele);
+}
 
 /******************** DERIVED CLASSES *********************************/
 

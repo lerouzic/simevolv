@@ -131,7 +131,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	std::vector<std::vector<double>> matrix;
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
-		matrix.push_back(Allele::combine_mean(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]));
+		matrix.push_back(genotype.combine_at_loc(loc, &Allele::combine_mean));
 	}
 	
 	// creation of the w_matrix and st_vector (from std to ublas)

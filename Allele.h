@@ -51,6 +51,7 @@ class Allele
 		
 		virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
         virtual std::shared_ptr<Allele> make_boolean_mutant() const;
+        std::vector<double> get_raw() const;
 	
 	protected :
 	    std::vector<double> allele;

@@ -25,7 +25,6 @@
 
 class Genotype
 {
-    friend class Individual;
 	friend class Population;
     friend class Architecture;
     friend class ArchiAdditive;
@@ -38,26 +37,54 @@ class Genotype
     friend class ArchiBoolean;
 
 	public:
-	    //constructors / destructors
-	    Genotype(const Haplotype&, const Haplotype&);
-	    Genotype(const Genotype&);
-	    Genotype(const ParameterSet &);
+		virtual ~Genotype() {}
+		virtual Genotype* clone() const = 0;
 	
-	    //operator overload
-	    int operator == (const Genotype&) const;
-	    int operator != (const Genotype&) const;
-	
-	    //functions
-	    int nb_loc() const;
-	    int all_size() const;
-	    Haplotype recombine() const;
-	    Phenotype phenotypic_value(const Genotype&) const;
+	    unsigned int nb_loc() const;
+	    unsigned int all_size() const;
+	    virtual unsigned int ploidy() const = 0;
+	    virtual void draw_mutation() = 0;
+	    virtual void make_mutation(bool test = false) = 0;
+		virtual Haplotype produce_gamete() const = 0;
+		
+		virtual std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const = 0;
+};
+
+class DiploGenotype : public Genotype {
+	public:
+		DiploGenotype(const DiploGenotype &);
+		DiploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
+		DiploGenotype(const ParameterSet &);
+		DiploGenotype* clone() const;
+
+		unsigned int ploidy() const {return 2;}
 	    void draw_mutation();
 	    void make_mutation(bool test = false);
-	
+		Haplotype produce_gamete() const;
+		
+		std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const;	
+		
 	protected:
 	    Haplotype gam_father;
 	    Haplotype gam_mother;
+};
+
+class HaploGenotype : public Genotype {
+	public:
+		HaploGenotype(const HaploGenotype &);
+		HaploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
+		HaploGenotype(const ParameterSet &);
+		HaploGenotype* clone() const;
+		
+		unsigned int ploidy() const {return 1;}
+	    void draw_mutation();
+	    void make_mutation(bool test = false);
+		Haplotype produce_gamete() const;		
+		
+		std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const;
+			
+	protected: 
+		Haplotype gam;
 };
 
 #endif // GENOTYPE_H_INCLUDED

@@ -25,92 +25,51 @@
 
 using namespace std;
 
+// functions
 
+/* collect the number of loci from the Architecture and return it */
+unsigned int Genotype::nb_loc() const
+{
+    return (Architecture::Get() -> nb_loc());
+}
 
-// constructors and destuctor
+/* collect the size of the allele from the Architecture and return it */
+unsigned int Genotype::all_size() const
+{
+    return (Architecture::Get() -> all_size());
+}
+
+/******************* DiploGenotype *****************************/
 
 /* constructor using two haplotypes */
-Genotype::Genotype(const Haplotype& father, const Haplotype& mother)
+DiploGenotype::DiploGenotype(const Haplotype& father, const Haplotype& mother)
     : gam_father(father)
     , gam_mother(mother)
 {
 }
 
 /* copy constructor */
-Genotype::Genotype(const Genotype& copy)
+DiploGenotype::DiploGenotype(const DiploGenotype& copy)
     : gam_father(copy.gam_father)
     , gam_mother(copy.gam_mother)
 {
 }
   
 /* constructor using the parameters for building the two haplotypes */
-Genotype::Genotype(const ParameterSet & param)
+DiploGenotype::DiploGenotype(const ParameterSet & param)
 	: gam_father(param)
 	, gam_mother(param)
 {
 }
 
-
-// operator overload
-
-int Genotype::operator== (const Genotype& other) const
-{ // some kind of hypothesis here: no maternal or epigenetic effects
-    return
-    (
-        ((this->gam_father == other.gam_father) && (this->gam_mother == other.gam_mother))
-        ||
-        ((this->gam_father == other.gam_mother) && (this->gam_mother == other.gam_father))
-    );
-}
-
-int Genotype::operator!= (const Genotype& other) const
+DiploGenotype* DiploGenotype::clone() const 
 {
-    return(!(*this==other));
+	return (new DiploGenotype(*this));
 }
-
-
-// functions
-
-/* collect the number of loci from the Architecture and return it */
-int Genotype::nb_loc() const
-{
-    return (Architecture::Get() -> nb_loc());
-}
-
-/* collect the size of the allele from the Architecture and return it */
-int Genotype::all_size() const
-{
-    return (Architecture::Get() -> all_size());
-}
-
-/* perform the recombination between the the father and the mother haplotype */
-Haplotype Genotype::recombine() const
-{
-    Architecture * archi = Architecture::Get();
-
-    Haplotype result(gam_father);
-    bool copy_father = Random::randnum() < 0.5 ? true : false;
-    unsigned int nloc = nb_loc();
-
-    for (unsigned int locus = 0; locus < nloc; locus++)
-    {
-		if (!copy_father) 
-		{
-			result.haplotype[locus] = gam_mother.haplotype[locus];
-		}
-		if ((locus < nloc - 1) && (Random::randnum() < archi -> recombination_rate(locus)))
-        { 
-            copy_father = !copy_father;
-        }
-	}
-
-    return(result);
-}
-
 
 /* determine if a mutation will occur in one of the haplotype 
  * (depending on the mutation rate) */
-void Genotype::draw_mutation()
+void DiploGenotype::draw_mutation()
 {
     gam_father.draw_mutation();
     gam_mother.draw_mutation();
@@ -118,7 +77,7 @@ void Genotype::draw_mutation()
 
 
 /* force to make a mutation in one of the haplotype */
-void Genotype::make_mutation(bool test /*=false*/)
+void DiploGenotype::make_mutation(bool test /*=false*/)
 {
     if (Random::randnum() < 0.5)
     {
@@ -128,4 +87,66 @@ void Genotype::make_mutation(bool test /*=false*/)
     {
         gam_mother.make_mutation(test);
     }
+}
+
+Haplotype DiploGenotype::produce_gamete() const 
+{
+	return(Haplotype::recombine(gam_father, gam_mother));
+}
+
+std::vector<double> DiploGenotype::combine_at_loc(unsigned int loc, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const 
+{
+	assert(loc < nb_loc());
+	return(combineFUN(*gam_father.haplotype[loc], *gam_mother.haplotype[loc]));
+}
+
+/******************* HaploGenotype *****************************/
+
+/* constructor using two haplotypes */
+HaploGenotype::HaploGenotype(const Haplotype& father, const Haplotype& mother)
+    : gam(Haplotype::recombine(father, mother))
+{
+}
+
+/* copy constructor */
+HaploGenotype::HaploGenotype(const HaploGenotype& copy)
+    : gam(copy.gam)
+{
+}
+  
+/* constructor using the parameters for building the two haplotypes */
+HaploGenotype::HaploGenotype(const ParameterSet & param)
+	: gam(param)
+{
+}
+
+HaploGenotype* HaploGenotype::clone() const
+{
+	return (new HaploGenotype(*this));
+}
+
+/* determine if a mutation will occur in one of the haplotype 
+ * (depending on the mutation rate) */
+void HaploGenotype::draw_mutation()
+{
+    gam.draw_mutation();
+}
+
+
+/* force to make a mutation in one of the haplotype */
+void HaploGenotype::make_mutation(bool test /*=false*/)
+{
+    gam.make_mutation(test);
+}
+
+Haplotype HaploGenotype::produce_gamete() const 
+{
+	return(gam);
+}
+
+std::vector<double> HaploGenotype::combine_at_loc(unsigned int loc, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const 
+{
+	assert(loc < nb_loc());
+	// For haploid genomes, the "combine" function does not make sense. 
+	return(gam.haplotype[loc]->get_raw());
 }

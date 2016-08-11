@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <sstream>
+#include <cassert>
 
 using namespace std;
 
@@ -30,29 +31,47 @@ using namespace std;
 // constructors and destructor
 
 /* constructor using two haplotypes */
-Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother)
-    : genotype(gam_father, gam_mother)
+Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, const unsigned int ploid)
+    : genotype(NULL)
 {
+	assert ((ploid == 1) || (ploid == 2));
+	if (ploid == 1) {
+		genotype = new HaploGenotype(gam_father, gam_mother);
+	} else {
+		genotype = new DiploGenotype(gam_father, gam_mother);
+	}
     initialize();
 }
 
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, 
-	const EpigeneticInfo& epimother)
-	: genotype(gam_father, gam_mother), epiinfo(epimother)
+		const unsigned int ploid, const EpigeneticInfo& epimother)
+	: genotype(NULL)
+	, epiinfo(epimother)
 {
+	assert ((ploid == 1) || (ploid == 2));
+	if (ploid == 1) {
+		genotype = new HaploGenotype(gam_father, gam_mother);
+	} else {
+		genotype = new DiploGenotype(gam_father, gam_mother);
+	}	
 	initialize();
 }
 
 /* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
-	: genotype(param)
+	: genotype(NULL)
 	, epigenet(param.getpar(GENET_EPIGENET)-> GetDouble())
 {
+	if(param.getpar(GENET_PLOIDY)->GetInt() == 1) {
+		genotype = new HaploGenotype(param);
+	} else {
+		genotype = new DiploGenotype(param);
+	}
     initialize();
 }
 
 Individual::Individual(const Individual& copy)
-    : genotype(copy.genotype)
+    : genotype(copy.genotype->clone())
     , phenotype(copy.phenotype)
     , fitness(copy.fitness)
     , epigenet(copy.epigenet)
@@ -62,6 +81,7 @@ Individual::Individual(const Individual& copy)
 
 Individual::~Individual()
 {
+	delete genotype;
 }
 
 // operator overload
@@ -71,7 +91,7 @@ Individual & Individual::operator = (const Individual& copy)
     if (this == &copy)
         return (*this);
 
-    genotype=copy.genotype;
+    genotype=copy.genotype->clone();
     phenotype=copy.phenotype;
     fitness=copy.fitness;
     epigenet=copy.epigenet;
@@ -87,7 +107,7 @@ Individual & Individual::operator = (const Individual& copy)
 void Individual::initialize()
 {
     Architecture * archi = Architecture::Get();
-    phenotype = archi -> phenotypic_value(genotype, true, epiinfo);
+    phenotype = archi -> phenotypic_value(*genotype, true, epiinfo);
     fitness = 0;
     
     // So far, the epigenetic factor does not evolve).
@@ -121,18 +141,9 @@ Phenotype Individual::get_phenotype() const
     return(phenotype);
 }
 
-string Individual::write_debug(unsigned int gam) const 
+unsigned int Individual::ploidy() const 
 {
-	assert ((gam==1) || (gam==2));
-	// Dirty but convenient: write any debug information into a string.
-	ostringstream o;
-	
-	if (gam==1) 
-		o << genotype.gam_father.write_debug();
-	else
-		o << genotype.gam_mother.write_debug();
-	
-	return(o.str());
+	return(genotype->ploidy());
 }
 
 EpigeneticInfo Individual::make_epiinfo() const
@@ -146,14 +157,16 @@ EpigeneticInfo Individual::make_epiinfo() const
 /* create a new individual from the paternal and maternal gametes */
 Individual Individual::mate(const Individual& father, const Individual& mother)
 {
-    Individual offspring(father.produce_gamete(), mother.produce_gamete(), mother.make_epiinfo());
+	// so far, haplodiploidy is not supported, both parents must have the same ploidy level
+	assert(mother.ploidy() == father.ploidy());
+    Individual offspring(father.produce_gamete(), mother.produce_gamete(), mother.ploidy(), mother.make_epiinfo());
     return(offspring);
 }
 
 /* produce the gametes of an individual : recombination and mutation */
 Haplotype Individual::produce_gamete() const
 {
-    Haplotype gamete(genotype.recombine());
+    Haplotype gamete = genotype->produce_gamete();
     gamete.draw_mutation();
     return(gamete);
 }
@@ -167,16 +180,16 @@ Haplotype Individual::produce_gamete() const
  * The fitness is set to 0 */
 void Individual::draw_mutation()
 {
-    genotype.draw_mutation();
-    phenotype = Architecture::Get() -> phenotypic_value(genotype, true, epiinfo);
+    genotype->draw_mutation();
+    phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, epiinfo);
     fitness = 0.0;
 }
 
 /* force to make a mutation in an individual */
 void Individual::make_mutation(bool test /* = false */)
 {
-    genotype.make_mutation(test);
-    phenotype = Architecture::Get() -> phenotypic_value(genotype, true, epiinfo);
+    genotype->make_mutation(test);
+    phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, epiinfo);
     fitness = 0.0;
 } 
 
@@ -196,7 +209,7 @@ Individual Individual::test_canalization(unsigned int nb_mut, const Population &
 Individual Individual::test_disturb(const Population & pop) const
 {
 	Individual clone(*this);
-	clone.phenotype = Architecture::Get() -> phenotypic_value(genotype, true, clone.epiinfo, true, false);
+	clone.phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, clone.epiinfo, true, false);
 	clone.update_fitness(pop);
 	return(clone);
 }
@@ -205,7 +218,7 @@ Individual Individual::test_disturb(const Population & pop) const
 Individual Individual::test_enviro(const Population & pop) const
 {
 	Individual clone(*this);
-	clone.phenotype = Architecture::Get() -> phenotypic_value(genotype, true, clone.epiinfo, false, true);
+	clone.phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, clone.epiinfo, false, true);
 	clone.update_fitness(pop);
 	return(clone);
 }

@@ -69,8 +69,8 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir,
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
-		vector<double> sumloc = Allele::combine_add
-			(*genotype.gam_father.haplotype[loc], *genotype.gam_mother.haplotype[loc]);
+		vector<double> sumloc = genotype.combine_at_loc(loc, &Allele::combine_add);
+		
 		for (unsigned int all = 0; all < sall; all++)
 			phenotype[all] += sumloc[all];
     }
