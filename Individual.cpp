@@ -91,6 +91,7 @@ Individual & Individual::operator = (const Individual& copy)
     if (this == &copy)
         return (*this);
 
+	delete genotype;
     genotype=copy.genotype->clone();
     phenotype=copy.phenotype;
     fitness=copy.fitness;
