@@ -40,6 +40,40 @@ BOOST_CLASS_EXPORT(ArchiWagner)
 BOOST_CLASS_EXPORT(ArchiSiegal)
 BOOST_CLASS_EXPORT(ArchiM2)
 
+std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const std::vector<double> & s) 
+{
+    //Expects(s.size() > 0);
+    //Expects(s.size() == m.size());
+    //Expects(m.size() == m[0].size());
+    
+    std::vector<double> ans(s.size());
+    
+    for (unsigned int i = 0; i < s.size(); i++) {
+        ans[i] = 0.0;
+        for (unsigned int j = 0; j < s.size(); j++) {
+            ans[i] += m[i][j] * s[j];
+        }
+    }
+    return(ans);
+}
+
+std::vector<double> naive_prod(const std::vector<double> & s, const std::vector<std::vector<double>> & m) 
+{
+    //Expects(s.size() > 0);
+    //Expects(s.size() == m.size());
+    //Expects(m.size() == m[0].size());
+    
+    std::vector<double> ans(s.size());
+    
+    for (unsigned int i = 0; i < s.size(); i++) {
+        ans[i] = 0.0;
+        for (unsigned int j = 0; j < s.size(); j++) {
+            ans[i] += m[j][i] * s[j];
+        }
+    }
+    return(ans);
+}
+
 // convert a boost vector into a regulat std::vector and vice-versa
 template<class T>
 std::vector<T> boost_to_std_vector(const boost::numeric::ublas::vector<T> & x) 
@@ -133,11 +167,9 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	{
 		matrix.push_back(genotype.combine_at_loc(loc, &Allele::combine_mean));
 	}
-	
-	// creation of the w_matrix and st_vector (from std to ublas)
-	unsigned int nloc = nb_loc();
-	boost::numeric::ublas::vector<double> St(nloc);
-	boost::numeric::ublas::matrix<double> W(nloc, nloc); 
+
+    unsigned int nloc = nb_loc();
+	std::vector<double> St(nloc);
 	
 	// Initial state of the network
 	for (unsigned int i = 0 ; i<nloc ; i++)
@@ -146,46 +178,39 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		// with binary network models!!
 		// Here comes the epigenetic transmission
 		if (epi.is_defined()) { 
-			St(i) = epi.get_epigenet()*epi.get_phenotype()[i] + (1.-epi.get_epigenet())*So[i];
+			St[i] = epi.get_epigenet()*epi.get_phenotype()[i] + (1.-epi.get_epigenet())*So[i];
 		} else {
-			St(i) = So[i];
+			St[i] = So[i];
 		}
 		
-		St(i) += Environment::init_disturb(sdinittest);
+		St[i] += Environment::init_disturb(sdinittest);
 	}
 	haircut(St);
-	
-	for (unsigned int i=0; i<nloc; i++) 
-	{
-        for (unsigned int j=0; j<nloc; j++) 
-        {
-            W(i,j) = matrix[i][j];            
-        }
-	}
+
 	
 	// dynamic simulation
-	boost::numeric::ublas::vector<double> h(nloc);
+	std::vector<double> h(nloc);
 	std::vector<std::vector<double>> unstability;
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
-		h = prod(St,W);
+		h = naive_prod(matrix, St);
 		
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			double St_i = recur*St(i) + (1.-recur)*(this->sigma(h(i)));
+			double St_i = recur*St[i] + (1.-recur)*(this->sigma(h[i]));
 			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
 			//St(i) = this->sigma(h(i));
 			St_i += Environment::dynam_disturb(sddynamtest);
-			St(i) = St_i;
+			St[i] = St_i;
 		}
 		haircut(St);
 		
 		if (t >= (timesteps-calcsteps)) 
 		{
-			unstability.push_back(boost_to_std_vector(St));
+			unstability.push_back(St);
 		}
 	}
 	
