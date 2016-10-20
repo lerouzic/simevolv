@@ -129,11 +129,12 @@ int main(int argc, char *argv[])
 		if (param.exists(SIMUL_MAXGEN))
 			maxgen = param.getpar(SIMUL_MAXGEN)->GetInt();
 		else
-			maxgen += current_pargen;
+			maxgen += current_pargen + 1;
 		
 		// Inner loop: for one parameter file    
-		for (unsigned int inner_generation = 1; global_generation <= maxgen; 
-								inner_generation++, global_generation++)
+		for (unsigned int inner_generation = 1; 
+				(inner_generation <= current_pargen) && (global_generation <= maxgen); 
+						inner_generation++, global_generation++)
 		{
 			// Fitness::fluctuate(local_generation); // Obsolete
 			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
@@ -141,7 +142,7 @@ int main(int argc, char *argv[])
 				pop.write(*pt_output, global_generation);
 			}
         
-			if ((global_generation < maxgen) || (next_parfile != "")) {
+			if (global_generation < maxgen) {
 				// no need to compute a new population if the simulation is over
 				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
 				pop = offsp;
@@ -155,7 +156,10 @@ int main(int argc, char *argv[])
 			}*/
 		} // end of inner loop
 		
-		continue_simulation = param.exists(FILE_NEXTPAR) && (global_generation < maxgen);
+		continue_simulation = (param.exists(FILE_NEXTPAR) 
+			&& (param.getpar(FILE_NEXTPAR)->GetString() != next_parfile) 
+			&& (global_generation < maxgen));
+
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
 			param.read(next_parfile);
