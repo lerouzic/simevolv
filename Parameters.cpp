@@ -393,6 +393,7 @@ void ParameterSet::initialize()
     
     // Simulation parameters
     parameters[SIMUL_GENER] = new Parameter_int(1, 1000*1000);
+    parameters[SIMUL_MAXGEN] = new Parameter_int(1, 1000*1000);
     parameters[SIMUL_OUTPUT] = new Parameter_int(1, 10*1000);
    
 	// General genetic parameters

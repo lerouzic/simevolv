@@ -110,18 +110,11 @@ int main(int argc, char *argv[])
 	
     Population pop(param);
     
-	string next_parfile = "";    
+	string next_parfile = "";
+	bool continue_simulation = false;
     
-	do { // while next_parfile == ""
-		if (param.exists(FILE_NEXTPAR)) {
-			if (next_parfile == param.getpar(FILE_NEXTPAR)->GetString()) {
-				// Otherwise it is very easy to loop forever!
-				next_parfile = "";
-			} else {
-				next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
-			}
-		}
-	
+	do { // while continue_simulation
+			
 		// Partially duplicated code -- probably harmless, but not elegant
 		if (global_generation > 1) {
 			Fitness::initialize(param);
@@ -130,18 +123,25 @@ int main(int argc, char *argv[])
 			pop.update_param(param);
 		}
 
-		unsigned int maxgen = param.getpar(SIMUL_GENER)->GetInt();
+		unsigned int current_pargen = param.getpar(SIMUL_GENER)->GetInt();
 		unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
-		    
-		for (unsigned int local_generation = 1; local_generation <= maxgen; local_generation++, global_generation++)
+		unsigned int maxgen = global_generation;
+		if (param.exists(SIMUL_MAXGEN))
+			maxgen = param.getpar(SIMUL_MAXGEN)->GetInt();
+		else
+			maxgen += current_pargen;
+		
+		// Inner loop: for one parameter file    
+		for (unsigned int inner_generation = 1; global_generation <= maxgen; 
+								inner_generation++, global_generation++)
 		{
-			Fitness::fluctuate(local_generation);
+			// Fitness::fluctuate(local_generation); // Obsolete
 			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
 			}
         
-			if ((local_generation < maxgen) || (next_parfile != "")) {
+			if ((global_generation < maxgen) || (next_parfile != "")) {
 				// no need to compute a new population if the simulation is over
 				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
 				pop = offsp;
@@ -153,11 +153,14 @@ int main(int argc, char *argv[])
 				pop.write_debug(out);
 				tmp_out.close();
 			}*/
-		}
-		if (next_parfile != "") {
+		} // end of inner loop
+		
+		continue_simulation = param.exists(FILE_NEXTPAR) && (global_generation < maxgen);
+		if (continue_simulation) {
+			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
 			param.read(next_parfile);
 		}
-    } while (next_parfile != "");
+    } while (continue_simulation);
     
     if (vm.count("parcheck")) 
     {

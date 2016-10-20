@@ -24,6 +24,7 @@ const double MIN_LOG_VAR = -20.0;
 const std::string TYPE_ARCHI = "TYPE_ARCHI";				/* Architecture types */
 const std::string SIMUL_GENER = "SIMUL_GENER"; 
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
+const std::string SIMUL_MAXGEN = "SIMUL_MAXGEN";
 const std::string GENET_NBLOC = "GENET_NBLOC";
 const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
