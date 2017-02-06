@@ -2,26 +2,11 @@ sigma.M2 <- function(x, a) {
 	1. / (1. + exp((-x/(a*(1.-a)))+log(1./a-1.)) )
 }
 
-
-model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=FALSE, decay=1.0, microSdE=0) {
+model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=FALSE) {
 	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
 	sto[,1] <- S0
 	for (i in 1:steps) {
-		S0 <- S0*(1-decay)+decay*sigma.M2((S0 %*% W + rnorm(length(S0), 0, sd=microSdE)), a) 			
-		sto[,i+1] <- S0
-	}
-	ans <- list()
-	ans$mean <- apply(sto[,(steps+1-measure):(steps+1)], 1, mean)
-	ans$var <- apply(sto[,(steps+1-measure):(steps+1)], 1, function(x) mean((x-mean(x))^2))
-	if (full) ans$full <- sto
-	return(ans)
-}
-
-model.raw <-  function(W, S0=rep(1, nrow(W)), steps=100, measure=10, full=FALSE, decay=1.0) {
-	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
-	sto[,1] <- S0
-	for (i in 1:steps) {
-		S0 <- S0*(1-decay)+decay*(S0 %*% W)
+		S0 <- sigma.M2((S0 %*% W), a) 			
 		sto[,i+1] <- S0
 	}
 	ans <- list()
