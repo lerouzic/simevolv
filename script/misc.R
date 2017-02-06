@@ -11,7 +11,7 @@
 # * No warranty *
 ###########################################################
 
-mcsapply <- 
+"mcsapply" <- 
 function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE) 
 {
     if (!require(parallel)) mclapply <- lapply
@@ -22,4 +22,12 @@ function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)
     if (!identical(simplify, FALSE) && length(answer)) 
         simplify2array(answer, higher = (simplify == "array"))
     else answer
+}
+
+"canIndex" <-
+function (x, max.can=20)
+{
+    suppresswarnings(ans.tmp <- -log(x))
+    ans.tmp[is.na(ans.tmp) | ans.tmp > max.can] <- max.can
+    ifelse(is.na(x), NA, ans.tmp)
 }
