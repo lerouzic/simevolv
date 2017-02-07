@@ -27,7 +27,7 @@ function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)
 "canIndex" <-
 function (x, max.can=20)
 {
-    suppresswarnings(ans.tmp <- -log(x))
+    suppressWarnings(ans.tmp <- -log(x))
     ans.tmp[is.na(ans.tmp) | ans.tmp > max.can] <- max.can
     ifelse(is.na(x), NA, ans.tmp)
 }
