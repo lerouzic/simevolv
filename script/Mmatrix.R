@@ -1,4 +1,21 @@
-source("netw.R")
+#########################################################
+# Mmatrix.R
+#
+# Computes and displays the mutation variance-covariance 
+# matrix for a specific W matrix
+# 
+# Copyright Arnaud Le Rouzic / CNRS 2015
+# <lerouzic@egce.cnrs-gif.fr>
+#
+# Released under the WTFPL version 2.0
+# * No warranty *
+###########################################################
+
+script.dir <- normalizePath(dirname(parent.frame(2)$ofile))
+if (is.null(script.dir))
+	script.dir <- normalizePath(dirname(sys.frame(1)$ofile))
+
+source(paste(script.dir, "netw.R", sep="/"))
 
 Mmatrix.MonteCarlo.ij.run <- function(W, sdmut, i, j, what="mean", ...) {
 	stopifnot(i > 0, i <= ncol(W), j > 0, j <= ncol(W))
