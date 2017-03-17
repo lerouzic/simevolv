@@ -43,8 +43,14 @@ dev.consistency <- function(W, a=0.5, S0=rep(a, nrow(W)), ..., macroSdE=0.1, rep
 
 canscale <- function(x) ifelse(is.na(x) | x < exp(-20), 20, -log(x))
 
-genet.canalization <- function(W, ..., which.i=1:nrow(W), which.j=1:ncol(W), mutsd=0.1, exclude.0=TRUE, replicates=100, what="mean", reference="mutant") {
+genet.canalization <- function(W, ..., index="var", which.i=1:nrow(W), which.j=1:ncol(W), mutsd=0.1, exclude.0=TRUE, replicates=100, what="mean", reference="mutant") {
 	# This is the traditional canalization measurement (robustness to mutations)
+	#
+	# index = var: variance among mutants (or compared to the reference genotype, see 'reference')
+	# index = can: canalization score (-log(var))
+	# index = avg: average (absolute) effect of mutations
+	# index = pctx: proportion of mutations leading to an expression change larger than x%
+	#
 	# reference = 'mutant' (variance around the average mutant expression)
 	# reference = 'wt'     (variance around the original genotype)
 	#
@@ -70,12 +76,25 @@ genet.canalization <- function(W, ..., which.i=1:nrow(W), which.j=1:ncol(W), mut
 		myW[Wbox[i]] <- W[Wbox[i]]+Wdev[i]
 		model.M2(W=myW, ...)[[what]]
 	})
-	if (reference == "mutant") {
-		return(apply(rr, 1, var))
-	} else if (reference == "wt") {
-		ref <- model.M2(W=W, ...)[[what]]
-		return(apply(rr-ref, 1, function(x) sum(x^2)/length(x)))
-	}	
+	ans <- NULL
+	rrt <- if (reference == "wt") 
+				{ rr-model.M2(W=W, ...)[[what]] } 
+			else 
+				{ rr - apply(rr, 1, mean) }
+
+	if (index == "var" || index == "can") {
+		ans <- apply(rrt, 1, function(x) sum(x^2)/length(x))
+		if (index == "can") ans <- canscale(ans)
+	}
+	if (index == "avg") {
+		ans <- apply(abs(rrt), 1, mean)
+	}
+	if (grepl(index, pattern="pct")) {
+		pct <- as.numeric(substr(index, 4, nchar(index)))
+		stopifnot(is.numeric(pct))
+		ans <- apply(abs(rrt) >= pct/100, 1, mean)
+	}
+	return(ans)
 }
 
 genet.canalization.ij <- function(W, ..., mutsd=0.1, replicates=100, what="mean", reference="mutant", plot=FALSE, on.gene=1:nrow(W), zlim=c(-log(0.25), 20), text=TRUE) {
