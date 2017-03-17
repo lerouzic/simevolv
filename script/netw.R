@@ -7,7 +7,7 @@ model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=F
 	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
 	sto[,1] <- S0
 	for (i in 1:steps) {
-		S0 <- S0*(1-decay)+decay*sigma.M2((S0 %*% W + rnorm(length(S0), 0, sd=microSdE)), a) 			
+		S0 <- S0*(1-decay)+decay*sigma.M2((W %*% S0 + rnorm(length(S0), 0, sd=microSdE)), a) 			
 		sto[,i+1] <- S0
 	}
 	ans <- list()
@@ -21,7 +21,7 @@ model.raw <-  function(W, S0=rep(1, nrow(W)), steps=100, measure=10, full=FALSE,
 	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
 	sto[,1] <- S0
 	for (i in 1:steps) {
-		S0 <- S0*(1-decay)+decay*(S0 %*% W)
+		S0 <- S0*(1-decay)+decay*(W %*% S0)
 		sto[,i+1] <- S0
 	}
 	ans <- list()
