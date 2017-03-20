@@ -223,8 +223,3 @@ Individual Individual::test_enviro(const Population & pop) const
 	clone.update_fitness(pop);
 	return(clone);
 }
-
-void Individual::write_debug(ostream & out) const
-{
-    genotype->write_debug(out);
-}

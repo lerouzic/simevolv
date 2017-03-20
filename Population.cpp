@@ -517,11 +517,3 @@ void Population::write(ostream & out, int generation) const
 	out << '\n';
 
 }
-
-void Population::write_debug(ostream & out, int generation) const
-{
-    out << "Debug output generation " << generation << "\n";
-    for (auto indiv : pop) {
-        indiv.write_debug(out);
-    }
-}
