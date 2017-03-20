@@ -71,6 +71,8 @@ class Individual
 	    
 	    Individual test_enviro(const Population &) const;
 	
+        void write_debug(std::ostream &, int) const;
+    
 	protected :
 	    Genotype * genotype;
 	    Phenotype phenotype; // phenotype + environmental effect 
