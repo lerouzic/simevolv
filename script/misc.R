@@ -2,7 +2,7 @@
 # misc.R
 #
 # Set of various helper functions.
-# Don't take it seriously, nothing fancy here. 
+# Nothing fancy here. 
 # 
 # Copyright Arnaud Le Rouzic / CNRS 2015
 # <lerouzic@egce.cnrs-gif.fr>
@@ -11,6 +11,7 @@
 # * No warranty *
 ###########################################################
 
+# mcsapply is a parallel-equivalent to sapply
 "mcsapply" <- 
 function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE) 
 {
@@ -24,6 +25,8 @@ function (X, FUN, ..., simplify = TRUE, USE.NAMES = TRUE)
     else answer
 }
 
+# Implements the canalization index as defined in Rünneburger & Le Rouzic 2016 BMC Evol. Biol. 
+# This is simply -log(V), where V is the variance in a disturbed phenotype.
 "canIndex" <-
 function (x, max.can=20)
 {

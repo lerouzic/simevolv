@@ -3,6 +3,7 @@
 #
 # Computes and displays the mutation variance-covariance 
 # matrix for a specific W matrix
+#
 # 
 # Copyright Arnaud Le Rouzic / CNRS 2015
 # <lerouzic@egce.cnrs-gif.fr>
@@ -30,7 +31,7 @@ Mmatrix.MonteCarlo.ij <- function(W, sdmut=0.1, i, j, replicates=100, what="mean
 	ans
 }
 
-Mmatrix.MonteCarlo <- function(W, sdmut=0.1, exclude.0=TRUE, replicates=100, what="mean", ...) {
+Mmatrix <- function(W, sdmut=0.1, exclude.0=TRUE, replicates=100, what="mean", ...) {
 	n <- ncol(W)
 	ans <- list(ref=model.M2(W=W, ...)[[what]])
 	for (i in 1:n) {
