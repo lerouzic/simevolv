@@ -25,8 +25,6 @@
 
 using namespace std;
 
-
-
 // constructors/destructor
 
 /* constructor using the parameters given by the parameters file and the Architecture files*/

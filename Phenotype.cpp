@@ -173,13 +173,6 @@ unsigned int Phenotype::dimensionality() const
 	return(pheno.size());
 }
 
-/* changes in the phenotype (for Environment only?) */
-void Phenotype::add_to_pheno(const unsigned int index, const double effect) 
-{
-	assert (index < dimensionality());
-	pheno[index] += effect;
-}
-
 
 
 /////////////////////// class PhenotypeStat //////////////////////////////////////

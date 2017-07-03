@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 {
 	string input_file;
 	string archi_file;
+    string popin_file;
 	string output_file;
 	long int seed;
 
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
       ("help,h", "Print help messages")
       ("parameter,p", po::value<string>(&input_file), "Parameter file")
       ("architecture,a", po::value<string>(&archi_file), "Architecture file")
+      ("population,P", po::value<string>(&popin_file), "Population file")
       ("output,o", po::value<string>(&output_file), "Output file")
       ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
       ("template,t", "Print a template for the parameter file")
@@ -109,6 +111,11 @@ int main(int argc, char *argv[])
 	Environment::initialize(param);
 	
     Population pop(param);
+    if (vm.count("population")) {
+        ifstream popin(popin_file.c_str(), ios::in);
+        popin >> pop;
+        popin.close();
+    }
     
 	string next_parfile = "";
 	bool continue_simulation = false;
@@ -140,6 +147,13 @@ int main(int argc, char *argv[])
 			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
+                if (param.exists(FILE_POP)) { // serializes the current population
+                    ostringstream ss;
+                    ss << param.getpar(FILE_POP)->GetString() << "-" << global_generation;
+                    ofstream os(ss.str());
+                    os << pop;
+                    os.close();
+                }
 			}
         
 			if (global_generation < maxgen) {
@@ -147,13 +161,6 @@ int main(int argc, char *argv[])
 				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
 				pop = offsp;
 			}
-	        // Quick and dirty: send some debugging/detailed information into a specific file
-	        /*if (generation==maxgen) {
-				ofstream tmp_out("debug.txt");
-				ostream & out = tmp_out;
-				pop.write_debug(out);
-				tmp_out.close();
-			}*/
 		} // end of inner loop
 		
 		continue_simulation = (param.exists(FILE_NEXTPAR) 

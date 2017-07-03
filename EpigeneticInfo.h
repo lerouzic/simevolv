@@ -15,6 +15,8 @@
 
 #include "Phenotype.h"
 
+#include <boost/serialization/serialization.hpp>
+
 class Individual;
 
 class EpigeneticInfo {
@@ -33,6 +35,13 @@ class EpigeneticInfo {
 	protected:
 		double epigenet;
 		Phenotype mother_phen;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & epigenet;
+            ar & mother_phen;
+        }          
 		
 };
 

@@ -23,6 +23,12 @@
 #include <cassert>
 #include <cmath>
 
+#include <boost/serialization/export.hpp>
+
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Genotype)
+BOOST_CLASS_EXPORT(DiploGenotype)
+BOOST_CLASS_EXPORT(HaploGenotype)
+
 using namespace std;
 
 // functions

@@ -26,9 +26,15 @@
 
 using namespace std;
 
-
-
 // constructors and destructor
+
+Individual::Individual() 
+    : genotype(NULL)
+    , phenotype(0.0)
+    , fitness(0.0)
+{    
+    initialize();
+}
 
 /* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, const unsigned int ploid)
@@ -107,8 +113,10 @@ Individual & Individual::operator = (const Individual& copy)
 /* initialize the individual, with genotypic, phenotypic and environmental values */
 void Individual::initialize()
 {
-    Architecture * archi = Architecture::Get();
-    phenotype = archi -> phenotypic_value(*genotype, true, epiinfo);
+    if (genotype != NULL) {
+        Architecture * archi = Architecture::Get();
+        phenotype = archi -> phenotypic_value(*genotype, true, epiinfo);
+    }
     fitness = 0;
     
     // So far, the epigenetic factor does not evolve).

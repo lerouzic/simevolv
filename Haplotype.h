@@ -24,6 +24,8 @@
 #include <vector>
 #include <memory> // shared_ptr
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/shared_ptr.hpp>
 
 class Haplotype
 {
@@ -43,6 +45,7 @@ class Haplotype
 
 	public :
 	    //constructors/destructor
+        Haplotype() { }
 	    Haplotype(const ParameterSet &);
 	    Haplotype(const Haplotype &);
 	    Haplotype(const std::vector<std::shared_ptr<Allele> > &);
@@ -64,6 +67,12 @@ class Haplotype
 	
 	protected :
 	    std::vector<std::shared_ptr<Allele> > haplotype;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & haplotype;
+        }        
 };
 
 #endif // HAPLOTYPE_H_INCLUDED

@@ -21,6 +21,8 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/serialization/serialization.hpp>
+
 class Phenovec;
 void outformat(std::ostream &, const Phenovec &,
                       unsigned int width=13, unsigned int precision=5, std::string sep="");
@@ -28,27 +30,35 @@ class Phenotype;
 void outformat(std::ostream &, const Phenotype &,
                       unsigned int width=13, unsigned int precision=5, std::string sep="");
 
+
 // Phenovec is "just" a vector of double, storing phenotypic values for several characters
-class Phenovec: private std::vector<double>
-{
+class Phenovec {
 	friend std::ostream& operator << (std::ostream&, const Phenovec &);
 	friend void outformat(std::ostream &, const Phenovec &, 
-		unsigned int width, unsigned int precision, std::string sep);
-		
-    typedef double T;
-    typedef std::vector<double> vector;
+		unsigned int width, unsigned int precision, std::string sep);    
+        
+    public:
+        Phenovec() : vec(std::vector<double>()) { }
+        Phenovec(const std::vector<double> & v) : vec(v) { }
+        virtual ~Phenovec() { }
+        void push_back(const double el) { vec.push_back(el); }
+        double operator[](unsigned int n) const { return vec[n]; }
+        double& operator[](unsigned int n) { return vec[n]; }
+        std::vector<double>::iterator begin() { return vec.begin(); }
+        std::vector<double>::const_iterator begin() const { return vec.begin(); }
+        std::vector<double>::iterator end() { return vec.end(); } 
+        std::vector<double>::const_iterator end() const {return vec.end(); }
+        unsigned int size() const { return vec.size(); }
+        unsigned int dimensionality() const { return size(); }
     
-public:
-    using vector::push_back;
-    using vector::operator[];
-    using vector::begin;
-    using vector::end;
-    using vector::size;
-    unsigned int dimensionality() const { return(size()); }
-    Phenovec() : std::vector<double>() { }
-    Phenovec(const std::vector<double> & vec) : std::vector<double>(vec) { }
-    // Phenovec(const Phenovec & vec) : std::vector<double>(vec.vector) { }
-    virtual ~Phenovec() { }
+    protected:
+        std::vector<double> vec;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & vec;
+        }      
 };
 
 
@@ -88,8 +98,13 @@ class Phenotype
 	protected:
 		Phenovec pheno;
 		Phenovec unstabpheno;
-
-		void add_to_pheno(const unsigned int index, const double effect);
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & pheno;
+            ar & unstabpheno;
+        }  
 };
 
 

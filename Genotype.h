@@ -22,6 +22,7 @@
 
 #include <iostream>
 
+#include <boost/serialization/serialization.hpp>
 
 class Genotype
 {
@@ -48,10 +49,17 @@ class Genotype
 		virtual Haplotype produce_gamete() const = 0;
 		
 		virtual std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const = 0;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            // nothing to do
+        }
 };
 
 class DiploGenotype : public Genotype {
 	public:
+        DiploGenotype() { }
 		DiploGenotype(const DiploGenotype &);
 		DiploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		DiploGenotype(const ParameterSet &);
@@ -67,10 +75,19 @@ class DiploGenotype : public Genotype {
 	protected:
 	    Haplotype gam_father;
 	    Haplotype gam_mother;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::base_object<Genotype>(*this);
+            ar & gam_father;
+            ar & gam_mother;
+        }        
 };
 
 class HaploGenotype : public Genotype {
 	public:
+        HaploGenotype() { }
 		HaploGenotype(const HaploGenotype &);
 		HaploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		HaploGenotype(const ParameterSet &);
@@ -85,6 +102,13 @@ class HaploGenotype : public Genotype {
 			
 	protected: 
 		Haplotype gam;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::base_object<Genotype>(*this);
+            ar & gam;
+        }           
 };
 
 #endif // GENOTYPE_H_INCLUDED

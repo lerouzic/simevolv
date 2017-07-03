@@ -459,6 +459,7 @@ void ParameterSet::initialize()
     
     // Input/Output
     parameters[FILE_ARCHI] = new Parameter_string();
+    parameters[FILE_POP] = new Parameter_string();
     parameters[FILE_NEXTPAR] = new Parameter_string();
 }
 

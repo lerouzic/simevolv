@@ -26,9 +26,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+
 #include <boost/serialization/serialization.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
 
 class Architecture  	/* Pure virtual class */
 {

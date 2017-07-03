@@ -23,9 +23,12 @@
 #include <string>
 #include <cmath>
 
+#include <boost/serialization/export.hpp>
+
+BOOST_CLASS_EXPORT(Allele)
+BOOST_CLASS_EXPORT(Allele_zero)
+
 using namespace std;
-
-
 
 // constructors and destructor
 
@@ -39,7 +42,6 @@ Allele::Allele(const Allele & copy)
 	: allele(copy.allele)
 {
 }
-
 
 // operator overload
 int Allele::operator==(const Allele& other) const

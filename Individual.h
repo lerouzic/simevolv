@@ -25,6 +25,7 @@
 #include <iostream>
 #include <string>
 
+#include <boost/serialization/serialization.hpp>
 
 class Population;
 
@@ -33,7 +34,7 @@ class Individual
 	friend class Population;	
 	public :
 	    // constructors/destructor
-	    Individual() = delete;
+	    Individual();
 	    Individual(const Haplotype&, const Haplotype&, const unsigned int);
 	    Individual(const Haplotype&, const Haplotype&, const unsigned int, const EpigeneticInfo&);
 	    Individual(const Individual&);
@@ -78,6 +79,16 @@ class Individual
 	    double epigenet; // to be transmitted to the offspring
 	    
 	    EpigeneticInfo epiinfo; // from the mother
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & genotype;
+            ar & phenotype;
+            ar & fitness;
+            ar & epigenet;
+            ar & epiinfo;            
+        } 
 };
 
 #endif // INDIVIDUAL_H_INCLUDED

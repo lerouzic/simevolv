@@ -20,6 +20,8 @@
 #include <vector>
 #include <memory>
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/vector.hpp>
 
 class Allele
 {
@@ -35,6 +37,7 @@ class Allele
 	
 	public :
 	    //constructors/destructor
+        Allele() { }
 	    Allele(const std::vector<double>);
 	    Allele(const Allele &);
 	    virtual ~Allele() { }
@@ -55,6 +58,12 @@ class Allele
 	
 	protected :
 	    std::vector<double> allele;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & allele;
+        }          
 };
 
 
@@ -71,11 +80,18 @@ class Allele_zero: public Allele
     
 	public:
 	// This is a 'normal Allele' but sites with 0.0 values cannot mutate
+    Allele_zero() { }
 	Allele_zero(const std::vector<double>);
 	Allele_zero(const Allele_zero &);
 	virtual ~Allele_zero() { }
 	
 	virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
+    
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::base_object<Allele>(*this);
+        }      
 };
 
 #endif // ALLELE_H_INCLUDED

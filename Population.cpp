@@ -33,9 +33,10 @@
 #include <iostream>
 #include <iomanip>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
 using namespace std;
-
-
 
 // constructors (note: most are useless)
 
@@ -516,4 +517,17 @@ void Population::write(ostream & out, int generation) const
 	}
 	out << '\n';
 
+}
+
+ostream & operator << (ostream & out, const Population & pop) {
+        boost::archive::text_oarchive oa(out);
+        oa << pop;
+        return out;
+}
+
+istream & operator >> (istream & in, Population & pop) {
+        boost::archive::text_iarchive ia(in);
+        pop.pop.clear(); // not completely sure why this is necessary (is Individual default_constructible?)
+        ia >> pop;
+        return in;
 }

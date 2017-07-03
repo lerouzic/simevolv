@@ -23,6 +23,9 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/vector.hpp>
+
 
 class Population
 {
@@ -51,9 +54,13 @@ class Population
 	    void draw_mutation();
 	    void make_mutation();
 	    	
-	    //output
+	    // input / output
+            // write summary
 	    void write(std::ostream &, int) const;
-	
+            // serialization
+        friend std::ostream& operator << (std::ostream&, const Population&);
+        friend std::istream& operator >> (std::istream&, Population&);
+        
 	protected :
 		// internal functions
 	    void initialize(const ParameterSet &);
@@ -69,13 +76,26 @@ class Population
 	
 	    std::vector<Individual> pop;
 	    
-	    // output parameters, to be stored and copied
+	    // output parameters, to be stored and copied (design problem?)
 	    double selfing_rate;	    
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
 	    std::string out_geno;
 	    std::string out_unstab;
+        
+	private:
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version){
+            ar & pop;
+            ar & selfing_rate;
+            ar & nb_canal_test;
+            ar & nb_herit_test;
+            ar & nb_direpi_test;
+            ar & out_geno;
+            ar & out_unstab;
+        }     
 };
+
 
 #endif // POPULATION_H_INCLUDED
