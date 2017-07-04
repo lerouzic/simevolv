@@ -93,6 +93,10 @@ double UnivariateStat::var_log() const {
 
 MultivariateStat::MultivariateStat(const vector<vector<double> > & v)
 	: data(v)
+    , sum_ij(vector<vector<double>>(v.size(), vector<double>(v.size(), 0.0)))
+    , sum_log_ij(vector<vector<double>>(v.size(), vector<double>(v.size(), 0.0)))
+    , sum_i(vector<double>(v.size()))
+    , sum_log_i(vector<double>(v.size()))
 { 
 	// It is a bit complicated to assert here whether the vector<vector<double> > is OK. 
 	// Temporary storage variables as well as checks on the dimensions will occur afterwards, 
@@ -116,52 +120,43 @@ void MultivariateStat::initialize()
 		}
 	}
 	
-	// creates the matrix of sum_ij
-	for (unsigned int i = 0; i < data.size(); i++) 
-	{
-		vector<double> tmp_sumij(data.size(), 0.0);
-		sum_ij.push_back(tmp_sumij);
-		sum_log_ij.push_back(tmp_sumij);
-	}
-	
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
 		
 		// vector of sum_i
-		double tmp_sum = 0.0;
-		double tmp_sum_log = 0.0;
 		for (unsigned int k = 0; k < data[i].size(); k++) 
 		{
-			tmp_sum += data[i][k];
-			if (data[i][k] < EXPMINLOG)
-				tmp_sum_log += MINLOG;
+            double d_ik =  data[i][k];
+			sum_i[i] += d_ik;
+			if (d_ik < EXPMINLOG)
+				sum_log_i[i] += MINLOG;
 			else
-				tmp_sum_log += log(data[i][k]);
+				sum_log_i[i] += log(d_ik);
 		}
-		sum_i.push_back(tmp_sum);
-		sum_log_i.push_back(tmp_sum_log);
 		
 		// matrix of sum_ij
 		for (unsigned int j = i; j < data.size(); j++) 
 		{
-			double tmp_sumij = 0.0;
-			double tmp_log_sumij = 0.0;
+            double tmp_sum_ij = 0.0;
+            double tmp_sum_log_ij = 0.0;
 			for (unsigned int k = 0; k < data[i].size(); k++)
 			{
-				tmp_sumij += data[i][k] * data[j][k];
+                double d_ik = data[i][k];
+                double d_jk = data[j][k];
+				tmp_sum_ij += d_ik * d_jk;
 				double log_data_ik = MINLOG;
 				double log_data_jk = MINLOG;
-				if (data[i][k] > EXPMINLOG)
-					log_data_ik = log(data[i][k]);
-				if (data[j][k] > EXPMINLOG)
-					log_data_jk = log(data[j][k]);
-				tmp_log_sumij += log_data_ik * log_data_jk;
+				if (d_ik > EXPMINLOG)
+					log_data_ik = log(d_ik);
+				if (d_jk > EXPMINLOG)
+					log_data_jk = log(d_jk);
+				tmp_sum_log_ij += log_data_ik * log_data_jk;
 			}
-			sum_ij[i][j] = tmp_sumij;
-			sum_log_ij[i][j] = tmp_log_sumij;
+            sum_ij[i][j] = tmp_sum_ij;
+            sum_log_ij[i][j] = tmp_sum_log_ij;
 			if (i != j) { // does not harm, but useless when i == j
-				sum_ij[j][i] = tmp_sumij; 
-				sum_log_ij[j][i] = tmp_log_sumij;
+				sum_ij[j][i] = tmp_sum_ij;
+				sum_log_ij[j][i] = tmp_sum_log_ij;
 			}
 		}
 	}

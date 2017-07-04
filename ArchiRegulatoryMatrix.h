@@ -139,13 +139,15 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 			
 	protected :
 		double basal;
+        double b1; // = 1/basal - 1
+        double b2; // = 1/(basal*(basal-1))
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
 		virtual void haircut(double &) const;
 		
 	protected:
-		ArchiM2() {}
+		ArchiM2() { };
 
 	private:
 		friend class boost::serialization::access;

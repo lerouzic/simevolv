@@ -190,7 +190,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	
 	// dynamic simulation
 	std::vector<double> h(nloc);
-	std::vector<std::vector<double>> unstability;
+	std::vector<std::vector<double>> unstability = vector<vector<double>>(calcsteps, vector<double>(nloc, 0.0));
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
@@ -210,7 +210,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		
 		if (t >= (timesteps-calcsteps)) 
 		{
-			unstability.push_back(St);
+			unstability[t - (timesteps-calcsteps)] = St;
 		}
 	}
 	
@@ -472,8 +472,11 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
 {
-	float min = 0;
-	float max = 1;
+    b1 = 1./basal - 1.;
+    b2 = 1./(basal*(basal-1.))    ;
+    
+	double min = 0;
+	double max = 1;
 	
 	string type_so = param.getpar(TYPE_SO)->GetString();
     if (type_so==SO_min)
@@ -525,7 +528,8 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 
 double ArchiM2::sigma(double h) const 
 {
-	return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
+	// return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
+    return(1./(1.+b1*exp(b2*h)));
 }
 
 void ArchiM2::haircut(double & d) const 
