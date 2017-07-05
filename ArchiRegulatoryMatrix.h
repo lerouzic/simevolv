@@ -19,7 +19,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <boost/numeric/ublas/vector.hpp>
 
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/vector.hpp>
@@ -45,12 +44,12 @@ class ArchiRegulatoryMatrix : public Architecture
 		unsigned int calcsteps;
 				
 	    //functions
-		virtual double sigma(const double h) const;
-        virtual void sigma_v(std::vector<double>& vh) const; // vectorized version of sigma for optimization
+		virtual void sigma(double&) const;
+        virtual void sigma_v(std::vector<double>&) const; // vectorized version of sigma for optimization
+		virtual void haircut(double &) const;                
+		virtual void haircut_v(std::vector<double>&) const;
+        
 		void init_connectivity_matrix(const ParameterSet &);		
-		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
-		virtual void haircut(std::vector<double> & vec) const;
-		virtual void haircut(double &) const;
 		
 	protected:
 		ArchiRegulatoryMatrix() {}
@@ -82,9 +81,10 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 		
 	protected :
 		// Inherited functions
-		virtual double sigma(double h) const;
-        virtual void sigma_v(std::vector<double>& vh) const;
+		virtual void sigma(double&) const;
+        virtual void sigma_v(std::vector<double>&) const;
 		virtual void haircut(double &) const;
+        virtual void haircut_v(std::vector<double>&) const;
 		
 	protected:
 		ArchiWagner() {}
@@ -112,9 +112,10 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		double basal;
 		
 		// Inherited functions
-		virtual double sigma(double h) const; 
-        virtual void sigma_v(std::vector<double> & vh) const;
-		virtual void haircut(double &) const;	
+		virtual void sigma(double&) const; 
+        virtual void sigma_v(std::vector<double>&) const;
+		virtual void haircut(double&) const;	
+        virtual void haircut_v(std::vector<double>&) const;
 		
 	protected:
 		ArchiSiegal() {}
@@ -146,9 +147,10 @@ class ArchiM2 : public ArchiRegulatoryMatrix
         double b2; // = 1/(basal*(basal-1))
 		
 		// Inherited functions
-		virtual double sigma(double h) const; 
-        virtual void sigma_v(std::vector<double>& vh) const;
-		virtual void haircut(double &) const;
+		virtual void sigma(double&) const; 
+        virtual void sigma_v(std::vector<double>&) const;
+		virtual void haircut(double&) const;
+        virtual void haircut_v(std::vector<double>&) const;
 		
 	protected:
 		ArchiM2() { };

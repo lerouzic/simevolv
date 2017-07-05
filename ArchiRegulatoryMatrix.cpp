@@ -27,10 +27,6 @@
 #include <cassert>
 #include <algorithm>
 
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
-
 using namespace std;
 
 BOOST_CLASS_EXPORT(ArchiRegulatoryMatrix)
@@ -65,29 +61,17 @@ std::vector<double> naive_prod(const std::vector<double> & s, const std::vector<
     //Expects(s.size() == m.size());
     //Expects(m.size() == m[0].size());
     
-    std::vector<double> ans(s.size());
+    unsigned int ssz = s.size();    
     
-    for (unsigned int i = 0; i < s.size(); i++) {
+    std::vector<double> ans(ssz);
+    
+    for (unsigned int i = 0; i < ssz; i++) {
         ans[i] = 0.0;
-        for (unsigned int j = 0; j < s.size(); j++) {
+        for (unsigned int j = 0; j < ssz; j++) {
             ans[i] += m[j][i] * s[j];
         }
     }
     return(ans);
-}
-
-// convert a boost vector into a regulat std::vector and vice-versa
-template<class T>
-std::vector<T> boost_to_std_vector(const boost::numeric::ublas::vector<T> & x) 
-{
-	// not very fast, optimize with std::copy if necessary
-	std::vector<T> ans(x.size());
-	//~ for (unsigned int i = 0; i < x.size(); i++) 
-	//~ {
-		//~ ans.push_back(x(i));
-	//~ }
-	copy(x.begin(), x.end(), ans.begin());
-	return(ans);
 }
 
 
@@ -187,7 +171,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		
 		St[i] += Environment::init_disturb(sdinittest);
 	}
-	haircut(St);
+	this->haircut_v(St);
 
 	
 	// dynamic simulation
@@ -202,7 +186,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
 			// double St_i = recur*St[i] + (1.-recur)*(this->sigma(h[i]));
-            double St_i = recur*St[i] + (1.-recur)*h[i];
+            double St_i = h[i];
+            if (recur != 0.0) {
+                St_i = recur*St[i] + (1.-recur)*St_i;
+            }
 			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
@@ -210,7 +197,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 			St_i += Environment::dynam_disturb(sddynamtest);
 			St[i] = St_i;
 		}
-		haircut(St);
+		this->haircut_v(St);
 		
 		if (t >= (timesteps-calcsteps)) 
 		{
@@ -225,7 +212,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	
 	for (unsigned int i = 0; i < Sf_mean.size(); i++)
 		Sf_mean[i] += Environment::final_disturb();
-	haircut(Sf_mean);
+	this->haircut_v(Sf_mean);
 	
 	return Phenotype(Sf_mean, Sf_var);
 }
@@ -234,15 +221,28 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 // Protected functions
 
 /* Theoretically useless. Just in case, running the model on the base class just calls the identity function (no sigmoid)*/
-double ArchiRegulatoryMatrix::sigma(const double h) const 
+void ArchiRegulatoryMatrix::sigma(double& h) const 
 {
-	return(h);
 }
 
 void ArchiRegulatoryMatrix::sigma_v(vector<double> & vh) const
 {
-    return;
+    for (unsigned int i = 0; i < vh.size(); ++i)
+        this->sigma(vh[i]);
 }
+
+void ArchiRegulatoryMatrix::haircut(double & d) const
+{
+}
+
+void ArchiRegulatoryMatrix::haircut_v(vector<double> & vec) const 
+{
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		this->haircut(vec[i]);
+	}
+}
+
+
 
 //static unsigned int count_init = 0; // debug instruction
 
@@ -279,23 +279,7 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 	}
 }
 
-void ArchiRegulatoryMatrix::haircut(boost::numeric::ublas::vector<double> & vec) const 
-{
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		this->haircut(vec(i));
-	}
-}
 
-void ArchiRegulatoryMatrix::haircut(vector<double> & vec) const 
-{
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		this->haircut(vec[i]);
-	}
-}
-
-void ArchiRegulatoryMatrix::haircut(double & d) const
-{
-}
 
 //////////////////////////// INHERITED CLASSES //////////////////////////////////
 
@@ -374,26 +358,21 @@ ArchiWagner::~ArchiWagner()
 }
 
 
-double ArchiWagner::sigma(const double h) const 
+void ArchiWagner::sigma(double & h) const 
 {
-	if (h<0)
-	{
-		return (-1.);
-	} 
-	else if (h>0) 
-	{
-		return (1.);
-	} 
-	else 
-	{
-		return (0.);
-	}
+	if (h < 0.) {
+		h = -1.;
+	} else if (h > 0.) {
+		h = 1.;
+	} else {
+        h = 0.;
+    }
 }	
 
 void ArchiWagner::sigma_v(vector<double> & vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
-        vh[i] = ArchiWagner::sigma(vh[i]);
+        ArchiWagner::sigma(vh[i]);
     }
 }
 
@@ -401,6 +380,13 @@ void ArchiWagner::haircut(double & d) const
 {
 	if (d < -1.) d = -1.;
 	else if (d > 1.) d = 1.;
+}
+
+void ArchiWagner::haircut_v(vector<double> & vd) const
+{
+    for (unsigned int i = 0; i < vd.size(); ++i) {
+        ArchiWagner::haircut(vd[i]);
+    }
 }
 
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
@@ -472,15 +458,15 @@ ArchiSiegal::~ArchiSiegal()
 }
 
 
-double ArchiSiegal::sigma(const double h) const 
+void ArchiSiegal::sigma(double &h) const 
 {
-	return ((2. / (1. + exp(-basal*h)) ) -1.);
+	h = (2. / (1. + exp(-basal*h)) ) -1.;
 }
 
 void ArchiSiegal::sigma_v(vector<double>& vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
-        vh[i] = (2. / (1. + exp(-basal*vh[i])) ) -1.;
+        ArchiSiegal::sigma(vh[i]);
     }
 }
 
@@ -488,6 +474,13 @@ void ArchiSiegal::haircut(double & d) const
 {
 	if (d < -1.) d = -1.;
 	else if (d > 1.) d = 1.;
+}
+
+void ArchiSiegal::haircut_v(vector<double> & vd) const
+{
+    for (unsigned int i = 0; i < vd.size(); ++i) {
+        ArchiSiegal::haircut(vd[i]);
+    }
 }
 
 
@@ -549,16 +542,16 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	}
 }
 
-double ArchiM2::sigma(const double h) const 
+void ArchiM2::sigma(double& h) const 
 {
 	// return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
-    return(1./(1.+b1*exp(b2*h)));
+    h = 1./(1.+b1*exp(b2*h));
 }
 
 void ArchiM2::sigma_v(vector<double>& vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
-        vh[i] = 1./(1.+b1*exp(b2*vh[i]));
+        ArchiM2::sigma(vh[i]);
     }
 }
 
@@ -568,6 +561,12 @@ void ArchiM2::haircut(double & d) const
 	else if (d > 1.) d = 1.;
 }
 
+void ArchiM2::haircut_v(vector<double>& vd) const
+{
+    for (unsigned int i = 0; i < vd.size(); ++i) {
+        ArchiM2::haircut(vd[i]);
+    }
+}
 
 ArchiM2::~ArchiM2()
 {
