@@ -32,6 +32,8 @@ class ArchiRegulatoryMatrix : public Architecture
 	    virtual ~ArchiRegulatoryMatrix() = 0; // So that the class is abstract
 		
 		// functions 
+        unsigned int nb_phen() const;
+        
 		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int) const;
 		virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo&, bool sdinittest = false, bool sddynamtest = false) const;
 	
@@ -48,6 +50,10 @@ class ArchiRegulatoryMatrix : public Architecture
         virtual void sigma_v(std::vector<double>&) const; // vectorized version of sigma for optimization
 		virtual void haircut(double &) const;                
 		virtual void haircut_v(std::vector<double>&) const;
+        virtual void plasticity_v(std::vector<double>&) const;
+        virtual void recur_v(std::vector<double>&, const std::vector<double>&) const;
+        virtual void enviro_v(std::vector<double>&, bool) const;
+        
         
 		void init_connectivity_matrix(const ParameterSet &);		
 		

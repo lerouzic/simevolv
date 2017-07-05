@@ -415,7 +415,8 @@ void ParameterSet::initialize()
     // Environmental parameters
     parameters[ENVIRO_SDINIT] = new Parameter_double(0.0, 999.9);
 	parameters[ENVIRO_SDDYNAM] = new Parameter_double(0.0, 999.9);
-	parameters[ENVIRO_SDFINAL] = new Parameter_double(0.0, 999.9);    
+	parameters[ENVIRO_SDFINAL] = new Parameter_double(0.0, 999.9);
+    parameters[ENVIRO_PLASTICITY] = new Parameter_vector_double(0.0, 1.0);
 
     // Fitness parameters
     parameters[FITNESS_TYPE] = new Parameter_string(FT_options);

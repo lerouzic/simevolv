@@ -87,6 +87,10 @@ ArchiBoolean::~ArchiBoolean()
 
 // functions
 
+unsigned int ArchiBoolean::nb_phen() const {
+    return ploc; // Not sure (ALR 5 Juil 2017)
+}
+
 /* return value of bucket-matrix */
 double ArchiBoolean::get_bucket_matrix(unsigned int loc1, unsigned int loc2) const
 {

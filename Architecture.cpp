@@ -50,6 +50,8 @@ Architecture::Architecture(const ParameterSet& param)
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
     , mutsd_test (vector<double> (0))
+    , plasticity_strength (vector<double> (0))
+    , plasticity_signal (vector<double> (0))
     , iofile ("")
 {
 	update_param_internal(param);
@@ -168,6 +170,11 @@ unsigned int Architecture::nb_loc() const
     return nloc;
 }
 
+unsigned int Architecture::nb_phen() const
+{
+    return 1; // not a bad choice for most architectures
+}
+
 /* return the size of the allele */
 unsigned int Architecture::all_size() const
 {
@@ -251,7 +258,9 @@ void Architecture::update_param_internal(const ParameterSet& param)
 	mutrate.clear();
 	mutsd.clear();
 	mutsd_test.clear();
-	
+	plasticity_strength.clear();
+    plasticity_signal.clear();
+    
     for (unsigned int i = 0; i < nloc; i++)
     {
 		if (param.getpar(GENET_MUTTYPE)->GetString() == MT_locus)
@@ -261,4 +270,15 @@ void Architecture::update_param_internal(const ParameterSet& param)
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
         mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
+    if (param.exists(ENVIRO_PLASTICITY)) {
+        for (unsigned int i = 0; i < this->nb_phen(); i++) {
+            plasticity_strength.push_back(param.getpar(ENVIRO_PLASTICITY)->GetDouble(i));
+            plasticity_signal.push_back(param.getpar(FITNESS_OPTIMUM)->GetDouble(i));
+        }
+    } else {
+        plasticity_strength = vector<double>(this->nb_phen(), 0.0);
+        plasticity_signal = vector<double>(this->nb_phen(), 0.0);
+    }
+
+    
 }

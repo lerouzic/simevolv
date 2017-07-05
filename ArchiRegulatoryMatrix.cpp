@@ -167,10 +167,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 			St[i] = epi.get_epigenet()*epi.get_phenotype()[i] + (1.-epi.get_epigenet())*So[i];
 		} else {
 			St[i] = So[i];
-		}
-		
+		}      		
 		St[i] += Environment::init_disturb(sdinittest);
 	}
+    this->plasticity_v(St);
 	this->haircut_v(St);
 
 	
@@ -182,22 +182,10 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	{
 		h = naive_prod(matrix, St);
         this->sigma_v(h);
-		
-		for (unsigned int i=0 ; i<h.size() ; i++)
-		{
-			// double St_i = recur*St[i] + (1.-recur)*(this->sigma(h[i]));
-            double St_i = h[i];
-            if (recur != 0.0) {
-                St_i = recur*St[i] + (1.-recur)*St_i;
-            }
-			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
-			 * It has no sense for the wagner and siegal model, only for the M2 model.
-			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
-			//St(i) = this->sigma(h(i));
-			St_i += Environment::dynam_disturb(sddynamtest);
-			St[i] = St_i;
-		}
-		this->haircut_v(St);
+        this->recur_v(h, St);
+        this->enviro_v(h, sddynamtest);
+        this->plasticity_v(h);
+		this->haircut_v(h);
 		
 		if (t >= (timesteps-calcsteps)) 
 		{
@@ -242,7 +230,32 @@ void ArchiRegulatoryMatrix::haircut_v(vector<double> & vec) const
 	}
 }
 
+void ArchiRegulatoryMatrix::plasticity_v(vector<double> & vh) const
+{
+    for (unsigned int i = 0; i < vh.size(); i++) {
+        vh[i] += plasticity_strength[i]*(plasticity_signal[i]-vh[i]);
+    }
+}
 
+void ArchiRegulatoryMatrix::recur_v(vector<double> & vh, const std::vector<double> & oldvh) const
+{
+    for (unsigned int i = 0; i < vh.size(); i++) {
+        vh[i] =  recur*oldvh[i] + (1.-recur)*vh[i];
+    }
+}
+
+void ArchiRegulatoryMatrix::enviro_v(vector<double> & vh, bool sddynamtest) const
+{
+    for (unsigned int i = 0; i < vh.size(); i++) {
+        vh[i] += Environment::dynam_disturb(sddynamtest);
+    }
+}
+
+
+unsigned int ArchiRegulatoryMatrix::nb_phen() const
+{
+    return nb_loc();
+}
 
 //static unsigned int count_init = 0; // debug instruction
 

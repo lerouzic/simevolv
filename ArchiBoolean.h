@@ -32,6 +32,7 @@ class ArchiBoolean : public Architecture
     friend std::ostream& operator << (std::ostream&, const Architecture&);
     
     // getters
+    virtual unsigned int nb_phen() const;
     virtual double get_bucket_matrix(unsigned int, unsigned int) const;
     virtual double get_logic_operator(unsigned int) const;
     

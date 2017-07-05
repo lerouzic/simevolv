@@ -46,8 +46,10 @@ class Architecture  	/* Pure virtual class */
 	    static /* const */ Architecture* Get();
 	    static void terminate();
 	
+  
 	    // getters
 	    unsigned int nb_loc() const;
+        virtual unsigned int nb_phen() const;
 	    unsigned int all_size() const;
 	    double mutation_rate(unsigned int) const;
 	    double mutation_sd(unsigned int) const;
@@ -69,6 +71,9 @@ class Architecture  	/* Pure virtual class */
 	    std::vector<double> mutrate;
 	    std::vector<double> mutsd;
 	    std::vector<double> mutsd_test;
+        
+        std::vector<double> plasticity_strength;
+        std::vector<double> plasticity_signal;
 	    
 	    std::string iofile; // this should not be serialized
 	    
@@ -89,7 +94,9 @@ void Architecture::serialize(Archive & ar, const unsigned int version)
 	ar & sall; 
 	ar & mutrate;
 	ar & mutsd;
-	ar & mutsd_test;	
+	ar & mutsd_test;
+    ar & plasticity_strength;
+    ar & plasticity_signal;
 }
 
 #endif // ARCHITECTURE_H_INCLUDED

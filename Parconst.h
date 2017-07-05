@@ -40,6 +40,7 @@ const std::string INIT_CLONAL = "INIT_CLONAL";	 			/* Initial clonal status */
 const std::string ENVIRO_SDINIT = "ENVIRO_SDINIT";
 const std::string ENVIRO_SDDYNAM = "ENVIRO_SDDYNAM";
 const std::string ENVIRO_SDFINAL = "ENVIRO_SDFINAL";
+const std::string ENVIRO_PLASTICITY = "ENVIRO_PLASTICITY";
 const std::string FITNESS_TYPE = "FITNESS_TYPE";			/* Selection types */
 const std::string FITNESS_STRENGTH = "FITNESS_STRENGTH";
 const std::string FITNESS_OPTIMUM = "FITNESS_OPTIMUM";
