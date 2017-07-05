@@ -45,7 +45,8 @@ class ArchiRegulatoryMatrix : public Architecture
 		unsigned int calcsteps;
 				
 	    //functions
-		virtual double sigma(double h) const;
+		virtual double sigma(const double h) const;
+        virtual void sigma_v(std::vector<double>& vh) const; // vectorized version of sigma for optimization
 		void init_connectivity_matrix(const ParameterSet &);		
 		virtual void haircut(boost::numeric::ublas::vector<double> & vec) const;
 		virtual void haircut(std::vector<double> & vec) const;
@@ -82,6 +83,7 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 	protected :
 		// Inherited functions
 		virtual double sigma(double h) const;
+        virtual void sigma_v(std::vector<double>& vh) const;
 		virtual void haircut(double &) const;
 		
 	protected:
@@ -111,6 +113,7 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
+        virtual void sigma_v(std::vector<double> & vh) const;
 		virtual void haircut(double &) const;	
 		
 	protected:
@@ -144,6 +147,7 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		
 		// Inherited functions
 		virtual double sigma(double h) const; 
+        virtual void sigma_v(std::vector<double>& vh) const;
 		virtual void haircut(double &) const;
 		
 	protected:

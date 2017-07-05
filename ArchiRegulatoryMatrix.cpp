@@ -46,11 +46,13 @@ std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const
     //Expects(s.size() == m.size());
     //Expects(m.size() == m[0].size());
     
-    std::vector<double> ans(s.size());
+    unsigned int ssz = s.size();
     
-    for (unsigned int i = 0; i < s.size(); i++) {
+    std::vector<double> ans(ssz);
+    
+    for (unsigned int i = 0; i < ssz; i++) {
         ans[i] = 0.0;
-        for (unsigned int j = 0; j < s.size(); j++) {
+        for (unsigned int j = 0; j < ssz; j++) {
             ans[i] += m[i][j] * s[j];
         }
     }
@@ -195,10 +197,12 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
 		h = naive_prod(matrix, St);
+        this->sigma_v(h);
 		
 		for (unsigned int i=0 ; i<h.size() ; i++)
 		{
-			double St_i = recur*St[i] + (1.-recur)*(this->sigma(h[i]));
+			// double St_i = recur*St[i] + (1.-recur)*(this->sigma(h[i]));
+            double St_i = recur*St[i] + (1.-recur)*h[i];
 			/* WARNING : the recurrence parameter should be put at 0 for the Wagner and Siegal model.
 			 * It has no sense for the wagner and siegal model, only for the M2 model.
 			 * (But implementing it only for the M2 model will be difficult due to the structure of the program) */
@@ -230,9 +234,14 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 // Protected functions
 
 /* Theoretically useless. Just in case, running the model on the base class just calls the identity function (no sigmoid)*/
-double ArchiRegulatoryMatrix::sigma(double h) const 
+double ArchiRegulatoryMatrix::sigma(const double h) const 
 {
 	return(h);
+}
+
+void ArchiRegulatoryMatrix::sigma_v(vector<double> & vh) const
+{
+    return;
 }
 
 //static unsigned int count_init = 0; // debug instruction
@@ -365,7 +374,7 @@ ArchiWagner::~ArchiWagner()
 }
 
 
-double ArchiWagner::sigma(double h) const 
+double ArchiWagner::sigma(const double h) const 
 {
 	if (h<0)
 	{
@@ -380,6 +389,13 @@ double ArchiWagner::sigma(double h) const
 		return (0.);
 	}
 }	
+
+void ArchiWagner::sigma_v(vector<double> & vh) const
+{
+    for (unsigned int i = 0; i < vh.size(); ++i) {
+        vh[i] = ArchiWagner::sigma(vh[i]);
+    }
+}
 
 void ArchiWagner::haircut(double & d) const 
 {
@@ -456,9 +472,16 @@ ArchiSiegal::~ArchiSiegal()
 }
 
 
-double ArchiSiegal::sigma(double h) const 
+double ArchiSiegal::sigma(const double h) const 
 {
 	return ((2. / (1. + exp(-basal*h)) ) -1.);
+}
+
+void ArchiSiegal::sigma_v(vector<double>& vh) const
+{
+    for (unsigned int i = 0; i < vh.size(); ++i) {
+        vh[i] = (2. / (1. + exp(-basal*vh[i])) ) -1.;
+    }
 }
 
 void ArchiSiegal::haircut(double & d) const 
@@ -526,10 +549,17 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	}
 }
 
-double ArchiM2::sigma(double h) const 
+double ArchiM2::sigma(const double h) const 
 {
 	// return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
     return(1./(1.+b1*exp(b2*h)));
+}
+
+void ArchiM2::sigma_v(vector<double>& vh) const
+{
+    for (unsigned int i = 0; i < vh.size(); ++i) {
+        vh[i] = 1./(1.+b1*exp(b2*vh[i]));
+    }
 }
 
 void ArchiM2::haircut(double & d) const 
