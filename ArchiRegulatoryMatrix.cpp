@@ -183,25 +183,27 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 
 	
 	// dynamic simulation
-	std::vector<double> h(nloc);
+	std::vector<double> St_next(nloc);
 	std::vector<std::vector<double>> unstability = vector<vector<double>>(calcsteps, vector<double>(nloc, 0.0));
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
-		h = naive_prod(matrix, St);
+		St_next = naive_prod(matrix, St);
         
-        this->sigma_v(h);
+        this->sigma_v(St_next);
         
         if (run_recur)
-            this->recur_v(h, St);
+            this->recur_v(St_next, St);
         
         if (run_enviro) 
-            this->enviro_v(h, sddynamtest);
+            this->enviro_v(St_next, sddynamtest);
         
         if (run_plasticity)
-            this->plasticity_v(h);
+            this->plasticity_v(St_next);
             
-		this->haircut_v(h);
+		this->haircut_v(St_next);
+		
+		St = St_next;
 		
 		if (t >= (timesteps-calcsteps)) 
 		{
