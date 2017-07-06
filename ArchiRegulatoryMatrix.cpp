@@ -147,6 +147,13 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 	// the envir parameter is useless. 
 {
+    // flags for optimization
+    const bool run_recur = (recur != 0.0);
+    const bool run_plasticity = !std::all_of(plasticity_strength.begin(), plasticity_strength.end(), [](int i) 
+        { return i==0.; });
+    const bool run_enviro = (Environment::dynam_disturb(sddynamtest) == 0.); // not elegant, but should do the job.
+    
+    
 	// creation of the W matrix;
 	std::vector<std::vector<double>> matrix;
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
@@ -170,7 +177,8 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		}      		
 		St[i] += Environment::init_disturb(sdinittest);
 	}
-    this->plasticity_v(St);
+    if (run_plasticity) 
+        this->plasticity_v(St);
 	this->haircut_v(St);
 
 	
@@ -181,10 +189,18 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
 		h = naive_prod(matrix, St);
+        
         this->sigma_v(h);
-        this->recur_v(h, St);
-        this->enviro_v(h, sddynamtest);
-        this->plasticity_v(h);
+        
+        if (run_recur)
+            this->recur_v(h, St);
+        
+        if (run_enviro) 
+            this->enviro_v(h, sddynamtest);
+        
+        if (run_plasticity)
+            this->plasticity_v(h);
+            
 		this->haircut_v(h);
 		
 		if (t >= (timesteps-calcsteps)) 
@@ -215,31 +231,30 @@ void ArchiRegulatoryMatrix::sigma(double& h) const
 
 void ArchiRegulatoryMatrix::sigma_v(vector<double> & vh) const
 {
-    for (unsigned int i = 0; i < vh.size(); ++i)
-        this->sigma(vh[i]);
+    for (auto &i: vh) 
+        this->sigma(i);
 }
 
 void ArchiRegulatoryMatrix::haircut(double & d) const
 {
 }
 
-void ArchiRegulatoryMatrix::haircut_v(vector<double> & vec) const 
+void ArchiRegulatoryMatrix::haircut_v(vector<double> & vh) const 
 {
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		this->haircut(vec[i]);
-	}
+    for (auto &i: vh)
+		this->haircut(i);
 }
 
 void ArchiRegulatoryMatrix::plasticity_v(vector<double> & vh) const
 {
-    for (unsigned int i = 0; i < vh.size(); i++) {
+    for (unsigned int i = 0; i < nloc; i++) {
         vh[i] += plasticity_strength[i]*(plasticity_signal[i]-vh[i]);
     }
 }
 
 void ArchiRegulatoryMatrix::recur_v(vector<double> & vh, const std::vector<double> & oldvh) const
 {
-    for (unsigned int i = 0; i < vh.size(); i++) {
+    for (unsigned int i = 0; i < nloc; i++) {
         vh[i] =  recur*oldvh[i] + (1.-recur)*vh[i];
     }
 }
