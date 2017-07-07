@@ -249,23 +249,27 @@ void ArchiRegulatoryMatrix::haircut_v(vector<double> & vh) const
 
 void ArchiRegulatoryMatrix::plasticity_v(vector<double> & vh) const
 {
-    for (unsigned int i = 0; i < nloc; i++) {
-        vh[i] += plasticity_strength[i]*(plasticity_signal[i]-vh[i]);
+    auto vh_it = vh.begin();
+    auto pst_it = plasticity_strength.begin(); // this is probably a const_iterator because of the const method
+    auto psi_it = plasticity_signal.begin();
+    for ( ; vh_it != vh.end(); vh_it++, pst_it++, psi_it++) {
+        *vh_it += (*pst_it) * (*psi_it - *vh_it);
     }
 }
 
 void ArchiRegulatoryMatrix::recur_v(vector<double> & vh, const std::vector<double> & oldvh) const
 {
-    for (unsigned int i = 0; i < nloc; i++) {
-        vh[i] =  recur*oldvh[i] + (1.-recur)*vh[i];
+    auto vh_it = vh.begin();
+    auto oldvh_it = oldvh.begin();
+    for ( ; vh_it != vh.end(); vh_it++, oldvh_it++) {
+        *vh_it += recur*(*oldvh_it - *vh_it);
     }
 }
 
 void ArchiRegulatoryMatrix::enviro_v(vector<double> & vh, bool sddynamtest) const
 {
-    for (unsigned int i = 0; i < vh.size(); i++) {
-        vh[i] += Environment::dynam_disturb(sddynamtest);
-    }
+    for (auto &i: vh)
+        i += Environment::dynam_disturb(sddynamtest);
 }
 
 
