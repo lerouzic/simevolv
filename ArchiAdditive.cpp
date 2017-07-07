@@ -37,8 +37,7 @@ using namespace std;
 ArchiAdditive::ArchiAdditive(const ParameterSet& param)
     : Architecture(param)
 {
-	// Nothing to do here.
-	// mutrate and mutsd are already intialized in the constructor of the parent class
+    update_param_internal(param); 
 }
 
 ArchiAdditive::~ArchiAdditive()

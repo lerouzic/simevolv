@@ -45,6 +45,9 @@ ArchiBoolean::ArchiBoolean(const ParameterSet& param)
 , type(param.getpar(SCALE)->GetString())
 
 {
+    update_param_internal(param); 
+
+    
     double threshold_matrix = param.getpar(MATRIX_DENS)->GetDouble();
     double threshold_operator = param.getpar(LOG_OPERATOR_DENS)->GetDouble();
     

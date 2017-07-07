@@ -87,6 +87,8 @@ ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param)
     , timesteps(param.getpar(DEV_TIMESTEPS)->GetInt())
     , calcsteps(param.getpar(DEV_CALCSTEPS) -> GetInt())    
 {
+	// update_param_internal(param); // This should be called in derived classes only
+    
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
 
@@ -321,7 +323,9 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 
 ArchiWagner::ArchiWagner(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
-{ 
+{
+    update_param_internal(param); 
+ 
 	int min = -1;
 	int max = 1;
 	
@@ -426,7 +430,10 @@ void ArchiWagner::haircut_v(vector<double> & vd) const
 ArchiSiegal::ArchiSiegal(const ParameterSet& param) 
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
-{ 
+{
+	update_param_internal(param); 
+    
+     
 	int min = -1;
 	int max = 1;
 		
@@ -522,6 +529,8 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	: ArchiRegulatoryMatrix(param)
 	, basal(param.getpar(INIT_BASAL)->GetDouble())
 {
+	update_param_internal(param); 
+    
     b1 = 1./basal - 1.;
     b2 = 1./(basal*(basal-1.))    ;
     

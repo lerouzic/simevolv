@@ -44,8 +44,8 @@ using namespace std;
 
 /* constructor using the paramater given by ParameterSet */
 Architecture::Architecture(const ParameterSet& param)
-    : gmap (param)
-    , nloc (param.getpar(GENET_NBLOC) -> GetInt())
+    : gmap (param)                                    // This cannot change when the parameter file changes
+    , nloc (param.getpar(GENET_NBLOC) -> GetInt())    // The same, this cannot change even if the parameter file changes
     , sall (1) // by default, change for the architecture that needed a vector as allele
     , mutrate (vector<double> (0))
     , mutsd (vector<double> (0))
@@ -54,8 +54,8 @@ Architecture::Architecture(const ParameterSet& param)
     , plasticity_signal (vector<double> (0))
     , iofile ("")
 {
-	update_param_internal(param);
-    
+	// update_param_internal(param); // This should be called in derived classes only
+       
     // This happens only when the param constructor is called.
     if (param.exists(FILE_ARCHI))
 		iofile = param.getpar(FILE_ARCHI) -> GetString();
@@ -270,6 +270,7 @@ void Architecture::update_param_internal(const ParameterSet& param)
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
         mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
+    
     if (param.exists(ENVIRO_PLASTICITY)) {
         for (unsigned int i = 0; i < this->nb_phen(); i++) {
             plasticity_strength.push_back(param.getpar(ENVIRO_PLASTICITY)->GetDouble(i));

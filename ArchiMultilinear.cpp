@@ -42,7 +42,8 @@ ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     , epsilon2(vector<vector<double>>(0))
     , epsilon3(vector<vector<vector<double>>>(0))
 {
-	// mutrate and mutsd are already initialized in the constructor of the parent class
+	update_param_internal(param); 
+
     
     // building epsilon matrices
     for (unsigned int loc1 = 0; loc1 < nloc; loc1++)

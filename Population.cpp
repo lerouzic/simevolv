@@ -124,6 +124,13 @@ void Population::update_param(const ParameterSet & param)
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
+    
+    // Individuals don't know how to update themselves
+    // Note: useless (duplicated code) when initializing for the first time
+    double new_epigenet = param.getpar(GENET_EPIGENET)->GetDouble();
+    for (size_t i = 0; i < pop.size(); i++) {
+        pop[i].epigenet = new_epigenet;
+    }
 }
 
 // functions
