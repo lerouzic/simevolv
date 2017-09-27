@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2007-2017 Arnaud Le Rouzic    <lerouzic@egce.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -14,14 +14,10 @@
 
 
 #include "Individual.h"
-
 #include "Population.h"
-#include "Fitness.h"
-#include "Architecture.h"
 #include "Parconst.h"
+#include "Architecture.h"
 
-#include <vector>
-#include <sstream>
 #include <cassert>
 
 using namespace std;
@@ -29,8 +25,8 @@ using namespace std;
 // constructors and destructor
 
 Individual::Individual() 
-    : genotype(NULL)
-    , phenotype(0.0)
+    : genotype()
+    , phenotype()
     , fitness(0.0)
 {    
     initialize();
@@ -38,40 +34,40 @@ Individual::Individual()
 
 /* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, const unsigned int ploid)
-    : genotype(NULL)
+    : genotype()
 {
 	assert ((ploid == 1) || (ploid == 2));
 	if (ploid == 1) {
-		genotype = new HaploGenotype(gam_father, gam_mother);
+		genotype = unique_ptr<Genotype>(new HaploGenotype(gam_father, gam_mother));
 	} else {
-		genotype = new DiploGenotype(gam_father, gam_mother);
+		genotype = unique_ptr<Genotype>(new DiploGenotype(gam_father, gam_mother));
 	}
     initialize();
 }
 
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, 
 		const unsigned int ploid, const EpigeneticInfo& epimother)
-	: genotype(NULL)
+	: genotype()
 	, epiinfo(epimother)
 {
 	assert ((ploid == 1) || (ploid == 2));
 	if (ploid == 1) {
-		genotype = new HaploGenotype(gam_father, gam_mother);
+		genotype = unique_ptr<Genotype>(new HaploGenotype(gam_father, gam_mother));
 	} else {
-		genotype = new DiploGenotype(gam_father, gam_mother);
+		genotype = unique_ptr<Genotype>(new DiploGenotype(gam_father, gam_mother));
 	}	
 	initialize();
 }
 
 /* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
-	: genotype(NULL)
+	: genotype()
 	, epigenet(param.getpar(GENET_EPIGENET)-> GetDouble())
 {
 	if(param.getpar(GENET_PLOIDY)->GetInt() == 1) {
-		genotype = new HaploGenotype(param);
+		genotype = unique_ptr<Genotype>(new HaploGenotype(param));
 	} else {
-		genotype = new DiploGenotype(param);
+		genotype = unique_ptr<Genotype>(new DiploGenotype(param));
 	}
     initialize();
 }
@@ -87,7 +83,7 @@ Individual::Individual(const Individual& copy)
 
 Individual::~Individual()
 {
-	delete genotype;
+	// delete genotype; // Not needed, genotype is a unique_ptr
 }
 
 // operator overload
@@ -97,8 +93,7 @@ Individual & Individual::operator = (const Individual& copy)
     if (this == &copy)
         return (*this);
 
-	delete genotype;
-    genotype=copy.genotype->clone();
+    genotype.reset(copy.genotype->clone());
     phenotype=copy.phenotype;
     fitness=copy.fitness;
     epigenet=copy.epigenet;

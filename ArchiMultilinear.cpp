@@ -26,10 +26,12 @@
 #include <cassert>
 #include <algorithm>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/vector.hpp>
 
 BOOST_CLASS_EXPORT(ArchiMultilinear)
+#endif
 
 using namespace std;
 
@@ -71,6 +73,7 @@ ArchiMultilinear::~ArchiMultilinear()
 {
 	// iofile is not empty when the param constructor have been called 
 	// and the FILE_ARCHI option was provided.
+    #ifdef SERIALIZATION_TEXT
 	if (iofile != "") {
 		ofstream os(iofile);
 		boost::archive::text_oarchive oa(os);
@@ -78,6 +81,7 @@ ArchiMultilinear::~ArchiMultilinear()
 		oa << tmp;
 		// streams closed along with the destructors
 	}
+    #endif
 }
 
 // functions
@@ -188,8 +192,8 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 {
 	// Epigenetics not implemented!
-    vector<double> sumloc(nloc);
-    double phenotype = 0.0;
+    vector<basic_pheno> sumloc(nloc);
+    basic_pheno phenotype = 0.0;
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {	
@@ -221,6 +225,6 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
     }
     if (envir) 
 		phenotype += Environment::final_disturb();
-    return(Phenotype(phenotype));
+    return Phenotype(PhenoScalar(phenotype));
 }
 

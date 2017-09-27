@@ -1,4 +1,4 @@
-// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2013-2017      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -18,9 +18,11 @@
 #include "Statistics.h"
 #include "Parameters.h"
 #include "Population.h"
+#include "Fitness.h"
 
 #include <vector>
 #include <string>
+#include <memory>
 
 
 /* This class is devoted to the estimation of the canalization (or genetic robustness) of the genetic architecture in a population. 
@@ -33,8 +35,8 @@ class MiniCanIndiv
 	public:
 		MiniCanIndiv(const std::vector<Individual>&, const Individual &, bool, bool);
 		~MiniCanIndiv() {}
-		Phenovec canpheno;
-		double canfitness;
+		Phenotype canpheno;
+		basic_fitness canfitness;
 };	
 	
 class Canalization // virtual pure
@@ -44,14 +46,12 @@ class Canalization // virtual pure
 		virtual ~Canalization() = 0;
 	
 		// get the canalization scores
-		Phenovec meanpop_canphen() const;
-		Phenovec varpop_canphen() const;		
-		double meangene_meanpop_canphen() const;
-		std::vector<double> meangene_canphen() const;
+		Phenotype meanpop_canphen() const;
+		Phenotype varpop_canphen() const;		
 		
-		double meanpop_canlogfit() const;
-		double varpop_canlogfit() const;
-		std::vector<double> canlogfit() const;
+		basic_fitness meanpop_canlogfit() const;
+		basic_fitness varpop_canlogfit() const;
+		std::vector<basic_fitness> canlogfit() const;
 		
 	protected:		
 		std::vector<MiniCanIndiv> popcan;		

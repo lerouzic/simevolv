@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2007-2017 Arnaud Le Rouzic    <lerouzic@egce.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -14,6 +14,7 @@
 
 #include "Fitness.h"
 
+#include "Population.h"
 #include "Parconst.h"
 #include "Random.h"
 
@@ -25,8 +26,6 @@
 #include <string>
 
 using namespace std;
-
-
 
 /* Initialization of the instance (static pointer) */
 Fitness * Fitness::instance = NULL;
@@ -157,39 +156,16 @@ void Fitness::fluctuate(unsigned int generation_number)
    has to be provided, because some fitness functions requires a "population value".
    Fitness is the product of two components: a fitness score from the phenotypic values, 
    and a fitness score on stability (which has a meaning only for some genetic architectures). */
-double Fitness::compute(const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness::compute(const Phenotype & phenotype, const Population & population)
 {
 	return(Fitness::instance->fitphen->get_fitness(phenotype, population) 
 		* Fitness::instance->fitstab->get_fitness(phenotype));
 }
 
-Phenovec Fitness::current_optimum()
+FitnessOptimum Fitness::current_optimum()
 {
 	return(Fitness::instance->fitphen->get_optimum());
 }
-
-/* Trivial tool to expand incomplete vectors. Here is the summary of the problem:
-   For simplicity, a Parameter_vector_double can be specific in the parameter file
-   as a single number. In this case, all members of the vector would be considered as 
-   identical. 
-   Fitness strengths and optima are in such a situation. The problem is that there is 
-   no easy way to know the size of the vector before the fitness functions are called in
-   a real context. So, when the different fitness classes are initialized, vectors are stored
-   as provided by the parameter set (either vectors or scalars). When used for the first time, 
-   the size is compared to the dimensionality of phenotypes, and adjusted there -- this function
-   is used for that purpose. 
-   Obviously, this is not very elegant, but there is no reason that it shoudn't work. */
-Phenovec Fitness::expand_vec(const Phenovec & templ, unsigned int maxsize)
-{
-	assert(templ.size() > 0);
-	Phenovec answer = templ;
-	while(answer.size() < maxsize) 
-	{
-		answer.push_back(templ[0]);
-	}
-	return(answer);
-}
-
 
 
 /******************************** Fitness Fluct ******************************/
@@ -206,12 +182,12 @@ Fitness_Fluct_Nofluct::Fitness_Fluct_Nofluct(const ParameterSet & param)
 {
 }
 
-Phenovec Fitness_Fluct_Nofluct::get_new_strength(const Phenovec & old_strength, unsigned int generation) 
+FitnessStrength Fitness_Fluct_Nofluct::get_new_strength(const FitnessStrength & old_strength, unsigned int generation) 
 { 
 	return(old_strength); 
 }
 
-Phenovec Fitness_Fluct_Nofluct::get_new_optimum(const Phenovec & old_optimum, unsigned int generation) 
+FitnessOptimum Fitness_Fluct_Nofluct::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation) 
 { 
 	return(old_optimum); 
 } 
@@ -238,14 +214,14 @@ Fitness_Fluct_Flips::Fitness_Fluct_Flips(const ParameterSet & param)
 {
 }
 
-Phenovec Fitness_Fluct_Flips::get_new_strength(const Phenovec & old_strength, unsigned int generation)
+FitnessStrength Fitness_Fluct_Flips::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
 { // old_strength is used only to compare vector lengths
 	if (old_strength.size() > strength_state1.size()) 
 	{
-		strength_state1 = Fitness::expand_vec(strength_state1, old_strength.size());
-		strength_state2 = Fitness::expand_vec(strength_state2, old_strength.size());
+		strength_state1 = expand_vec(strength_state1, old_strength.size());
+		strength_state2 = expand_vec(strength_state2, old_strength.size());
 	}
-	if (int(generation / double(period/2)) % 2 == 0)
+	if (int(generation / float(period/2)) % 2 == 0)
 	{
         return(strength_state1);
     } 
@@ -255,14 +231,14 @@ Phenovec Fitness_Fluct_Flips::get_new_strength(const Phenovec & old_strength, un
     }
 }
 
-Phenovec Fitness_Fluct_Flips::get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
+FitnessOptimum Fitness_Fluct_Flips::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
 { // old_optimum is used only to compare vector lengths
 	if (old_optimum.size() > optimum_state1.size()) 
 	{
-		optimum_state1 = Fitness::expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = Fitness::expand_vec(optimum_state2, old_optimum.size());
+		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
+		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
 	}
-	if (int(generation / double(period/2)) % 2 == 0)
+	if (int(generation / float(period/2)) % 2 == 0)
 	{
         return(optimum_state1);
     } 
@@ -277,15 +253,15 @@ Fitness_Fluct_Sflips::Fitness_Fluct_Sflips(const ParameterSet & param)
 {	
 }
 
-Phenovec Fitness_Fluct_Sflips::get_new_strength(const Phenovec & old_strength, unsigned int generation)
+FitnessStrength Fitness_Fluct_Sflips::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
 { // old_strength is used only to compare vector lengths
 	if (old_strength.size() > strength_state1.size()) 
 	{
-		strength_state1 = Fitness::expand_vec(strength_state1, old_strength.size());
-		strength_state2 = Fitness::expand_vec(strength_state2, old_strength.size());
+		strength_state1 = expand_vec(strength_state1, old_strength.size());
+		strength_state2 = expand_vec(strength_state2, old_strength.size());
 	}
 
-	if (Random::randnum() < (1.0 / double(period) / 2.0))
+	if (Random::randnum() < (1.0 / float(period) / 2.0))
 	{
         return(strength_state1);
     } 
@@ -295,15 +271,15 @@ Phenovec Fitness_Fluct_Sflips::get_new_strength(const Phenovec & old_strength, u
     }
 }
 
-Phenovec Fitness_Fluct_Sflips::get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
+FitnessOptimum Fitness_Fluct_Sflips::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
 { // old_optimum is used only to compare vector lengths
 	if (old_optimum.size() > optimum_state1.size()) 
 	{
-		optimum_state1 = Fitness::expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = Fitness::expand_vec(optimum_state2, old_optimum.size());
+		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
+		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
 	}
 	
-	if (Random::randnum() < (1.0 / double(period) / 2.0))
+	if (Random::randnum() < (1.0 / float(period) / 2.0))
 	{
         return(optimum_state1);
     } 
@@ -318,32 +294,32 @@ Fitness_Fluct_Smooth::Fitness_Fluct_Smooth(const ParameterSet & param)
 {
 }
 
-Phenovec Fitness_Fluct_Smooth::get_new_strength(const Phenovec & old_strength, unsigned int generation)
+FitnessStrength Fitness_Fluct_Smooth::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
 {
 	if (old_strength.size() > strength_state1.size()) 
 	{
-		strength_state1 = Fitness::expand_vec(strength_state1, old_strength.size());
-		strength_state2 = Fitness::expand_vec(strength_state2, old_strength.size());
+		strength_state1 = expand_vec(strength_state1, old_strength.size());
+		strength_state2 = expand_vec(strength_state2, old_strength.size());
 	}
-	Phenovec new_strength;
+	FitnessStrength new_strength;
 	for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
 	{
-		new_strength.push_back(strength_state2[tt]+(strength_state1[tt]-strength_state2[tt])*(1.0+cos(2.0*generation*M_PI/double(period)))/2.0);
+		new_strength.push_back(strength_state2[tt]+(strength_state1[tt]-strength_state2[tt])*(1.0+cos(2.0*generation*M_PI/float(period)))/2.0);
 	}
 	return(new_strength);
 }
 
-Phenovec Fitness_Fluct_Smooth::get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
+FitnessOptimum Fitness_Fluct_Smooth::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
 {
 	if (old_optimum.size() > optimum_state1.size()) 
 	{
-		optimum_state1 = Fitness::expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = Fitness::expand_vec(optimum_state2, old_optimum.size());
+		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
+		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
 	}
-	Phenovec new_optimum;
+	FitnessOptimum new_optimum;
 	for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
 	{
-		new_optimum.push_back(optimum_state2[tt]+(optimum_state1[tt]-optimum_state2[tt])*(1.0+cos(2.0*generation*M_PI/double(period)))/2.0);
+		new_optimum.push_back(optimum_state2[tt]+(optimum_state1[tt]-optimum_state2[tt])*(1.0+cos(2.0*generation*M_PI/float(period)))/2.0);
 	}
 	return(new_optimum);
 }
@@ -370,16 +346,16 @@ Fitness_Fluct_Whitenoise::Fitness_Fluct_Whitenoise(const ParameterSet & param)
 {
 }
 
-Phenovec Fitness_Fluct_Whitenoise::get_new_strength(const Phenovec & old_strength, unsigned int generation)
+FitnessStrength Fitness_Fluct_Whitenoise::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
 {
 	if (old_strength.size() > strength_ref.size()) 
 	{
-		strength_ref = Fitness::expand_vec(strength_ref, old_strength.size());
-		strength_sd = Fitness::expand_vec(strength_sd, old_strength.size());
+		strength_ref = expand_vec(strength_ref, old_strength.size());
+		strength_sd = expand_vec(strength_sd, old_strength.size());
 	}
 	if (generation % period == 0) 
 	{
-		Phenovec new_strength;
+		FitnessStrength new_strength;
 		for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
 		{
 			new_strength.push_back(strength_ref[tt] + strength_sd[tt]*Random::randgauss());
@@ -392,16 +368,16 @@ Phenovec Fitness_Fluct_Whitenoise::get_new_strength(const Phenovec & old_strengt
 	}
 }
 
-Phenovec Fitness_Fluct_Whitenoise::get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
+FitnessOptimum Fitness_Fluct_Whitenoise::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
 {
 	if (old_optimum.size() > optimum_ref.size()) 
 	{
-		optimum_ref = Fitness::expand_vec(optimum_ref, old_optimum.size());
-		optimum_sd = Fitness::expand_vec(optimum_sd, old_optimum.size());
+		optimum_ref = expand_vec(optimum_ref, old_optimum.size());
+		optimum_sd = expand_vec(optimum_sd, old_optimum.size());
 	}
 	if (generation % period == 0) 
 	{
-		Phenovec new_optimum;
+		FitnessOptimum new_optimum;
 		for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
 		{
 			new_optimum.push_back(optimum_ref[tt] + optimum_sd[tt]*Random::randgauss());
@@ -419,15 +395,15 @@ Fitness_Fluct_Brownian::Fitness_Fluct_Brownian(const ParameterSet & param)
 {	
 }
 
-Phenovec Fitness_Fluct_Brownian::get_new_strength(const Phenovec & old_strength, unsigned int generation)
+FitnessStrength Fitness_Fluct_Brownian::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
 {
 	if (old_strength.size() > strength_sd.size()) 
 	{
-		strength_sd = Fitness::expand_vec(strength_sd, old_strength.size());
+		strength_sd = expand_vec(strength_sd, old_strength.size());
 	}
 	if (generation % period == 0) 
 	{
-		Phenovec new_strength;
+		FitnessStrength new_strength;
 		for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
 		{
 			new_strength.push_back(old_strength[tt] + strength_sd[tt]*Random::randgauss());
@@ -440,15 +416,15 @@ Phenovec Fitness_Fluct_Brownian::get_new_strength(const Phenovec & old_strength,
 	}
 }
 
-Phenovec Fitness_Fluct_Brownian::get_new_optimum(const Phenovec & old_optimum, unsigned int generation)
+FitnessOptimum Fitness_Fluct_Brownian::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
 {
 	if (old_optimum.size() > optimum_sd.size()) 
 	{
-		optimum_sd = Fitness::expand_vec(optimum_sd, old_optimum.size());
+		optimum_sd = expand_vec(optimum_sd, old_optimum.size());
 	}
 	if (generation % period == 0) 
 	{
-		Phenovec new_optimum;
+		FitnessOptimum new_optimum;
 		for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
 		{
 			new_optimum.push_back(old_optimum[tt] + optimum_sd[tt]*Random::randgauss());
@@ -470,10 +446,10 @@ Fitness_Phenotype::~Fitness_Phenotype()
 	
 }
 
-double Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Population & population)
 {
 	unsigned int dim = phenotype.dimensionality();
-	double fitness = 1.0;
+	basic_fitness fitness = 1.0;
 	for (unsigned int dd = 0; dd < dim; dd++) 
 	{
 		fitness *= get_fitness_trait(dd, phenotype, population);
@@ -481,9 +457,9 @@ double Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Populat
 	return(fitness);
 }
 
-Phenovec Fitness_Phenotype::get_optimum() const 
+FitnessOptimum Fitness_Phenotype::get_optimum() const 
 { 
-	Phenovec nothing; 
+	FitnessOptimum nothing; 
 	return(nothing); 
 }
 
@@ -525,11 +501,11 @@ Fitness_Phenotype_Linear::Fitness_Phenotype_Linear(const ParameterSet & param)
 {	
 }
 
-double Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 		
 	if (popmem != &population) 
@@ -537,7 +513,7 @@ double Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phe
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	double fit = strength[trait]*(phenotype.get_pheno(trait) - popmean[trait]);
+	basic_fitness fit = strength[trait]*(phenotype[trait] - popmean[trait]);
 	if (fit < 0.0)
 	{ 
 		fit = 0.0;
@@ -550,11 +526,11 @@ Fitness_Phenotype_Expo::Fitness_Phenotype_Expo(const ParameterSet & param)
 {
 }
 
-double Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 		
 	if (popmem != &population) 
@@ -562,7 +538,7 @@ double Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Pheno
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	double departure = phenotype.get_pheno(trait) - popmean[trait];
+	basic_pheno departure = phenotype[trait] - popmean[trait];
 	return(exp(strength[trait]*departure)); 
 }
 
@@ -571,11 +547,11 @@ Fitness_Phenotype_Concave::Fitness_Phenotype_Concave(const ParameterSet & param)
 {
 }
 
-double Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 		
 	if (popmem != &population) 
@@ -583,7 +559,7 @@ double Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Ph
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	double fit = 1.0 + 0.5*log(1.0+2.0*strength[trait]*(phenotype.get_pheno(trait) - popmean[trait]));
+	basic_fitness fit = 1.0 + 0.5*log(1.0+2.0*strength[trait]*(phenotype[trait] - popmean[trait]));
 	if (fit < 0.0) 
 	{
 		fit = 0.0;
@@ -612,23 +588,23 @@ Fitness_Phenotype_Gaussian::Fitness_Phenotype_Gaussian(const ParameterSet & para
 {
 }
 
-double Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 	
 	if (optimum.size() < phenotype.dimensionality())
 	{
-		optimum = Fitness::expand_vec(optimum, phenotype.dimensionality());
+		optimum = expand_vec(optimum, phenotype.dimensionality());
         
 	}
 	
-	double departure = phenotype.get_pheno(trait) - optimum[trait];
-	double fit = exp(- strength[trait]*departure*departure);
+	basic_pheno departure = phenotype[trait] - optimum[trait];
+	basic_fitness fit = exp(- strength[trait]*departure*departure);
 	return(fit);
 }
 
@@ -637,22 +613,22 @@ Fitness_Phenotype_Quadratic::Fitness_Phenotype_Quadratic(const ParameterSet & pa
 {
 }
 
-double Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 	
 	if (optimum.size() < phenotype.dimensionality())
 	{
-		optimum = Fitness::expand_vec(optimum, phenotype.dimensionality());	
+		optimum = expand_vec(optimum, phenotype.dimensionality());	
 	}
 
-	double departure = phenotype.get_pheno(trait) - optimum[trait];
-	double fit = 1.0 - strength[trait]*departure*departure;
+	basic_pheno departure = phenotype[trait] - optimum[trait];
+	basic_fitness fit = 1.0 - strength[trait]*departure*departure;
 	if (fit < 0.0)
 	{
 		fit = 0.0;
@@ -666,22 +642,22 @@ Fitness_Phenotype_Biconvex::Fitness_Phenotype_Biconvex(const ParameterSet & para
 {
 }
 
-double Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+basic_fitness Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 	
 	if (optimum.size() < phenotype.dimensionality())
 	{
-		optimum = Fitness::expand_vec(optimum, phenotype.dimensionality());	
+		optimum = expand_vec(optimum, phenotype.dimensionality());	
 	}
 
-	double departure = phenotype.get_pheno(trait) - optimum[trait];
-	double fit = exp(-sqrt(strength[trait]*strength[trait]*departure*departure));
+	basic_pheno departure = phenotype[trait] - optimum[trait];
+	basic_fitness fit = exp(-sqrt(strength[trait]*strength[trait]*departure*departure));
 	return(fit);	
 }
 
@@ -689,10 +665,10 @@ double Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const P
 
 /********************** Fitness_Stability *******************/
 
-double Fitness_Stability::get_fitness(const Phenotype & phenotype)
+basic_fitness Fitness_Stability::get_fitness(const Phenotype & phenotype)
 {
 	unsigned int dim = phenotype.dimensionality();
-	double answer = 1.0;
+	basic_fitness answer = 1.0;
 	for (unsigned int dd = 0; dd < dim; dd++) 
 	{
 		answer *= get_fitness_trait(dd, phenotype);
@@ -705,7 +681,7 @@ Fitness_Stability_Noselection::Fitness_Stability_Noselection(const ParameterSet 
 {
 }
 
-double Fitness_Stability_Noselection::get_fitness_trait(unsigned int trait, const Phenotype & phenotype) 
+basic_fitness Fitness_Stability_Noselection::get_fitness_trait(unsigned int trait, const Phenotype & phenotype) 
 { 
 	return(1.0); 
 }
@@ -716,14 +692,14 @@ Fitness_Stability_Exponential::Fitness_Stability_Exponential(const ParameterSet 
 {	
 }
 
-double Fitness_Stability_Exponential::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
+basic_fitness Fitness_Stability_Exponential::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
 {
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())
 	{
-		strength = Fitness::expand_vec(strength, phenotype.dimensionality());
+		strength = expand_vec(strength, phenotype.dimensionality());
 	}
 		
-	return(exp(-strength[trait]*phenotype.get_unstab(trait)));
+	return(exp(-strength[trait]*phenotype.get_pheno2(trait)));
 }

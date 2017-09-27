@@ -24,8 +24,6 @@ using namespace std;
 
 Mutantcollection::Mutantcollection(unsigned int tests, const Individual & ref, const Population & pop)
 	: reference(ref)
-	, phenostat(NULL)
-	, fitstat(NULL)
 {
 	Fitness::update(pop); // not sure this is strictly necessary...
 	
@@ -37,9 +35,7 @@ Mutantcollection::Mutantcollection(unsigned int tests, const Individual & ref, c
 };
 
 Mutantcollection::~Mutantcollection()
-{ // memory leak if the pointers are not deleted
-	delete phenostat;
-	delete fitstat;
+{ 
 }
 
 Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl) 
@@ -48,83 +44,47 @@ Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl)
 	{
 		reference=tmpl.reference;
 		collection = tmpl.collection;
-		phenostat=NULL;
-		fitstat=NULL;
 	}
 	return(*this);
 }
 
-Phenovec Mutantcollection::mean_phen() const
+Phenotype Mutantcollection::mean_phen() const
 {
-	if (phenostat == NULL)
-	{
-		compute_phenostat();
-	}
-	return(phenostat->means_phen());
+    vector<Phenotype> pheno_tmp;
+    for (const auto & i : collection)
+        pheno_tmp.push_back(i.phen);
+	return Phenotype::mean(pheno_tmp);
 }
 
-Phenovec Mutantcollection::var_phen() const
+Phenotype Mutantcollection::var_phen() const
 {
-	if (phenostat == NULL)
-	{
-		compute_phenostat();
-	}
-	return(phenostat->vars_phen());
+    vector<Phenotype> pheno_tmp;
+    for (const auto & i : collection)
+        pheno_tmp.push_back(i.phen);
+	return Phenotype::var(pheno_tmp);
 }
 
-double Mutantcollection::mean_fit() const
+basic_fitness Mutantcollection::mean_fit() const
 {
-	if (fitstat == NULL)
-	{
-		compute_fitstat();
-	}
-	return(fitstat->mean());
+	vector<basic_fitness> vecd;
+	for (const auto & i : collection) 
+		vecd.push_back(i.fitness);
+	auto fitstat = UnivariateStat(vecd);
+    return fitstat.mean();
 }
 
-double Mutantcollection::var_fit() const
+basic_fitness Mutantcollection::var_fit() const
 {
-	if (fitstat == NULL)
-	{
-		compute_fitstat();
-	}
-	return(fitstat->var());
-}
-
-void Mutantcollection::compute_phenostat() const
-{ // This function can be const because phenostat is mutable
-	if (phenostat != NULL) 
-	{
-		cerr << "Warning: mutantcollection is updated several times." << endl;
-		delete phenostat; // otherwise the memory leaks!
-	}
-	vector<Phenotype> vecp;
-	for (unsigned int i = 0; i < collection.size(); i++) 
-	{
-		vecp.push_back(collection[i].phen);
-	}
-	phenostat = new PhenotypeStat(vecp);
-}
-
-void Mutantcollection::compute_fitstat() const
-{ // this function can be const because fitstat is mutable
-	if (fitstat != NULL) 
-	{
-		cerr << "Warning: mutantcollection is updated several times." << endl;
-		delete fitstat; // otherwise the memory leaks!
-	}
-	vector<double> vecd;
-	for (unsigned int i = 0; i < collection.size(); i++) 
-	{
-		vecd.push_back(collection[i].fitness);
-	}
-	fitstat = new UnivariateStat(vecd);
+	vector<basic_fitness> vecd;
+	for (const auto & i : collection) 
+		vecd.push_back(i.fitness);
+	auto fitstat = UnivariateStat(vecd);
+    return fitstat.var();
 }
 
 //////////////////// DoubleMutantcollection
 
 DoubleMutantcollection::DoubleMutantcollection(unsigned int tests1, unsigned int tests2, const Individual & reference, const Population & pop) 
-	: refstat(NULL)
-	, reffitstat(NULL)
 {
 	Fitness::update(pop); // not sure this is strictly necessary...
 	
@@ -138,8 +98,6 @@ DoubleMutantcollection::DoubleMutantcollection(unsigned int tests1, unsigned int
 
 DoubleMutantcollection::~DoubleMutantcollection() 
 { 
-	delete refstat;
-	delete reffitstat;
 }
 
 DoubleMutantcollection & DoubleMutantcollection::operator=(const DoubleMutantcollection & tmpl)
@@ -147,62 +105,45 @@ DoubleMutantcollection & DoubleMutantcollection::operator=(const DoubleMutantcol
 	if (this != &tmpl) 
 	{
 		dcollection = tmpl.dcollection;
-		// it is probably safer and easier to recompute the statistics stored in cache
-		refstat = NULL;
-		reffitstat = NULL;
 	}
 	return(*this);
 }
 
-Phenovec DoubleMutantcollection::ref_mean_phen() const 
+Phenotype DoubleMutantcollection::ref_mean_phen() const 
 {
-	if (refstat == NULL)
-	{
-		compute_refstat();
-	}
-	return(refstat->means_phen());
+    return Phenotype::mean(ref_phen());
 }
 
-Phenovec DoubleMutantcollection::ref_var_phen() const
+Phenotype DoubleMutantcollection::ref_var_phen() const
 {
-	if (refstat == NULL)
-	{
-		compute_refstat();
-	}
-	return(refstat->vars_phen());
+    return Phenotype::var(ref_phen());
 }
 
-double DoubleMutantcollection::ref_mean_fit() const
+basic_fitness DoubleMutantcollection::ref_mean_fit() const
 {
-	if (reffitstat == NULL)
-	{
-		compute_reffitstat();
-	}
-	return(reffitstat->mean());
+    auto fitstat = UnivariateStat(ref_fit());
+    return fitstat.mean();
 }
 
-double DoubleMutantcollection::ref_var_fit() const
+basic_fitness DoubleMutantcollection::ref_var_fit() const
 {
-	if (reffitstat == NULL)
-	{
-		compute_reffitstat();
-	}
-	return(reffitstat->var());
+    auto fitstat = UnivariateStat(ref_fit());
+    return fitstat.var();
 }
 
-vector<Phenovec> DoubleMutantcollection::ref_phen() const
+vector<Phenotype> DoubleMutantcollection::ref_phen() const
 {
-	vector<Phenovec> ans;
+	vector<Phenotype> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
-		ans.push_back(dcollection[i].reference.phen.get_pheno()); 
+		ans.push_back(dcollection[i].reference.phen); 
 	}
 	return(ans);
 }
 
-vector<Phenovec> DoubleMutantcollection::var_mutant_phen() const
+vector<Phenotype> DoubleMutantcollection::var_mutant_phen() const
 {
-	vector<Phenovec> ans;
+	vector<Phenotype> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
 		ans.push_back(dcollection[i].var_phen());
@@ -210,9 +151,9 @@ vector<Phenovec> DoubleMutantcollection::var_mutant_phen() const
 	return(ans);
 }
 
-vector<double> DoubleMutantcollection::ref_fit() const
+vector<basic_fitness> DoubleMutantcollection::ref_fit() const
 {
-	vector<double> ans;
+	vector<basic_fitness> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
 		ans.push_back(dcollection[i].reference.fitness);
@@ -220,9 +161,9 @@ vector<double> DoubleMutantcollection::ref_fit() const
 	return(ans);
 }
 
-vector<double> DoubleMutantcollection::var_mutant_fit() const
+vector<basic_fitness> DoubleMutantcollection::var_mutant_fit() const
 {
-	vector<double> ans;
+	vector<basic_fitness> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
 		ans.push_back(dcollection[i].var_fit());
@@ -230,23 +171,3 @@ vector<double> DoubleMutantcollection::var_mutant_fit() const
 	return(ans);
 }
 
-
-void DoubleMutantcollection::compute_refstat() const
-{ // this can be const because refstat is mutable
-	if (refstat != NULL) 
-	{
-		cerr << "Warning: DoubleMutantcollection is updated several times." << endl;
-		delete refstat; // otherwise the memory leaks!
-	}
-	refstat = new PhenotypeStat(ref_phen());
-}
-
-void DoubleMutantcollection::compute_reffitstat() const
-{
-	if(reffitstat != NULL) 
-	{
-		cerr << "Warning: DoubleMutantcollection is updated several times." << endl;
-		delete reffitstat; // otherwise the memory leaks!
-	}		
-	reffitstat = new UnivariateStat(ref_fit());
-}

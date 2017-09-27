@@ -29,12 +29,14 @@
 
 using namespace std;
 
+#ifdef SERIALIZATION_TEXT
 BOOST_CLASS_EXPORT(ArchiRegulatoryMatrix)
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(ArchiRegulatoryMatrix)
 
 BOOST_CLASS_EXPORT(ArchiWagner)
 BOOST_CLASS_EXPORT(ArchiSiegal)
 BOOST_CLASS_EXPORT(ArchiM2)
+#endif
 
 std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const std::vector<double> & s) 
 {
@@ -222,7 +224,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		Sf_mean[i] += Environment::final_disturb();
 	this->haircut_v(Sf_mean);
 	
-	return Phenotype(Sf_mean, Sf_var);
+	return Phenotype(PhenoTranscriptome(Sf_mean, Sf_var));
 }
 
 

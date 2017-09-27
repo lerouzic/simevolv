@@ -27,12 +27,15 @@
 #include <cassert>
 #include <algorithm>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/vector.hpp>
 
+BOOST_CLASS_EXPORT(ArchiBoolean)
+#endif
+
 using namespace std;
 
-BOOST_CLASS_EXPORT(ArchiBoolean)
 
 // constructors and destuctor
 
@@ -80,12 +83,14 @@ ArchiBoolean::ArchiBoolean(const ParameterSet& param)
 
 ArchiBoolean::~ArchiBoolean()
 {
+    #ifdef SERIALIZATION_TEXT
 	if (iofile != "") {
 		ofstream os(iofile);
 		boost::archive::text_oarchive oa(os);
 		Architecture * tmp = this;
 		oa << tmp;
 	}	
+    #endif
 }
 
 // functions
@@ -192,7 +197,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
 // 3. SC_dec treats the vector as binary number and converts it to decimal
 // 4. SC_combi is a combination of 1. and 2. The first number in the vector is the sum of the vector, followed by the whole vector
     if(type == SC_vector){
-        return(Phenotype(phenotype));
+        return Phenotype(PhenoVector(phenotype));
     }
     else if(type==SC_int){
     
@@ -201,7 +206,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
             phenotypesum=phenotypesum + phenotype[i];
         }
         //cout<< phenotypesum << endl;
-        return(Phenotype(phenotypesum));
+        return Phenotype(PhenoScalar(phenotypesum));
     }
     else if(type==SC_dec){
         for(unsigned int i=0;i<phenotype.size();i++)
@@ -209,7 +214,7 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
             phenotypesum=phenotypesum + (phenotype[phenotype.size()-i-1]*pow(2,i));
         }
         //cout<< phenotypesum << endl;
-        return(Phenotype(phenotypesum));
+        return Phenotype(PhenoScalar(phenotypesum));
     }
     else if(type==SC_combi){
       
@@ -219,11 +224,11 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
         }
         phenotype.insert(phenotype.begin(),phenotypesum);
         
-        return(Phenotype(phenotype));
+        return Phenotype(PhenoVector(phenotype));
     }
 
     assert(type==SC_vector||type==SC_dec||type==SC_combi||type==SC_int);
-    return -1;
+    // return -1;
 }
 
 //calculates the mutations. Defined in Allele.cpp

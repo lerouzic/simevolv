@@ -1,4 +1,4 @@
-// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2013-2017      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -33,8 +33,8 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	if (mutants1 < 1) mutants1 = 2;
 	if (mutants2 < 1) mutants2 = 2;
 		
-	vector<Phenovec> dir_ind;
-	vector<double> fit_dir;
+	vector<Phenotype> dir_ind;
+	vector<basic_fitness> fit_dir;
 	for (unsigned int i = 0; i < pop.size(); i++) 
 	{
 		DoubleMutantcollection dmutcol(mutants1, mutants2, pop.pop[i], pop);
@@ -43,50 +43,50 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 		dir_ind.push_back(individual_direpi(dmutcol));
 		fit_dir.push_back(individual_fitdir(dmutcol));
 	}
-	PhenotypeStat dir_stat(dir_ind);
-	dir_epi_mean = dir_stat.means_phen();
-	dir_epi_var  = dir_stat.vars_phen();
+
+	dir_epi_mean = Phenotype::mean(dir_ind);
+	dir_epi_var  = Phenotype::var(dir_ind);
 	
 	UnivariateStat fit_stat(fit_dir);
 	fit_epi_mean = fit_stat.mean();
 	fit_epi_var = fit_stat.var();	
 }
 
-Phenovec Direpistasis::phen_direpistasis() const
+Phenotype Direpistasis::phen_direpistasis() const
 {
 	return(dir_epi_mean);
 }
 
-Phenovec Direpistasis::var_phen_direpistasis() const
+Phenotype Direpistasis::var_phen_direpistasis() const
 {
 	return(dir_epi_var);
 }
 
-double Direpistasis::fitness_direpistasis() const
+basic_fitness Direpistasis::fitness_direpistasis() const
 {
 	return(fit_epi_mean);
 }
 
-double Direpistasis::var_fitness_direpistasis() const
+basic_fitness Direpistasis::var_fitness_direpistasis() const
 {
 	return(fit_epi_var);
 }
 
-Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol) const
+Phenotype Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol) const
 { // returns the directional epistasis for a single individual
 	
-	Phenovec mut1_var = dmutcol.ref_var_phen();
-	vector<Phenovec> mut1_phen = dmutcol.ref_phen();
-	vector<Phenovec> mut2_var_phen = dmutcol.var_mutant_phen();
+	Phenotype mut1_var = dmutcol.ref_var_phen();
+	vector<Phenotype> mut1_phen = dmutcol.ref_phen();
+	vector<Phenotype> mut2_var_phen = dmutcol.var_mutant_phen();
 	
-	vector<double> dir; // directional epistasis
+	vector<basic_pheno> dir; // directional epistasis
 	// loop over characters
 	for (unsigned int t = 0; t < mut1_var.dimensionality(); t++) 
 	{ 
 		
 		// Step 1: transpose the results to get means and variances per character
-		vector<double> y1_t;
-		vector<double> sd_m;
+		vector<basic_pheno> y1_t;
+		vector<basic_pheno> sd_m;
 		for (unsigned int i = 0; i < mut1_phen.size(); i++) 
 		{
 			y1_t.push_back(mut1_phen[i][t]);
@@ -94,7 +94,7 @@ Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol)
 		}
 		
 		// Step 2: compute the regression between the standard deviation of the effect of the 2nd mutation vs. the effect of the first mutation
-		vector<vector<double> > temp_stat;
+		vector<vector<basic_pheno> > temp_stat;
 		temp_stat.push_back(y1_t);
 		temp_stat.push_back(sd_m);
 		
@@ -105,19 +105,19 @@ Phenovec Direpistasis::individual_direpi(const DoubleMutantcollection & dmutcol)
 	return(dir);	
 }
 
-double Direpistasis::individual_fitdir(const DoubleMutantcollection & dmutcol) const
+basic_fitness Direpistasis::individual_fitdir(const DoubleMutantcollection & dmutcol) const
 {
 	// This is much simpler than for phenotypes, because there is only one dimension. 
-	double mut1_var = dmutcol.ref_var_fit();
+	basic_fitness mut1_var = dmutcol.ref_var_fit();
 	// if (mut1_var <= 0.0) cerr << "No variance in fitness among mutants." << endl;
-	vector<double> mut1_fit = dmutcol.ref_fit();
-	vector<double> mut2_sdfit = dmutcol.var_mutant_fit();
+	vector<basic_fitness> mut1_fit = dmutcol.ref_fit();
+	vector<basic_fitness> mut2_sdfit = dmutcol.var_mutant_fit();
 	for (unsigned int i = 0; i < mut2_sdfit.size(); i++) 
 	{
 		mut2_sdfit[i] = sqrt(mut2_sdfit[i]);
 	}
 	
-	vector<vector<double> > temp_stat;
+	vector<vector<basic_fitness> > temp_stat;
 	temp_stat.push_back(mut1_fit);
 	temp_stat.push_back(mut2_sdfit);
 	

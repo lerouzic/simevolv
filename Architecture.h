@@ -27,7 +27,9 @@
 #include <vector>
 #include <memory>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#endif
 
 class Architecture  	/* Pure virtual class */
 {
@@ -81,10 +83,13 @@ class Architecture  	/* Pure virtual class */
 	    virtual void update_param_internal(const ParameterSet&);		
 	
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);
+        #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 // Templates have to be written in the header file
 template<class Archive>
 void Architecture::serialize(Archive & ar, const unsigned int version) 
@@ -98,5 +103,6 @@ void Architecture::serialize(Archive & ar, const unsigned int version)
     ar & plasticity_strength;
     ar & plasticity_signal;
 }
+#endif
 
 #endif // ARCHITECTURE_H_INCLUDED

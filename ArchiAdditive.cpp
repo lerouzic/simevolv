@@ -24,10 +24,12 @@
 #include <cassert>
 #include <algorithm>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(ArchiAdditive)
+#endif
 
 using namespace std;
 
@@ -44,6 +46,7 @@ ArchiAdditive::~ArchiAdditive()
 {
 	// iofile is not empty when the param constructor have been called 
 	// and the FILE_ARCHI option was provided.
+    #ifdef SERIALIZATION_TEXT
 	if (iofile != "") {
 		ofstream os(iofile);
 		boost::archive::text_oarchive oa(os);
@@ -51,6 +54,7 @@ ArchiAdditive::~ArchiAdditive()
 		oa << tmp;
 		// streams closed along with the destructors
 	}
+    #endif
 }
 
 
@@ -61,14 +65,14 @@ ArchiAdditive::~ArchiAdditive()
 Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 {
 	// Epigenetic transmission not implemented yet!
-    vector<double> phenotype(sall);
+    PhenoVector phenotype(sall);
 
 	for (unsigned int all = 0; all < sall; all++)
 		phenotype[all] = 0.0;
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
-		vector<double> sumloc = genotype.combine_at_loc(loc, &Allele::combine_add);
+		PhenoVector sumloc = genotype.combine_at_loc(loc, &Allele::combine_add);
 		
 		for (unsigned int all = 0; all < sall; all++)
 			phenotype[all] += sumloc[all];
@@ -78,6 +82,6 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir,
 		if (envir)
 			phenotype[all] += Environment::final_disturb();
 
-    return(Phenotype(phenotype));
+    return phenotype;
 }
 

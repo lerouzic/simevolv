@@ -29,7 +29,7 @@ struct MiniIndividual
 		MiniIndividual(const Individual & ind) : phen(ind.get_phenotype()), fitness(ind.get_fitness()) { }
 				
 		Phenotype phen;
-		double fitness;
+		basic_fitness fitness;
 };
 
 
@@ -43,20 +43,14 @@ class Mutantcollection
 		
 		Mutantcollection & operator=(const Mutantcollection &);
 		
-		Phenovec mean_phen() const;
-		Phenovec var_phen() const;
-		double mean_fit() const;
-		double var_fit() const;
+		Phenotype mean_phen() const;
+		Phenotype var_phen() const;
+		basic_fitness mean_fit() const;
+		basic_fitness var_fit() const;
 		
 	protected:
-		void compute_phenostat() const;
-		void compute_fitstat() const;
-	
 		MiniIndividual reference;
 		std::vector<MiniIndividual> collection;
-		
-		mutable PhenotypeStat* phenostat;
-		mutable UnivariateStat* fitstat;
 };
 	
 	
@@ -68,24 +62,18 @@ class DoubleMutantcollection
 		
 		DoubleMutantcollection & operator=(const DoubleMutantcollection &);
 		
-		Phenovec ref_mean_phen() const;
-		Phenovec ref_var_phen() const;
-		double ref_mean_fit() const;
-		double ref_var_fit() const;
+		Phenotype ref_mean_phen() const;
+		Phenotype ref_var_phen() const;
+		basic_fitness ref_mean_fit() const;
+		basic_fitness ref_var_fit() const;
 		
-		std::vector<Phenovec> ref_phen() const;
-		std::vector<Phenovec> var_mutant_phen() const;		
-		std::vector<double> ref_fit() const;
-		std::vector<double> var_mutant_fit() const;
+		std::vector<Phenotype> ref_phen() const;
+		std::vector<Phenotype> var_mutant_phen() const;		
+		std::vector<basic_fitness> ref_fit() const;
+		std::vector<basic_fitness> var_mutant_fit() const;
 		
 	protected:
-		void compute_refstat() const;	
-		void compute_reffitstat() const;
-					
 		std::vector<Mutantcollection> dcollection;
-		
-		mutable PhenotypeStat* refstat;
-		mutable UnivariateStat* reffitstat;
 };	
 	
 #endif // MUTANTCOLLECTION_H_INCLUDED

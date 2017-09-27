@@ -1,4 +1,4 @@
-// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2013-2017      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #include "Individual.h"
 #include "Phenotype.h"
 #include "Mutantcollection.h"
+#include "Fitness.h"
 
 #include <vector>
 
@@ -37,19 +38,19 @@ class Direpistasis
 		Direpistasis(unsigned int, const Population&);
 		~Direpistasis() { }
 		
-		Phenovec phen_direpistasis() const;
-		Phenovec var_phen_direpistasis() const;
-		double fitness_direpistasis() const;
-		double var_fitness_direpistasis() const;
+		Phenotype phen_direpistasis() const;
+		Phenotype var_phen_direpistasis() const;
+		basic_fitness fitness_direpistasis() const;
+		basic_fitness var_fitness_direpistasis() const;
 				
 	protected:		
-		Phenovec individual_direpi(const DoubleMutantcollection &) const;
-		double individual_fitdir(const DoubleMutantcollection &) const;  
+		Phenotype individual_direpi(const DoubleMutantcollection &) const;
+		basic_fitness individual_fitdir(const DoubleMutantcollection &) const;  
 		 
-		Phenovec dir_epi_mean;
-		Phenovec dir_epi_var;
-		double fit_epi_mean;
-		double fit_epi_var;			
+		Phenotype dir_epi_mean;
+		Phenotype dir_epi_var;
+		basic_fitness fit_epi_mean;
+		basic_fitness fit_epi_var;			
 };
 
 #endif // DIREPISTASIS_H_INCLUDED

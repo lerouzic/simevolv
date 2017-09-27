@@ -19,13 +19,15 @@
 #include "Parameters.h"
 #include "Phenotype.h"
 #include "Individual.h"
+#include "Fitness.h"
 
 #include <iostream>
 #include <vector>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/vector.hpp>
-
+#endif
 
 class Population
 {
@@ -48,7 +50,7 @@ class Population
 		void update_param(const ParameterSet&);
 	    Population reproduce(long int offspr_number = 0) const;
 	    
-	    Phenovec mean_phenotype() const; // Probably used by the Fitness class only
+	    Phenotype mean_phenotype() const; // Probably used by the Fitness class only
 	    long int size() const;
 
 	    void draw_mutation();
@@ -58,8 +60,10 @@ class Population
             // write summary
 	    void write(std::ostream &, int) const;
             // serialization
+        #ifdef SERIALIZATION_TEXT
         friend std::ostream& operator << (std::ostream&, const Population&);
         friend std::istream& operator >> (std::istream&, Population&);
+        #endif
         
 	protected :
 		// internal functions
@@ -67,7 +71,7 @@ class Population
 	    void update(void); 
 	    
 	    // Stuff for selection
-	    std::vector<double> cumul_fitness() const;
+	    std::vector<basic_fitness> cumul_fitness() const;
 	    const Individual & pick_parent(const std::vector<double>&) const;
 	    // different algorithms to optimize weighted random picking of parents
 	    long int search_fit_table(double, const std::vector<double>&) const;
@@ -77,7 +81,7 @@ class Population
 	    std::vector<Individual> pop;
 	    
 	    // output parameters, to be stored and copied (design problem?)
-	    double selfing_rate;	    
+	    float selfing_rate;	    
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
@@ -85,6 +89,7 @@ class Population
 	    std::string out_unstab;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version){
             ar & pop;
@@ -95,6 +100,7 @@ class Population
             ar & out_geno;
             ar & out_unstab;
         }     
+        #endif
 };
 
 

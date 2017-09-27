@@ -53,10 +53,13 @@ class ArchiMultilinear : public Architecture
 		ArchiMultilinear() {}
 		
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);	        
+        #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiMultilinear::serialize(Archive & ar, const unsigned int version)
 {
@@ -66,5 +69,6 @@ void ArchiMultilinear::serialize(Archive & ar, const unsigned int version)
 	ar & epsilon2;
 	ar & epsilon3;
 }
+#endif
 
 #endif // ARCHIMULTILINEAR_H_INCLUDED

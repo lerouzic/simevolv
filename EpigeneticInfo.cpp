@@ -19,7 +19,6 @@ using namespace std;
 
 EpigeneticInfo::EpigeneticInfo() 
 	: epigenet(0.0)
-	, mother_phen()
 	// This constructor exists for convenience, but the object
 	// does not contain any information. 
 { }
@@ -74,6 +73,6 @@ Phenotype EpigeneticInfo::get_phenotype() const
 
 bool EpigeneticInfo::is_defined() const
 {
-	return(mother_phen.dimensionality() > 0);
+	return(mother_phen.is_defined());
 }
 

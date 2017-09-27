@@ -193,15 +193,13 @@ void Population::update(void)
 }
 
 /* calculates and returns the phenotypic mean value for each trait */
-Phenovec Population::mean_phenotype() const
+Phenotype Population::mean_phenotype() const
 {
-	vector<Phenotype> phen;
-	for (unsigned int i = 0; i < pop.size(); i++) 
-	{
-		phen.push_back(pop[i].get_phenotype());
-	}
-	PhenotypeStat phenstat(phen);
-	return(phenstat.means_phen());
+	vector<Phenotype> vphen;
+	for (const auto & i : pop) 
+		vphen.push_back(i.get_phenotype());
+
+	return Phenotype::mean(vphen);
 }
 
 long int Population::size() const
@@ -294,60 +292,61 @@ void Population::make_mutation()
 void Population::write(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
-	vector<double> fit;
+	vector<basic_fitness> fit;
 	vector<double> epi;
-	vector<Phenotype> genot;
+	vector<Phenotype> genot; // this is temporary... 
 	
 	// stores vectors of phenotypic values, genotypic values, fitnesses. 
-	for (unsigned int i = 0 ; i < pop.size(); i++) 
+	for (const auto & i : pop) 
 	{
-		phen.push_back(pop[i].get_phenotype());
-		fit.push_back(pop[i].get_fitness());
-		epi.push_back(pop[i].get_epigenet());
+		phen.push_back(i.get_phenotype());
+		fit.push_back(i.get_fitness());
+		epi.push_back(i.get_epigenet());
 				
-		vector<double> matrix_vector_indiv;
+        // This is not clean. Stores genotype as a phenotype
+		vector<basic_pheno> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
         {
-            vector<double> tmp = pop[i].genotype->combine_at_loc(loc, &Allele::combine_mean);
+            vector<basic_pheno> tmp = i.genotype->combine_at_loc(loc, &Allele::combine_mean);
 
-            for (unsigned int i = 0 ; i < tmp.size(); i++)
-            {
-                matrix_vector_indiv.push_back(tmp[i]);
-            }
+            for (auto j : tmp) // fills the matrix
+                matrix_vector_indiv.push_back(j);
+
         }
        genot.push_back(Phenotype(matrix_vector_indiv)); 	
 	}
 			 
-	// Calls the multidimensional statistical routines for phenotypic and genotypic values
 	// Calls the unidimensional routine for fitnesses. 
-	PhenotypeStat phenstat(phen);
 	UnivariateStat fitstat(fit);
 	UnivariateStat epistat(epi);
-	PhenotypeStat matstat(genot);	
 			
 	/* First generation: need to write the headers. 
 	   This is not extremely clean. 
        No warranty that the function is called all the time at the first generation. If not, there will be no headers.
        This cannot be disabled, which can be annoying. 
        There is no double check that the headers actually match with the content of the columns. This part of the code needs to be carefully synchronized with the rest of the function! */
+       
+    const size_t dim_phen = phen[0].dimensionality();   // Clearly not elegant
+    const size_t dim_gen  = genot[0].dimensionality();
+       
 	if (generation==1)
 	{ 
 		outformat(out, "Gen");
-		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+		for (unsigned int i = 0; i < dim_phen; i++) 
 		{
 			outformat(out, i+1, "MPhen");
 		}
-		for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+		for (unsigned int i = 0; i < dim_phen; i++) 
 		{
 			outformat(out, i+1, "VPhen");
 		}
 		if (out_unstab == OU_yes) 
 		{
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 			{
 				outformat(out, i+1, "MUnstab");
 			}
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 			{
 				outformat(out, i+1, "VUnstab");
 			}
@@ -362,27 +361,27 @@ void Population::write(ostream & out, int generation) const
 		outformat(out, "VEpi");		
 		if (nb_canal_test > 0) 
 		{
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "MGenCan");
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VGenCan");
 			outformat(out, "GenCanFit");
 			
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "MInitCan");
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VInitCan");
 			outformat(out, "InitCanFit");
 						
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "MDynamCan");
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VDynamCan");
 			outformat(out, "DynamCanFit");
 		}
 		if (nb_herit_test > 0)
 		{	
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 			{			
 				outformat(out, i+1, "HerPhen");
 			}
@@ -390,7 +389,7 @@ void Population::write(ostream & out, int generation) const
 		}
 		if (nb_direpi_test > 0) 
 		{
-			for (unsigned int i = 0; i < phenstat.dimensionality(); i++) 
+			for (unsigned int i = 0; i < dim_phen; i++) 
 			{
 				outformat(out, i+1, "DirPhen");
 			}
@@ -398,11 +397,11 @@ void Population::write(ostream & out, int generation) const
 		}
 		if (out_geno == OG_yes) 
 		{
-			for (unsigned int i = 0; i < matstat.dimensionality() ; i++)
+			for (unsigned int i = 0; i < dim_gen; i++)
 			{
 				outformat(out, i+1, "MeanAll");
 			}
-			for (unsigned int i = 0; i < matstat.dimensionality() ; i++)
+			for (unsigned int i = 0; i < dim_gen; i++)
 			{
 				outformat(out, i+1, "VarAll");
 			}
@@ -437,39 +436,19 @@ void Population::write(ostream & out, int generation) const
   */
 	
 	outformat(out, generation);
-	Phenovec mm = phenstat.means_phen();
-	for (unsigned int i = 0; i < mm.size(); i++)
-	{
-		outformat(out, mm[i]);
-	}
-	Phenovec vv = phenstat.vars_phen();
-	for (unsigned int i = 0; i < vv.size(); i++)
-	{
-		outformat(out, vv[i]);
-	}
+	Phenotype mm = Phenotype::mean(phen);
+
+    outformat(out, mm);
+
+	Phenotype vv = Phenotype::var(phen);
+
+    outformat(out, vv);
+
 	if ((out_unstab == OU_yes) || (out_unstab == OU_log))
+    // Warning: log or natural scales are not decided here any longer
 	{
-		Phenovec mm2;
-		if (out_unstab == OU_yes) {
-			mm2 = phenstat.means_unstab();
-		} else {
-			mm2 = phenstat.means_log_unstab();
-		}
-		for (unsigned int i = 0; i < mm2.size(); i++)
-		{
-			outformat(out, mm2[i]);
-		}
-		
-		Phenovec vv2;
-		if (out_unstab == OU_yes) {
-			vv2 = phenstat.vars_unstab();
-		} else {
-			vv2 = phenstat.vars_log_unstab();
-		}
-		for (unsigned int i = 0; i < vv2.size(); i++)
-		{
-			outformat(out, vv2[i]);
-		}
+        outformat2(out, mm);
+        outformat2(out, vv);
 	}
 
     outformat(out, fitstat.mean());
@@ -511,21 +490,17 @@ void Population::write(ostream & out, int generation) const
 	}
 	if (out_geno == OG_yes) 
 	{
-		Phenovec wm = matstat.means_phen();
-		Phenovec wv = matstat.vars_phen();
-		for (unsigned int i = 0; i < wm.size(); i++)
-		{
-			outformat(out,wm[i]);
-		}
-		for (unsigned int i = 0; i < wv.size(); i++)
-		{
-			outformat(out,wv[i]);
-		}
+		Phenotype wm = Phenotype::mean(genot);
+		Phenotype wv = Phenotype::var(genot);
+
+		outformat(out, wm);
+		outformat(out, wv);
 	}
 	out << '\n';
 
 }
 
+#ifdef SERIALIZATION_TEXT
 ostream & operator << (ostream & out, const Population & pop) {
         boost::archive::text_oarchive oa(out);
         oa << pop;
@@ -538,3 +513,4 @@ istream & operator >> (istream & in, Population & pop) {
         ia >> pop;
         return in;
 }
+#endif

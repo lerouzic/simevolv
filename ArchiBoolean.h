@@ -57,10 +57,13 @@ class ArchiBoolean : public Architecture
 		ArchiBoolean() {}
 		
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);	        
+        #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiBoolean::serialize(Archive & ar, const unsigned int version)
 {
@@ -70,5 +73,6 @@ void ArchiBoolean::serialize(Archive & ar, const unsigned int version)
 	ar & ploc;
 	ar & type;
 }
+#endif
 
 #endif // ARCHIBoolean_H_INCLUDED

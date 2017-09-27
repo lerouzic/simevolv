@@ -1,4 +1,4 @@
-// Copyright 2013-2014      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2013-2017      Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
 
 /***************************************************************************
  *                                                                         *
@@ -29,21 +29,22 @@ using namespace std;
 MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual & ref, bool logvar, bool meancentered)
 {
 	vector<Phenotype> phenos;
-	vector<double> fitnesses;
+	vector<basic_fitness> fitnesses;
 	for (auto variant : variants) {
 		phenos.push_back(variant.get_phenotype());
 		fitnesses.push_back(variant.get_fitness());
 	}
-	PhenotypeStat phenostat(phenos);
+
 	UnivariateStat fitnessstat(fitnesses);	
 	
-	Phenovec rawmeanphen = phenostat.means_phen();
-	Phenovec rawvarphen = phenostat.vars_phen();
-	double rawmeanfit = fitnessstat.mean_log();
-	double rawvarfit = fitnessstat.var_log();
+	Phenotype rawmeanphen = Phenotype::mean(phenos);
+	Phenotype rawvarphen = Phenotype::var(phenos);
+	basic_fitness rawmeanfit = fitnessstat.mean_log();
+	basic_fitness rawvarfit = fitnessstat.var_log();
 	
 	if (!meancentered) {
-		Phenovec ref_pheno = ref.get_phenotype().get_pheno();
+		Phenotype ref_pheno = ref.get_phenotype();
+        // rawvarphen = rawvarphen + (rawmeanphen - ref_pheno)*(rawmeanphen - ref_pheno);
 		for (unsigned int i = 0; i < rawmeanphen.dimensionality(); i++) {
 			rawvarphen[i] = rawvarphen[i] + (rawmeanphen[i] - ref_pheno[i])*(rawmeanphen[i] - ref_pheno[i]);
 		}
@@ -74,61 +75,37 @@ Canalization::Canalization(unsigned int can_tests, const Population & pop, bool 
 
 Canalization::~Canalization() { }
 
-Phenovec Canalization::meanpop_canphen() const 
+Phenotype Canalization::meanpop_canphen() const 
 {
-	vector<Phenovec> phenpop;
+	vector<Phenotype> phenpop;
 	for (auto minican : popcan)
 		phenpop.push_back(minican.canpheno);
-	PhenotypeStat phenostat(phenpop);
-	return(phenostat.means_phen());
+	return(Phenotype::mean(phenpop));
 }
 
-Phenovec Canalization::varpop_canphen() const 
+Phenotype Canalization::varpop_canphen() const 
 {
-	vector<Phenovec> phenpop;
+	vector<Phenotype> phenpop;
 	for (auto minican : popcan)
 		phenpop.push_back(minican.canpheno);
-	PhenotypeStat phenostat(phenpop);
-	return(phenostat.vars_phen());
+	return(Phenotype::var(phenpop));
 }
 
-double Canalization::meangene_meanpop_canphen() const
-{
-	vector<double> meanpop;
-	for (auto i : meanpop_canphen())
-		meanpop.push_back(i);
-	UnivariateStat uvstat(meanpop);
-	return(uvstat.mean());
-}
-
-vector<double> Canalization::meangene_canphen() const
-{
-	vector<double> ans;
-	for (auto minican : popcan) {
-		vector<double> indcan;
-		for (auto i : minican.canpheno)
-			indcan.push_back(i);
-		UnivariateStat uvstat(indcan);
-		ans.push_back(uvstat.mean());
-	}
-	return(ans);
-}
-
-double Canalization::meanpop_canlogfit() const
+basic_fitness Canalization::meanpop_canlogfit() const
 {
 	UnivariateStat uvstat(canlogfit());
 	return(uvstat.mean());
 }
 
-double Canalization::varpop_canlogfit() const
+basic_fitness Canalization::varpop_canlogfit() const
 {
 	UnivariateStat uvstat(canlogfit());
 	return(uvstat.var());
 }
 
-vector<double> Canalization::canlogfit() const
+vector<basic_fitness> Canalization::canlogfit() const
 {
-	vector<double> fitnesses;
+	vector<basic_fitness> fitnesses;
 	for (auto minican : popcan) {
 		fitnesses.push_back(minican.canfitness);
 	}

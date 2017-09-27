@@ -112,9 +112,13 @@ int main(int argc, char *argv[])
 	
     Population pop(param);
     if (vm.count("population")) {
-        ifstream popin(popin_file.c_str(), ios::in);
-        popin >> pop;
-        popin.close();
+        #ifdef SERIALIZATION_TEXT 
+            ifstream popin(popin_file.c_str(), ios::in);
+            popin >> pop;
+            popin.close();
+        #else
+            assert("Compile the program with the SERIALIZATION flag before using the FILE_POP option");
+        #endif
     }
     
 	string next_parfile = "";
@@ -147,12 +151,17 @@ int main(int argc, char *argv[])
 			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
+
                 if (param.exists(FILE_POP)) { // serializes the current population
-                    ostringstream ss;
-                    ss << param.getpar(FILE_POP)->GetString() << "-" << global_generation;
-                    ofstream os(ss.str());
-                    os << pop;
-                    os.close();
+                    #ifdef SERIALIZATION_TEXT                    
+                        ostringstream ss;
+                        ss << param.getpar(FILE_POP)->GetString() << "-" << global_generation;
+                        ofstream os(ss.str());
+                        os << pop;
+                        os.close();
+                    #else
+                        assert("Compile the program with the SERIALIZATION flag before using the FILE_POP option");
+                    #endif
                 }
 			}
         

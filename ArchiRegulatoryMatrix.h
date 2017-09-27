@@ -20,8 +20,10 @@
 #include <cmath>
 #include <iostream>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/vector.hpp>
+#endif
 
 class ArchiRegulatoryMatrix : public Architecture
 {
@@ -61,10 +63,13 @@ class ArchiRegulatoryMatrix : public Architecture
 		ArchiRegulatoryMatrix() {}
 		
 	private:
+    #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);			
+    #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiRegulatoryMatrix::serialize(Archive & ar, const unsigned int version)
 {
@@ -76,6 +81,7 @@ void ArchiRegulatoryMatrix::serialize(Archive & ar, const unsigned int version)
 	ar & timesteps;
 	ar & calcsteps;
 }
+#endif
 
 class ArchiWagner : public ArchiRegulatoryMatrix
 {
@@ -96,15 +102,19 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 		ArchiWagner() {}
 		
 	private:
+    #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);					
+    #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiWagner::serialize(Archive & ar, const unsigned int version)
 {
 	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
 }
+#endif
 
 class ArchiSiegal : public ArchiRegulatoryMatrix
 {
@@ -127,17 +137,20 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		ArchiSiegal() {}
 		
 	private:
+    #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);					
+    #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiSiegal::serialize(Archive & ar, const unsigned int version)
 {
 	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
 	ar & basal;
 }		
-
+#endif
 
 class ArchiM2 : public ArchiRegulatoryMatrix
 {
@@ -162,15 +175,19 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 		ArchiM2() { };
 
 	private:
+    #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive &, const unsigned int);			
+    #endif
 };
 
+#ifdef SERIALIZATION_TEXT
 template<class Archive>
 void ArchiM2::serialize(Archive & ar, const unsigned int version)
 {
 	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
 	ar & basal;
 }
+#endif
 
 #endif // ARCHIREGULATORYMATRIX_H_INCLUDED

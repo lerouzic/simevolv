@@ -16,6 +16,7 @@
 #include "Phenotype.h"
 #include "Population.h"
 #include "Individual.h"
+#include "Statistics.h"
 
 #include <vector>
 

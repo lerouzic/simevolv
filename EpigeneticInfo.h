@@ -15,7 +15,12 @@
 
 #include "Phenotype.h"
 
+#include <memory>
+
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#endif
+
 
 class Individual;
 
@@ -25,24 +30,25 @@ class EpigeneticInfo {
 		EpigeneticInfo(const EpigeneticInfo &);
 		EpigeneticInfo(const double, const Phenotype &);
 		EpigeneticInfo(const Individual &);
-		virtual ~ EpigeneticInfo();
+		~ EpigeneticInfo();
 		EpigeneticInfo & operator = (const EpigeneticInfo &);
 			
-		virtual double get_epigenet() const;
-		virtual Phenotype get_phenotype() const;
-		virtual bool is_defined() const;
+		double get_epigenet() const;
+		Phenotype get_phenotype() const;
+		bool is_defined() const;
 	
 	protected:
 		double epigenet;
 		Phenotype mother_phen;
         
 	private:
+    #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & epigenet;
             ar & mother_phen;
         }          
-		
+    #endif
 };
 
 #endif // EPIGENETICINFO_H_INCLUDED

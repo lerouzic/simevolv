@@ -16,145 +16,208 @@
 #ifndef PHENOTYPE_H_INCLUDED
 #define PHENOTYPE_H_INCLUDED
 
-#include "Statistics.h"
-
 #include <iostream>
+#include <string>  
 #include <vector>
+#include <memory>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#endif
 
-class Phenovec;
-void outformat(std::ostream &, const Phenovec &,
-                      unsigned int width=13, unsigned int precision=5, std::string sep="");
 class Phenotype;
+
+class PhenoBase;
+typedef double basic_pheno;
+typedef std::vector<Phenotype> pheno_container;
+typedef std::vector<basic_pheno> basic_container;
+
+// These ones should not really be used outside of Phenotype
+typedef std::unique_ptr<PhenoBase> pheno_type;
+typedef std::unique_ptr<const PhenoBase> const_pheno_type;
+
 void outformat(std::ostream &, const Phenotype &,
                       unsigned int width=13, unsigned int precision=5, std::string sep="");
-
-
-// Phenovec is "just" a vector of double, storing phenotypic values for several characters
-class Phenovec {
-	friend std::ostream& operator << (std::ostream&, const Phenovec &);
-	friend void outformat(std::ostream &, const Phenovec &, 
-		unsigned int width, unsigned int precision, std::string sep);    
-        
-    public:
-        Phenovec() : vec(std::vector<double>()) { }
-        Phenovec(const std::vector<double> & v) : vec(v) { }
-        virtual ~Phenovec() { }
-        void push_back(const double el) { vec.push_back(el); }
-        double operator[](unsigned int n) const { return vec[n]; }
-        double& operator[](unsigned int n) { return vec[n]; }
-        std::vector<double>::iterator begin() { return vec.begin(); }
-        std::vector<double>::const_iterator begin() const { return vec.begin(); }
-        std::vector<double>::iterator end() { return vec.end(); } 
-        std::vector<double>::const_iterator end() const {return vec.end(); }
-        unsigned int size() const { return vec.size(); }
-        unsigned int dimensionality() const { return size(); }
-    
-    protected:
-        std::vector<double> vec;
-        
-	private:
-		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            ar & vec;
-        }      
-};
-
+void outformat2(std::ostream &, const Phenotype &,
+                      unsigned int width=13, unsigned int precision=5, std::string sep="");
 
 class Phenotype
-{
-	friend std::ostream& operator << (std::ostream&, const Phenotype&);
+{ // Class Phenotype encapsulates a polymorphic pointer to a PhenoBase-derived class 
+  // This is supposed to be the only interface with most of the software
+  
 	friend void outformat(std::ostream &, const Phenotype &, 
-			unsigned int width, unsigned int precision, std::string sep);
-	friend class Environment;
-	
-	public:
-		//constructors/destructor
-		Phenotype();
-		Phenotype(const double);
-		Phenotype(const std::vector<double> &);
-		Phenotype(const Phenovec &);
-		Phenotype(const std::vector<double> &, const std::vector<double> &);
-		Phenotype(const Phenotype &);
-		~Phenotype();
-		
-		//initialization
-		void initialize(const std::vector<double>&);
-		
-		//operator overload
-		Phenotype& operator= (const Phenotype &);
-		
-		// getters
-		double operator[] (const unsigned int index) const;
-		Phenovec get_pheno() const;
-		double get_pheno(const unsigned int index) const;
-		Phenovec get_unstab() const;
-		double get_unstab(const unsigned int index) const;
-						
-		// number of phenotypes
-		unsigned int dimensionality() const;	    
-		
-	protected:
-		Phenovec pheno;
-		Phenovec unstabpheno;
+			unsigned int width, unsigned int precision, std::string sep);  
+	friend void outformat2(std::ostream &, const Phenotype &, 
+			unsigned int width, unsigned int precision, std::string sep);  
+              
+    public:
+        Phenotype();
+        Phenotype(const Phenotype &);
+        Phenotype(const PhenoBase &);
+        ~Phenotype();
+        Phenotype& operator=(const Phenotype &);
         
-	private:
-		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            ar & pheno;
-            ar & unstabpheno;
-        }  
+        // Specialized constructors, call directly a subclass (good idea or not?)
+        Phenotype(basic_pheno);  // PhenoScalar
+        Phenotype(size_t);       // PhenoVector
+        Phenotype(const basic_container&); // PhenoVector
+        Phenotype(const basic_container&, const basic_container&); // PhenoTranscriptome
+        
+        static Phenotype sum (const pheno_container&);
+        static Phenotype sumsq(const pheno_container&);
+        static Phenotype mean(const pheno_container&);        
+        static Phenotype var(const pheno_container&);
+
+    // Necessary for compatibility of the old code, should probably be avoided   
+        bool is_defined() const;
+        std::size_t dimensionality() const;
+        basic_pheno operator[] (std::size_t) const;
+        basic_pheno &operator[] (std::size_t);
+        virtual basic_pheno get_pheno(std::size_t) const;
+        virtual basic_pheno get_pheno2(std::size_t) const;  
+        
+    protected:
+        Phenotype(const_pheno_type); // these ones should not be available to the outside world
+        Phenotype(pheno_type);       // 
+        pheno_type pheno_ptr;
 };
 
-
-///////////// Specific class to get multivariate statistics on phenotypes. 
-class PhenotypeStat
+class PhenoBase    // This is the base class, it is just and interface (virtual pure)
 {
 	public:
-		//constructor
-		PhenotypeStat() = delete;
-		PhenotypeStat(const PhenotypeStat &) = delete;
-		PhenotypeStat(const std::vector<Phenotype> &);
-		PhenotypeStat(const std::vector<Phenovec> &);
-		~PhenotypeStat();
-		
-		//functions
-		Phenovec means_phen() const; 
-		Phenovec vars_phen() const; 
-		
-		Phenovec means_unstab() const;
-		Phenovec means_log_unstab() const;		
-		Phenovec vars_unstab() const;
-		Phenovec vars_log_unstab() const;
-		
-		unsigned int dimensionality() const;
-		
-		static std::vector<std::vector<double> > transpose_phen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double> > transpose_unstabphen_matrix(const std::vector<Phenotype> &);
-		static std::vector<std::vector<double> > transpose_phenovec_matrix(const std::vector<Phenovec> &);
-		
-	protected:
-		MultivariateStat * pheno;
-		MultivariateStat * unstab;
+		virtual ~PhenoBase() { }
+        
+        virtual pheno_type clone() const       = 0;
+        virtual void add(const PhenoBase &)    = 0;
+        virtual void remove(const PhenoBase &) = 0;
+        virtual void divide(unsigned int)      = 0;
+        virtual void square()                  = 0;   
+        
+        virtual std::size_t dimensionality() const = 0;
+        virtual basic_pheno operator[] (std::size_t) const  = 0;
+        virtual basic_pheno& operator[](std::size_t)        = 0;
+        virtual basic_pheno get_pheno(std::size_t) const;
+        virtual basic_pheno get_pheno2(std::size_t) const;      
+        
+        virtual void outformat(std::ostream&, unsigned int, unsigned int, std::string) const = 0;
+        virtual void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;
+        
+	//~ private:
+		//~ friend class boost::serialization::access;
+		//~ template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            //~ ar & pheno;
+            //~ ar & unstabpheno;
+        //~ }  
 };
 
-class BivariatePhenovecStat 
-{
-	// At one point it might be useful to make it multivariate (TODO)
-	public:
-		// constructors
-		BivariatePhenovecStat() = delete;
-		BivariatePhenovecStat(const std::vector<Phenovec>&, const std::vector<Phenovec>&); // This is only bivariate
-		~BivariatePhenovecStat();
-	
-		// functions
-		Phenovec means(unsigned int) const;
-		Phenovec vars(unsigned int) const;
-		Phenovec cov(unsigned int, unsigned int) const;
-		
-	protected:
-		std::vector<MultivariateStat *> cache;
+class PhenoScalar: public PhenoBase {
+  // The phenotype is a single scalar
+  
+  // Phenotypes should be canonical classes
+  public: 
+    PhenoScalar();
+    PhenoScalar(const PhenoScalar&);
+    PhenoScalar(basic_pheno);
+    PhenoScalar& operator=(const PhenoScalar&);
+    ~PhenoScalar() { }
+    
+    pheno_type clone() const;
+    void add(const PhenoBase&);
+    void remove(const PhenoBase&);
+    void divide(unsigned int);
+    void square();
+    
+    std::size_t dimensionality() const;
+    basic_pheno operator[] (std::size_t) const;
+    basic_pheno& operator[](std::size_t);
+    
+    void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;    
+          
+  protected:
+    
+    PhenoScalar  operator +  (const PhenoScalar&) const;
+    PhenoScalar& operator += (const PhenoScalar&);
+    PhenoScalar  operator -  (const PhenoScalar&) const;
+    PhenoScalar& operator -= (const PhenoScalar&);    
+    PhenoScalar  operator /  (unsigned int) const;
+    PhenoScalar& operator /= (unsigned int);  
+  
+    basic_pheno pheno;
+    
+};
+
+class PhenoVector: public PhenoBase {
+  // The phenotype is a vector
+  
+  public: 
+    PhenoVector(); 
+    PhenoVector(size_t);
+    PhenoVector(const PhenoVector&);
+    PhenoVector(const basic_container&);
+    PhenoVector& operator = (const PhenoVector& p);
+    ~PhenoVector() { }    
+    
+    pheno_type clone() const;
+    void add(const PhenoBase&);
+    void remove(const PhenoBase&);
+    void divide(unsigned int);
+    void square();
+    
+    std::size_t dimensionality() const;
+    basic_pheno operator[] (std::size_t) const;
+    basic_pheno& operator[](std::size_t);
+    
+    void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;      
+        
+  protected:
+    PhenoVector  operator +  (const PhenoVector&) const;
+    PhenoVector& operator += (const PhenoVector&);
+    PhenoVector  operator -  (const PhenoVector&) const;
+    PhenoVector& operator -= (const PhenoVector&);    
+    PhenoVector  operator /  (unsigned int) const;
+    PhenoVector& operator /= (unsigned int);  
+  
+    basic_container pheno;
+};
+
+class PhenoTranscriptome: public PhenoBase {
+  // The phenotype is a transcriptome
+  //   - gene expression levels
+  //   - gene expression stability
+  
+  public: 
+    PhenoTranscriptome();
+    PhenoTranscriptome(size_t);
+    PhenoTranscriptome(const PhenoTranscriptome&);
+    PhenoTranscriptome(const basic_container&, const basic_container&);
+    PhenoTranscriptome& operator= (const PhenoTranscriptome&);
+    ~PhenoTranscriptome() { }
+    
+    pheno_type clone() const;     
+    void add(const PhenoBase&);
+    void remove(const PhenoBase&);
+    void divide(unsigned int);
+    void square();
+    
+    std::size_t dimensionality() const;
+    basic_pheno operator[] (std::size_t) const;
+    basic_pheno& operator[](std::size_t); 
+    basic_pheno get_pheno2(std::size_t) const;  
+    
+    void outformat(std::ostream&, unsigned int, unsigned int, std::string) const; 
+    void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;             
+    
+  protected: 
+     
+    PhenoTranscriptome  operator +  (const PhenoTranscriptome&) const;
+    PhenoTranscriptome& operator += (const PhenoTranscriptome&); 
+    PhenoTranscriptome  operator -  (const PhenoTranscriptome&) const;
+    PhenoTranscriptome& operator -= (const PhenoTranscriptome&);     
+    PhenoTranscriptome  operator /  (unsigned int) const;
+    PhenoTranscriptome& operator /= (unsigned int); 
+  
+    basic_container expression;
+    basic_container stability;
 };
 
 #endif // PHENOTYPE_H_INCLUDED

@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2007-2017 Arnaud Le Rouzic    <lerouzic@egce.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -21,11 +21,15 @@
 #include "Genotype.h"
 #include "Parameters.h"
 #include "EpigeneticInfo.h"
+#include "Fitness.h"
 
 #include <iostream>
 #include <string>
+#include <memory>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#endif
 
 class Population;
 
@@ -50,7 +54,7 @@ class Individual
 	    void update_fitness(const Population &);
 
 		// getters
-	    double get_fitness() const;
+	    basic_fitness get_fitness() const;
 	    double get_epigenet() const;
 	    Phenotype get_phenotype() const;
 	    unsigned int ploidy() const;
@@ -73,14 +77,15 @@ class Individual
 	    Individual test_enviro(const Population &) const;
 	
 	protected :
-	    Genotype * genotype;
-	    Phenotype phenotype; // phenotype + environmental effect 
-	    double fitness;
+	    std::unique_ptr<Genotype> genotype;
+	    Phenotype phenotype; 
+	    basic_fitness fitness;
 	    double epigenet; // to be transmitted to the offspring
 	    
 	    EpigeneticInfo epiinfo; // from the mother
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & genotype;
@@ -89,6 +94,7 @@ class Individual
             ar & epigenet;
             ar & epiinfo;            
         } 
+        #endif
 };
 
 #endif // INDIVIDUAL_H_INCLUDED

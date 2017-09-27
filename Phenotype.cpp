@@ -1,5 +1,5 @@
 // Copyright 2004-2007 José Alvarez-Castro <jose.alvarez-castro@lcb.uu.se>
-// Copyright 2007-2014 Arnaud Le Rouzic    <lerouzic@legs.cnrs-gif.fr>
+// Copyright 2007-2017 Arnaud Le Rouzic    <lerouzic@egce.cnrs-gif.fr>
 // Copyright 2014	   Estelle Rünneburger <estelle.runneburger@legs.cnrs-gif.fr>		
 
 /***************************************************************************
@@ -14,354 +14,547 @@
 
 
 #include "Phenotype.h"
+#include "OutputFormat.h"
 
-#include "OutputFormat.h" // for outformat(ostream, -> double <-, ...)
-#include "Parconst.h"
+#include <cassert> // for assert
 
-#include <cassert>
-
-#include <cmath> 
 
 using namespace std;
 
-
-
-/////////////////// Phenovec - related friend functions ////////////////////////
-
-ostream& operator << (ostream& out, const Phenovec & pvec)
+void outformat(ostream & out, const Phenotype & pheno,
+                      unsigned int width, unsigned int precision, string sep)
 {
-	for (unsigned int i = 0; i < pvec.size(); i++) 
-	{
-		out << pvec[i];
-		if (i < pvec.size() - 1)
-		{
-			out << "\t";
-		}
-	}
-	return(out);
+    pheno.pheno_ptr->outformat(out, width, precision, sep);
 }
 
-void outformat(std::ostream & out, const Phenovec & pv, unsigned int width /*=10*/, 
-			unsigned int precision /* =5 */, std::string sep /* ="" */) 
+void outformat2(ostream & out, const Phenotype & pheno,
+                      unsigned int width, unsigned int precision, string sep)
 {
-	for (unsigned int i = 0; i < pv.size(); i++)
-	{
-		outformat(out, pv[i], width, precision, sep);
-	}
+    pheno.pheno_ptr->outformat2(out, width, precision, sep);
 }
 
-
-//////////////////////////// Phenotype //////////////////////////////////////////
-
-// Friend functions
-ostream& operator << (ostream& out, const Phenotype& phen)
-{
-	for (unsigned int k = 0; k < phen.dimensionality(); k++) 
-	{
-		//out << phen.pheno[k] << "(" << phen.unstabpheno[k] << ")\t";   // for debug
-		out << phen.pheno[k] << "\t";
-	}
-	return(out);
-}
-
-void outformat(std::ostream & out, const Phenotype & ph, unsigned int width /*=10*/, 
-	unsigned int precision /*=5*/, std::string sep /*=""*/) {
-		outformat(out, ph.pheno, width, precision, sep);
-}
-
-
-// constructors and destructors
-
+/////////////////////// Phenotype /////////////////////////////
 Phenotype::Phenotype()
 {
 }
 
-/* constructor using an initialization value 
- * for uni-dimension phentotype */
-Phenotype::Phenotype(double init) 
+Phenotype::Phenotype(const Phenotype& p)
 {
-	pheno.push_back(init);
-	unstabpheno.push_back(0.0);
+    if (p.pheno_ptr != nullptr)
+        pheno_ptr = p.pheno_ptr->clone();
 }
 
-/* constructor using a vector of initialization value 
- * for multi-dimension phenotype */
-Phenotype::Phenotype(const vector<double> & init) 
+Phenotype::~Phenotype()
 {
-	pheno = init;
-	// when the unstability vector is not provided, we assume that phenotypes
-	// are all stable.
-	for (unsigned int i = 0; i < pheno.size(); i++) 
-	{
-		unstabpheno.push_back(0.0);
-	}
+    // No need to delete anything because of the 
 }
 
-Phenotype::Phenotype(const Phenovec & init)
+Phenotype& Phenotype::operator=(const Phenotype& p)
 {
-	pheno = init;
-	// when the unstability vector is not provided, we assume that phenotypes
-	// are all stable.
-	for (unsigned int i = 0; i < pheno.size(); i++) 
-	{
-		unstabpheno.push_back(0.0);
-	}
+    if (this != &p) {
+        pheno_ptr = move(p.pheno_ptr->clone());
+    }
+    return *this;
 }
 
-Phenotype::Phenotype(const vector<double>& init, const vector<double>& initunstab)
-{
-	pheno = init;
-	unstabpheno = initunstab;
-}
-
-/* constructor using a previous phenotype as pattern */
-Phenotype::Phenotype(const Phenotype & templ)
-{
-	pheno = templ.pheno;
-	unstabpheno = templ.unstabpheno;
-}
-
-Phenotype::~Phenotype() 
+Phenotype::Phenotype(const PhenoBase & pb)
+    : pheno_ptr(pb.clone())
 {
 }
 
-// operator overload 
-Phenotype & Phenotype::operator = (const Phenotype & templ) 
+Phenotype::Phenotype(basic_pheno bp)
+    : pheno_ptr(new PhenoScalar(bp))
 {
-	if (this == &templ)
-        return (*this);
-    pheno = templ.pheno;
-    unstabpheno = templ.unstabpheno;
-    return(*this);
 }
 
-double Phenotype::operator[] (const unsigned int index) const 
-{// Warning: this returns the phenotypic value!
-	return(get_pheno(index));
-}
-
-
-// getters
-
-Phenovec Phenotype::get_pheno() const
+Phenotype::Phenotype(size_t s)
+    : pheno_ptr(new PhenoVector(s))
 {
-	return(pheno);
 }
 
-double Phenotype::get_pheno(const unsigned int index) const
+Phenotype::Phenotype(const basic_container& pc)
+    : pheno_ptr(new PhenoVector(pc))
 {
-	assert(index < dimensionality());
-	return(pheno[index]);
 }
 
-Phenovec Phenotype::get_unstab() const
+Phenotype::Phenotype(const basic_container& pc1, const basic_container& pc2)
+    : pheno_ptr(new PhenoTranscriptome(pc1, pc2))
 {
-	return(unstabpheno);
 }
 
-double Phenotype::get_unstab(const unsigned int index) const
+
+Phenotype::Phenotype(const_pheno_type pp)
+// private constructor
+    : pheno_ptr(pp->clone())
 {
-	assert(index < dimensionality());
-	assert(pheno.size() == unstabpheno.size());
-	return(unstabpheno[index]);
 }
 
-/* return the dimensionnality of the phenotype (number of phenotypes observed) */
-unsigned int Phenotype::dimensionality() const 
+Phenotype::Phenotype(pheno_type pp)
+// private constructor
+    : pheno_ptr(pp->clone())
 {
-	assert(pheno.size() == unstabpheno.size());
-	return(pheno.size());
 }
 
-
-
-/////////////////////// class PhenotypeStat //////////////////////////////////////
-
-// constructors and destructors
-
-/* constructor using a vector of phenotype */
-PhenotypeStat::PhenotypeStat(const vector<Phenotype> & vec_phen)
+Phenotype Phenotype::sum(const pheno_container& vp)
 {
-	assert(vec_phen.size() > 2);
-	pheno = new MultivariateStat(transpose_phen_matrix(vec_phen));
-	unstab = new MultivariateStat(transpose_unstabphen_matrix(vec_phen));
+    auto first = vp.begin();
+    auto result = pheno_type(first->pheno_ptr->clone()); // because *first is const
+
+    for (++first; first != vp.end(); ++first) // don't add again the first element!
+        result->add(*(first->pheno_ptr)); 
+        
+    return result;    
 }
 
-PhenotypeStat::PhenotypeStat(const vector<Phenovec> & vec_phen)
+
+Phenotype Phenotype::sumsq(const pheno_container& vp)
 {
-	assert(vec_phen.size() > 2);
-	pheno = new MultivariateStat(transpose_phenovec_matrix(vec_phen));
-	unstab = NULL;
+    auto first = vp.begin();
+    auto result = pheno_type(first->pheno_ptr->clone()); // because *first is const
+    result->square();
+    
+    for (++first; first != vp.end(); ++first) // don't add again the first element!
+    {
+        auto tmp = pheno_type(first->pheno_ptr->clone());
+        tmp->square();
+        result->add(*tmp);
+     }
+    return result;    
 }
 
-PhenotypeStat::~PhenotypeStat()
+Phenotype Phenotype::mean(const pheno_container& vp)
 {
-	// Very important; these are raw pointers and memory MUST be cleared when the object is destroyed!
-	delete pheno;
-	delete unstab; 
+    auto result = Phenotype::sum(vp).pheno_ptr;
+    result->divide(vp.size());
+    return result;
 }
 
-
-// functions
-
-Phenovec PhenotypeStat::means_phen() const 
+Phenotype Phenotype::var(const pheno_container& vp)
 {
-	assert(pheno != NULL); 
-	return(pheno->means());
+    auto mm     = Phenotype::mean(vp).pheno_ptr;
+    mm->square();
+    auto result = Phenotype::sumsq(vp).pheno_ptr;
+    result->divide(vp.size());
+    result->remove(*mm);
+    return result;
 }
 
-Phenovec PhenotypeStat::vars_phen() const 
+bool Phenotype::is_defined() const
 {
-	assert(pheno != NULL); 
-	return(pheno->vars());
+    return pheno_ptr != nullptr;
 }
-		
-Phenovec PhenotypeStat::means_unstab() const 
+
+size_t Phenotype::dimensionality() const
 {
-	assert(unstab != NULL); 
-	
-	return(unstab->means()); 
+    return pheno_ptr->dimensionality();
 }
 
-Phenovec PhenotypeStat::means_log_unstab() const 
+basic_pheno Phenotype::operator[] (size_t pos) const
 {
-	assert(unstab != NULL); 
-
-	return(unstab->means_log()); 		
+    return (*pheno_ptr)[pos];
 }
 
-Phenovec PhenotypeStat::vars_unstab() const 
+basic_pheno& Phenotype::operator[] (size_t pos)
 {
-	assert(unstab != NULL); 
-	
-	return(unstab->vars()); 
+    return (*pheno_ptr)[pos];
 }
 
-Phenovec PhenotypeStat::vars_log_unstab() const 
+basic_pheno Phenotype::get_pheno(size_t pos) const
 {
-	assert(unstab != NULL); 
-
-	return(unstab->vars_log()); 		
+    return pheno_ptr->get_pheno(pos);
 }
 
-unsigned int PhenotypeStat::dimensionality() const 
+basic_pheno Phenotype::get_pheno2(size_t pos) const
 {
-	assert(pheno != NULL); 
-	return(pheno->dim1());
+    return pheno_ptr->get_pheno2(pos);
 }
 
-/* transpose the phen_matrix (vector of vector) to get means and variances of traits
- * static function called into the initialization list of the constructor */
-vector<vector<double>> PhenotypeStat::transpose_phen_matrix(const vector<Phenotype> & vec_phen)
+/////////////////////// PhenoBase   ///////////////////////////
+
+basic_pheno PhenoBase::get_pheno(size_t pos) const
+{
+    return (*this)[pos];
+}
+
+basic_pheno PhenoBase::get_pheno2(size_t pos) const
+{
+    assert("This should never happen: calling get_pheno2 on an irrelevant phenotype.\n");
+    return 0.0;
+}
+
+void PhenoBase::outformat2(ostream & out, unsigned int width, unsigned int precision, string sep) const
+{
+    assert("This should never happen: calling outformat2 on an irrelevant phenotype.\n");
+}    
+/////////////////////// PhenoScalar ///////////////////////////
+
+PhenoScalar::PhenoScalar() 
+    : pheno(0.0)
+{
+}
+
+PhenoScalar::PhenoScalar(const PhenoScalar& p)
+    : pheno(p.pheno)
+{
+}
+
+PhenoScalar::PhenoScalar(basic_pheno v)
+    : pheno(v)
+{
+}
+
+PhenoScalar& PhenoScalar::operator = (const PhenoScalar& p)
 { 
-	assert(!vec_phen.empty());
-	
-	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double>> ans;
-	
-	for (unsigned int k = 0; k < dim; k++) {
-		vector<double> tmp;
-		for (unsigned int i = 0; i < vec_phen.size(); i++) {
-			tmp.push_back(vec_phen[i].get_pheno(k));
-		}
-		ans.push_back(tmp);
-	}
-	return(ans);
+    if (this != &p) {
+        pheno = p.pheno;
+    }
+    return *this;
 }
 
-vector<vector<double>> PhenotypeStat::transpose_unstabphen_matrix(const vector<Phenotype> & vec_phen)
-{ 
-	assert(!vec_phen.empty());
-	
-	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double>> ans;
-	
-	for (unsigned int k = 0; k < dim; k++) 
-	{
-		vector<double> tmp;
-		for (unsigned int i = 0; i < vec_phen.size(); i++) 
-		{
-			tmp.push_back(vec_phen[i].get_unstab(k));
-		}
-		ans.push_back(tmp);
-	}
-	return(ans);
-}
-
-vector<vector<double>> PhenotypeStat::transpose_phenovec_matrix(const vector<Phenovec> & vec_phen)
+pheno_type PhenoScalar::clone() const
 {
-	assert(!vec_phen.empty());
-	
-	unsigned int dim = vec_phen[0].dimensionality();
-	vector<vector<double>> ans;
-	
-	for (unsigned int k = 0; k < dim; k++) 
-	{
-		vector<double> tmp;
-		for (unsigned int i = 0; i < vec_phen.size(); i++) 
-		{
-			tmp.push_back(vec_phen[i][k]);
-		}
-		ans.push_back(tmp);
-	}
-	return(ans);
+    return pheno_type(new PhenoScalar(*this));
 }
 
-////////////////////////////////// BivariatePhenovecStat
-
-BivariatePhenovecStat::BivariatePhenovecStat(const vector<Phenovec> & v1, const vector<Phenovec> & v2)
+PhenoScalar& PhenoScalar::operator += (const PhenoScalar& p)
 {
-	assert(!v1.empty());
-	assert(!v2.empty());
-	assert(v1.size() > 1);
-	assert(v2.size() > 1);
-	assert(v1.size() == v2.size());
-	assert(v1[0].dimensionality() == v2[0].dimensionality());
-	
-	for (unsigned int i = 0; i < v1[0].dimensionality(); i++) { // loop on the genes
-		vector<double> vv1, vv2;
-		for (unsigned int j = 0; j < v1.size(); j++) { // loop on individuals
-			vv1.push_back(v1[j][i]);
-			vv2.push_back(v2[j][i]);
-		}
-		vector<vector<double>> tmp;
-		tmp.push_back(vv1);
-		tmp.push_back(vv2);
-		cache.push_back(new MultivariateStat(tmp));
-	}
+    pheno += p.pheno;
+    return *this;
 }
 
-BivariatePhenovecStat::~BivariatePhenovecStat() {
-	for (unsigned int i = 0; i < cache.size(); i++) {
-		delete cache[i];
-	}
+PhenoScalar PhenoScalar::operator + (const PhenoScalar& p) const
+{
+    return PhenoScalar(*this) += p;
 }
 
-Phenovec BivariatePhenovecStat::means(unsigned int index) const {
-	assert (index < 2); // Bivariate only
-	vector<double> tmp;
-	for (unsigned int i = 0; i < cache.size(); i++) {
-		tmp.push_back(cache[i]->mean(index));
-	}
-	return(tmp);
+PhenoScalar& PhenoScalar::operator -= (const PhenoScalar& p)
+{
+    pheno -= p.pheno;
+    return *this;
 }
 
-Phenovec BivariatePhenovecStat::vars(unsigned int index) const {
-	assert (index < 2); // Bivariate only
-	vector<double> tmp;
-	for (unsigned int i = 0; i < cache.size(); i++) {
-		tmp.push_back(cache[i]->var(index));
-	}
-	return(tmp);
+PhenoScalar PhenoScalar::operator - (const PhenoScalar& p) const
+{
+    return PhenoScalar(*this) -= p;
 }
 
-Phenovec BivariatePhenovecStat::cov(unsigned int index1, unsigned int index2) const {
-	assert(index1 < 2);
-	assert(index2 < 2);
-	assert(index1 != index2);
-	vector<double> tmp;
-	for (unsigned int i = 0; i < cache.size(); i++) {
-		tmp.push_back(cache[i]->cov(index1, index2));
-	}
-	return(tmp);
+
+PhenoScalar& PhenoScalar::operator /= (unsigned int n)
+{
+    pheno /= n;
+    return *this;
+}
+
+PhenoScalar PhenoScalar::operator / (unsigned int n) const
+{
+    return PhenoScalar(*this) /= n;
+}
+
+void PhenoScalar::add(const PhenoBase& p)
+{
+    const PhenoScalar& pp = dynamic_cast<const PhenoScalar&>(p);
+    *this += pp;
+}
+
+void PhenoScalar::remove(const PhenoBase& p)
+{
+    const PhenoScalar& pp = dynamic_cast<const PhenoScalar&>(p);
+    *this -= pp;
+}
+
+void PhenoScalar::divide(unsigned int n)
+{
+    *this /= n;
+}
+
+void PhenoScalar::square()
+{
+    pheno *= pheno;
+}
+
+size_t PhenoScalar::dimensionality() const
+{
+    return 1;
+}
+
+basic_pheno PhenoScalar::operator[] (size_t pos) const
+{
+    return pheno;
+}
+
+basic_pheno& PhenoScalar::operator[] (size_t pos)
+{
+    return pheno;
+}
+
+void PhenoScalar::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const
+{
+    ::outformat(out, pheno, width, precision, sep);
+}
+
+////////////////////// PhenoVector /////////////////////////////
+
+PhenoVector::PhenoVector()
+    : pheno(basic_container())
+{
+}
+
+PhenoVector::PhenoVector(size_t s)
+    : pheno(basic_container(s))
+{
+}
+
+PhenoVector::PhenoVector(const PhenoVector& p)
+    : pheno(p.pheno)
+{
+}
+
+PhenoVector::PhenoVector(const basic_container& v)
+    : pheno(v)
+{
+}
+
+PhenoVector& PhenoVector::operator = (const PhenoVector & p)
+{
+    if (this != &p) {
+        pheno = p.pheno;
+    }
+    return *this;
+}
+
+pheno_type PhenoVector::clone() const
+{
+    return pheno_type(new PhenoVector(*this));
+}
+
+PhenoVector& PhenoVector::operator += (const PhenoVector & p)
+{
+    assert(pheno.size() == p.pheno.size());
+    for (unsigned int i = 0; i < pheno.size(); i++) {
+        pheno[i] += p.pheno[i];
+    }
+    return *this;
+}
+
+PhenoVector PhenoVector::operator + (const PhenoVector & p) const
+{
+    return PhenoVector(*this) += p;
+}
+
+PhenoVector& PhenoVector::operator -= (const PhenoVector & p)
+{
+    assert(pheno.size() == p.pheno.size());
+    for (unsigned int i = 0; i < pheno.size(); i++) {
+        pheno[i] -= p.pheno[i];
+    }
+    return *this;
+}
+
+PhenoVector PhenoVector::operator - (const PhenoVector & p) const
+{
+    return PhenoVector(*this) -= p;
+}
+
+PhenoVector& PhenoVector::operator /= (unsigned int n)
+{
+    for (auto &i: pheno) {
+        i /= n;
+    }
+    return *this;
+}
+
+PhenoVector PhenoVector::operator / (unsigned int n) const
+{
+    return PhenoVector(*this) /= n;
+}
+
+void PhenoVector::add(const PhenoBase& p)
+{
+    const PhenoVector& pp = dynamic_cast<const PhenoVector&>(p);
+    *this += pp;
+}
+
+void PhenoVector::remove(const PhenoBase& p)
+{
+    const PhenoVector& pp = dynamic_cast<const PhenoVector&>(p);
+   *this -= pp;
+}
+
+void PhenoVector::divide(unsigned int n)
+{
+    *this /= n;
+}
+
+void PhenoVector::square()
+{
+    for (unsigned int i = 0; i < pheno.size(); i++) {
+        pheno[i] *= pheno[i];
+    }    
+}
+
+size_t PhenoVector::dimensionality() const
+{
+    return pheno.size();
+}
+
+basic_pheno PhenoVector::operator[] (size_t pos) const
+{
+    return pheno[pos];
+}
+
+basic_pheno& PhenoVector::operator[] (size_t pos)
+{
+    return pheno[pos];
+}
+
+void PhenoVector::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const
+{
+    for (auto p : pheno)
+        ::outformat(out, p, width, precision, sep);
+}
+
+
+////////////////////// class PhenoTranscriptome ///////////////////////
+
+PhenoTranscriptome::PhenoTranscriptome() 
+    : expression(basic_container())
+    , stability(basic_container())
+{
+}
+
+PhenoTranscriptome::PhenoTranscriptome(size_t n)
+    : expression(basic_container(n))
+    , stability(basic_container(n))
+{
+}
+
+PhenoTranscriptome::PhenoTranscriptome(const PhenoTranscriptome& p)
+    : expression(p.expression)
+    , stability(p.stability)
+{
+}
+
+PhenoTranscriptome::PhenoTranscriptome(const basic_container& v1, const basic_container& v2)
+    : expression(v1)
+    , stability(v2)
+{
+}
+
+PhenoTranscriptome& PhenoTranscriptome::operator = (const PhenoTranscriptome& p)
+{
+    if (this != &p) {
+        expression = p.expression;
+        stability  = p.stability;
+    }
+    return *this;
+}
+
+pheno_type PhenoTranscriptome::clone() const
+{
+    return pheno_type(new PhenoTranscriptome(*this));
+}
+
+PhenoTranscriptome& PhenoTranscriptome::operator += (const PhenoTranscriptome &p)
+{
+    assert(expression.size() == p.expression.size());
+    assert(stability.size() == p.stability.size());
+    for (unsigned int i = 0; i < expression.size(); i++)
+        expression[i] += p.expression[i];
+    for (unsigned int i = 0; i < stability.size(); i++)
+        stability[i] += p.stability[i];
+    return *this;
+}
+
+PhenoTranscriptome PhenoTranscriptome::operator + (const PhenoTranscriptome &p) const
+{
+    return PhenoTranscriptome(*this) += p;
+}
+
+PhenoTranscriptome& PhenoTranscriptome::operator -= (const PhenoTranscriptome &p)
+{
+    assert(expression.size() == p.expression.size());
+    assert(stability.size() == p.stability.size());
+    for (unsigned int i = 0; i < expression.size(); i++)
+        expression[i] -= p.expression[i];
+    for (unsigned int i = 0; i < stability.size(); i++)
+        stability[i] -= p.stability[i];
+    return *this;
+}
+
+PhenoTranscriptome PhenoTranscriptome::operator - (const PhenoTranscriptome &p) const
+{
+    return PhenoTranscriptome(*this) -= p;
+}
+
+PhenoTranscriptome & PhenoTranscriptome::operator /= (unsigned int n)
+{
+    for (unsigned int i = 0; i < expression.size(); i++)
+        expression[i] /= n;
+    for (unsigned int i = 0; i < stability.size(); i++)
+        stability[i] /= n;
+    return *this;
+}
+
+PhenoTranscriptome PhenoTranscriptome::operator / (unsigned int n) const
+{
+    return PhenoTranscriptome(*this) /= n;
+}
+
+void PhenoTranscriptome::add(const PhenoBase& p)
+{
+    const PhenoTranscriptome& pp = dynamic_cast<const PhenoTranscriptome&>(p);
+    *this += pp;
+}
+
+void PhenoTranscriptome::remove(const PhenoBase& p)
+{
+    const PhenoTranscriptome& pp = dynamic_cast<const PhenoTranscriptome&>(p);
+    *this -= pp;
+}
+
+void PhenoTranscriptome::divide(unsigned int n)
+{
+    *this /= n;
+}
+
+void PhenoTranscriptome::square()
+{
+    for (unsigned int i = 0; i < expression.size(); i++) {
+        expression[i] *= expression[i];
+    }    
+    for (unsigned int i = 0; i < stability.size(); i++) {
+        stability[i] *= stability[i];
+    }      
+}
+
+size_t PhenoTranscriptome::dimensionality() const
+{
+    return expression.size();
+}
+
+basic_pheno PhenoTranscriptome::operator[] (size_t pos) const
+{
+    return expression[pos];
+}
+
+basic_pheno& PhenoTranscriptome::operator[] (size_t pos)
+{
+    return expression[pos];
+}
+
+basic_pheno PhenoTranscriptome::get_pheno2(size_t pos) const
+{
+    return stability[pos];
+}
+
+void PhenoTranscriptome::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const
+{
+    for (auto p : expression)
+        ::outformat(out, p, width, precision, sep);
+}
+
+void PhenoTranscriptome::outformat2(ostream& out, unsigned int width, unsigned int precision, string sep) const
+{
+    for (auto p : stability)
+        ::outformat(out, p, width, precision, sep);
 }
