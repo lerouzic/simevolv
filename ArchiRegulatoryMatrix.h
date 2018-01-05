@@ -41,20 +41,22 @@ class ArchiRegulatoryMatrix : public Architecture
 	
 	protected :
 		unsigned int sall;
-		std::vector<double> So;
+		std::vector<pheno_type> So;
 		double recur;
-		std::vector<std::vector<double>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
+		std::vector<std::vector<allele_type>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
 		unsigned int calcsteps;
 				
 	    //functions
-		virtual void sigma(double&) const;
-        virtual void sigma_v(std::vector<double>&) const; // vectorized version of sigma for optimization
-		virtual void haircut(double &) const;                
-		virtual void haircut_v(std::vector<double>&) const;
-        virtual void plasticity_v(std::vector<double>&) const;
-        virtual void recur_v(std::vector<double>&, const std::vector<double>&) const;
-        virtual void enviro_v(std::vector<double>&, bool) const;
+        virtual void sigma(pheno_type &) const;
+        virtual void haircut(pheno_type &) const;
+        
+        // vectorized versions for optimization
+        virtual void sigma_v(std::vector<pheno_type>&) const; 
+		virtual void haircut_v(std::vector<pheno_type>&) const;
+        virtual void plasticity_v(std::vector<pheno_type>&) const;
+        virtual void recur_v(std::vector<pheno_type>&, const std::vector<pheno_type>&) const;
+        virtual void enviro_v(std::vector<pheno_type>&, bool) const;
         
         
 		void init_connectivity_matrix(const ParameterSet &);		
@@ -93,10 +95,10 @@ class ArchiWagner : public ArchiRegulatoryMatrix
 		
 	protected :
 		// Inherited functions
-		virtual void sigma(double&) const;
-        virtual void sigma_v(std::vector<double>&) const;
-		virtual void haircut(double &) const;
-        virtual void haircut_v(std::vector<double>&) const;
+		virtual void sigma(pheno_type&) const;
+        virtual void sigma_v(std::vector<pheno_type>&) const;
+		virtual void haircut(pheno_type &) const;
+        virtual void haircut_v(std::vector<pheno_type>&) const;
 		
 	protected:
 		ArchiWagner() {}
@@ -128,10 +130,10 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 		double basal;
 		
 		// Inherited functions
-		virtual void sigma(double&) const; 
-        virtual void sigma_v(std::vector<double>&) const;
-		virtual void haircut(double&) const;	
-        virtual void haircut_v(std::vector<double>&) const;
+		virtual void sigma(pheno_type&) const; 
+        virtual void sigma_v(std::vector<pheno_type>&) const;
+		virtual void haircut(pheno_type&) const;	
+        virtual void haircut_v(std::vector<pheno_type>&) const;
 		
 	protected:
 		ArchiSiegal() {}
@@ -166,10 +168,10 @@ class ArchiM2 : public ArchiRegulatoryMatrix
         double b2; // = 1/(basal*(basal-1))
 		
 		// Inherited functions
-		virtual void sigma(double&) const; 
-        virtual void sigma_v(std::vector<double>&) const;
-		virtual void haircut(double&) const;
-        virtual void haircut_v(std::vector<double>&) const;
+		virtual void sigma(pheno_type&) const; 
+        virtual void sigma_v(std::vector<pheno_type>&) const;
+		virtual void haircut(pheno_type&) const;
+        virtual void haircut_v(std::vector<pheno_type>&) const;
 		
 	protected:
 		ArchiM2() { };

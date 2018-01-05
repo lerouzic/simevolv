@@ -40,17 +40,17 @@ class Direpistasis
 		
 		Phenotype phen_direpistasis() const;
 		Phenotype var_phen_direpistasis() const;
-		basic_fitness fitness_direpistasis() const;
-		basic_fitness var_fitness_direpistasis() const;
+		fitness_type fitness_direpistasis() const;
+		fitness_type var_fitness_direpistasis() const;
 				
 	protected:		
 		Phenotype individual_direpi(const DoubleMutantcollection &) const;
-		basic_fitness individual_fitdir(const DoubleMutantcollection &) const;  
+		fitness_type individual_fitdir(const DoubleMutantcollection &) const;  
 		 
 		Phenotype dir_epi_mean;
 		Phenotype dir_epi_var;
-		basic_fitness fit_epi_mean;
-		basic_fitness fit_epi_var;			
+		fitness_type fit_epi_mean;
+		fitness_type fit_epi_var;			
 };
 
 #endif // DIREPISTASIS_H_INCLUDED

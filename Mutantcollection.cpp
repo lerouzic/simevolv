@@ -64,21 +64,21 @@ Phenotype Mutantcollection::var_phen() const
 	return Phenotype::var(pheno_tmp);
 }
 
-basic_fitness Mutantcollection::mean_fit() const
+fitness_type Mutantcollection::mean_fit() const
 {
-	vector<basic_fitness> vecd;
+	vector<fitness_type> vecd;
 	for (const auto & i : collection) 
 		vecd.push_back(i.fitness);
-	auto fitstat = UnivariateStat(vecd);
+	auto fitstat = UnivariateStat<fitness_type>(vecd);
     return fitstat.mean();
 }
 
-basic_fitness Mutantcollection::var_fit() const
+fitness_type Mutantcollection::var_fit() const
 {
-	vector<basic_fitness> vecd;
+	vector<fitness_type> vecd;
 	for (const auto & i : collection) 
 		vecd.push_back(i.fitness);
-	auto fitstat = UnivariateStat(vecd);
+	auto fitstat = UnivariateStat<fitness_type>(vecd);
     return fitstat.var();
 }
 
@@ -119,15 +119,15 @@ Phenotype DoubleMutantcollection::ref_var_phen() const
     return Phenotype::var(ref_phen());
 }
 
-basic_fitness DoubleMutantcollection::ref_mean_fit() const
+fitness_type DoubleMutantcollection::ref_mean_fit() const
 {
-    auto fitstat = UnivariateStat(ref_fit());
+    auto fitstat = UnivariateStat<fitness_type>(ref_fit());
     return fitstat.mean();
 }
 
-basic_fitness DoubleMutantcollection::ref_var_fit() const
+fitness_type DoubleMutantcollection::ref_var_fit() const
 {
-    auto fitstat = UnivariateStat(ref_fit());
+    auto fitstat = UnivariateStat<fitness_type>(ref_fit());
     return fitstat.var();
 }
 
@@ -151,9 +151,9 @@ vector<Phenotype> DoubleMutantcollection::var_mutant_phen() const
 	return(ans);
 }
 
-vector<basic_fitness> DoubleMutantcollection::ref_fit() const
+vector<fitness_type> DoubleMutantcollection::ref_fit() const
 {
-	vector<basic_fitness> ans;
+	vector<fitness_type> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
 		ans.push_back(dcollection[i].reference.fitness);
@@ -161,9 +161,9 @@ vector<basic_fitness> DoubleMutantcollection::ref_fit() const
 	return(ans);
 }
 
-vector<basic_fitness> DoubleMutantcollection::var_mutant_fit() const
+vector<fitness_type> DoubleMutantcollection::var_mutant_fit() const
 {
-	vector<basic_fitness> ans;
+	vector<fitness_type> ans;
 	for (unsigned int i = 0; i < dcollection.size(); i++) 
 	{
 		ans.push_back(dcollection[i].var_fit());

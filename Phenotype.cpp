@@ -62,7 +62,7 @@ Phenotype::Phenotype(const PhenoBase & pb)
 {
 }
 
-Phenotype::Phenotype(basic_pheno bp)
+Phenotype::Phenotype(pheno_type bp)
     : pheno_ptr(new PhenoScalar(bp))
 {
 }
@@ -72,24 +72,24 @@ Phenotype::Phenotype(size_t s)
 {
 }
 
-Phenotype::Phenotype(const basic_container& pc)
+Phenotype::Phenotype(const Phenotype::basic_container& pc)
     : pheno_ptr(new PhenoVector(pc))
 {
 }
 
-Phenotype::Phenotype(const basic_container& pc1, const basic_container& pc2)
+Phenotype::Phenotype(const Phenotype::basic_container& pc1, const Phenotype::basic_container& pc2)
     : pheno_ptr(new PhenoTranscriptome(pc1, pc2))
 {
 }
 
 
-Phenotype::Phenotype(const_pheno_type pp)
+Phenotype::Phenotype(std::unique_ptr<PhenoBase> pp)
 // private constructor
     : pheno_ptr(pp->clone())
 {
 }
 
-Phenotype::Phenotype(pheno_type pp)
+Phenotype::Phenotype(std::unique_ptr<const PhenoBase> pp)
 // private constructor
     : pheno_ptr(pp->clone())
 {
@@ -98,7 +98,7 @@ Phenotype::Phenotype(pheno_type pp)
 Phenotype Phenotype::sum(const pheno_container& vp)
 {
     auto first = vp.begin();
-    auto result = pheno_type(first->pheno_ptr->clone()); // because *first is const
+    auto result = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone()); // because *first is const
 
     for (++first; first != vp.end(); ++first) // don't add again the first element!
         result->add(*(first->pheno_ptr)); 
@@ -110,12 +110,12 @@ Phenotype Phenotype::sum(const pheno_container& vp)
 Phenotype Phenotype::sumsq(const pheno_container& vp)
 {
     auto first = vp.begin();
-    auto result = pheno_type(first->pheno_ptr->clone()); // because *first is const
+    auto result = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone()); // because *first is const
     result->square();
     
     for (++first; first != vp.end(); ++first) // don't add again the first element!
     {
-        auto tmp = pheno_type(first->pheno_ptr->clone());
+        auto tmp = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone());
         tmp->square();
         result->add(*tmp);
      }
@@ -149,34 +149,34 @@ size_t Phenotype::dimensionality() const
     return pheno_ptr->dimensionality();
 }
 
-basic_pheno Phenotype::operator[] (size_t pos) const
+pheno_type Phenotype::operator[] (size_t pos) const
 {
     return (*pheno_ptr)[pos];
 }
 
-basic_pheno& Phenotype::operator[] (size_t pos)
+pheno_type& Phenotype::operator[] (size_t pos)
 {
     return (*pheno_ptr)[pos];
 }
 
-basic_pheno Phenotype::get_pheno(size_t pos) const
+pheno_type Phenotype::get_pheno(size_t pos) const
 {
     return pheno_ptr->get_pheno(pos);
 }
 
-basic_pheno Phenotype::get_pheno2(size_t pos) const
+pheno_type Phenotype::get_pheno2(size_t pos) const
 {
     return pheno_ptr->get_pheno2(pos);
 }
 
 /////////////////////// PhenoBase   ///////////////////////////
 
-basic_pheno PhenoBase::get_pheno(size_t pos) const
+pheno_type PhenoBase::get_pheno(size_t pos) const
 {
     return (*this)[pos];
 }
 
-basic_pheno PhenoBase::get_pheno2(size_t pos) const
+pheno_type PhenoBase::get_pheno2(size_t pos) const
 {
     assert("This should never happen: calling get_pheno2 on an irrelevant phenotype.\n");
     return 0.0;
@@ -198,7 +198,7 @@ PhenoScalar::PhenoScalar(const PhenoScalar& p)
 {
 }
 
-PhenoScalar::PhenoScalar(basic_pheno v)
+PhenoScalar::PhenoScalar(pheno_type v)
     : pheno(v)
 {
 }
@@ -211,9 +211,9 @@ PhenoScalar& PhenoScalar::operator = (const PhenoScalar& p)
     return *this;
 }
 
-pheno_type PhenoScalar::clone() const
+std::unique_ptr<PhenoBase> PhenoScalar::clone() const
 {
-    return pheno_type(new PhenoScalar(*this));
+    return std::unique_ptr<PhenoBase>(new PhenoScalar(*this));
 }
 
 PhenoScalar& PhenoScalar::operator += (const PhenoScalar& p)
@@ -277,12 +277,12 @@ size_t PhenoScalar::dimensionality() const
     return 1;
 }
 
-basic_pheno PhenoScalar::operator[] (size_t pos) const
+pheno_type PhenoScalar::operator[] (size_t pos) const
 {
     return pheno;
 }
 
-basic_pheno& PhenoScalar::operator[] (size_t pos)
+pheno_type& PhenoScalar::operator[] (size_t pos)
 {
     return pheno;
 }
@@ -295,12 +295,12 @@ void PhenoScalar::outformat(ostream& out, unsigned int width, unsigned int preci
 ////////////////////// PhenoVector /////////////////////////////
 
 PhenoVector::PhenoVector()
-    : pheno(basic_container())
+    : pheno(Phenotype::basic_container())
 {
 }
 
 PhenoVector::PhenoVector(size_t s)
-    : pheno(basic_container(s))
+    : pheno(Phenotype::basic_container(s))
 {
 }
 
@@ -309,7 +309,7 @@ PhenoVector::PhenoVector(const PhenoVector& p)
 {
 }
 
-PhenoVector::PhenoVector(const basic_container& v)
+PhenoVector::PhenoVector(const Phenotype::basic_container& v)
     : pheno(v)
 {
 }
@@ -322,9 +322,9 @@ PhenoVector& PhenoVector::operator = (const PhenoVector & p)
     return *this;
 }
 
-pheno_type PhenoVector::clone() const
+std::unique_ptr<PhenoBase> PhenoVector::clone() const
 {
-    return pheno_type(new PhenoVector(*this));
+    return std::unique_ptr<PhenoBase>(new PhenoVector(*this));
 }
 
 PhenoVector& PhenoVector::operator += (const PhenoVector & p)
@@ -396,13 +396,12 @@ size_t PhenoVector::dimensionality() const
 {
     return pheno.size();
 }
-
-basic_pheno PhenoVector::operator[] (size_t pos) const
+pheno_type PhenoVector::operator[] (size_t pos) const
 {
     return pheno[pos];
 }
 
-basic_pheno& PhenoVector::operator[] (size_t pos)
+pheno_type& PhenoVector::operator[] (size_t pos)
 {
     return pheno[pos];
 }
@@ -417,14 +416,14 @@ void PhenoVector::outformat(ostream& out, unsigned int width, unsigned int preci
 ////////////////////// class PhenoTranscriptome ///////////////////////
 
 PhenoTranscriptome::PhenoTranscriptome() 
-    : expression(basic_container())
-    , stability(basic_container())
+    : expression(Phenotype::basic_container())
+    , stability(Phenotype::basic_container())
 {
 }
 
 PhenoTranscriptome::PhenoTranscriptome(size_t n)
-    : expression(basic_container(n))
-    , stability(basic_container(n))
+    : expression(Phenotype::basic_container(n))
+    , stability(Phenotype::basic_container(n))
 {
 }
 
@@ -434,7 +433,7 @@ PhenoTranscriptome::PhenoTranscriptome(const PhenoTranscriptome& p)
 {
 }
 
-PhenoTranscriptome::PhenoTranscriptome(const basic_container& v1, const basic_container& v2)
+PhenoTranscriptome::PhenoTranscriptome(const Phenotype::basic_container& v1, const Phenotype::basic_container& v2)
     : expression(v1)
     , stability(v2)
 {
@@ -449,9 +448,9 @@ PhenoTranscriptome& PhenoTranscriptome::operator = (const PhenoTranscriptome& p)
     return *this;
 }
 
-pheno_type PhenoTranscriptome::clone() const
+std::unique_ptr<PhenoBase> PhenoTranscriptome::clone() const
 {
-    return pheno_type(new PhenoTranscriptome(*this));
+    return std::unique_ptr<PhenoBase>(new PhenoTranscriptome(*this));
 }
 
 PhenoTranscriptome& PhenoTranscriptome::operator += (const PhenoTranscriptome &p)
@@ -532,17 +531,17 @@ size_t PhenoTranscriptome::dimensionality() const
     return expression.size();
 }
 
-basic_pheno PhenoTranscriptome::operator[] (size_t pos) const
+pheno_type PhenoTranscriptome::operator[] (size_t pos) const
 {
     return expression[pos];
 }
 
-basic_pheno& PhenoTranscriptome::operator[] (size_t pos)
+pheno_type& PhenoTranscriptome::operator[] (size_t pos)
 {
     return expression[pos];
 }
 
-basic_pheno PhenoTranscriptome::get_pheno2(size_t pos) const
+pheno_type PhenoTranscriptome::get_pheno2(size_t pos) const
 {
     return stability[pos];
 }

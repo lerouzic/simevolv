@@ -23,6 +23,8 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/vector.hpp>
 
+typedef double allele_type;
+
 class Allele
 {
     friend class Haplotype;
@@ -38,26 +40,26 @@ class Allele
 	public :
 	    //constructors/destructor
         Allele() { }
-	    Allele(const std::vector<double>);
+	    Allele(const std::vector<allele_type>);
 	    Allele(const Allele &);
 	    virtual ~Allele() { }
 	
 	    //operator overload
-	    int operator== (const Allele&) const;
-	    int operator!= (const Allele&) const;
+	    bool operator== (const Allele&) const;
+	    bool operator!= (const Allele&) const;
 	
 	    //functions
 	    unsigned int all_size() const;
-		static std::vector<double> combine_add(const Allele &, const Allele &);
-		static std::vector<double> combine_mean(const Allele &, const Allele &);
-        static std::vector<double> combine_OR(const Allele &, const Allele &);
+		static std::vector<allele_type> combine_add(const Allele &, const Allele &);
+		static std::vector<allele_type> combine_mean(const Allele &, const Allele &);
+        static std::vector<allele_type> combine_OR(const Allele &, const Allele &);
 		
-		virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
+		virtual std::shared_ptr<Allele> make_mutant(allele_type mutsd) const;
         virtual std::shared_ptr<Allele> make_boolean_mutant() const;
-        std::vector<double> get_raw() const;
+        std::vector<allele_type> get_raw() const;
 	
 	protected :
-	    std::vector<double> allele;
+	    std::vector<allele_type> allele;
         
 	private:
 		friend class boost::serialization::access;
@@ -81,11 +83,11 @@ class Allele_zero: public Allele
 	public:
 	// This is a 'normal Allele' but sites with 0.0 values cannot mutate
     Allele_zero() { }
-	Allele_zero(const std::vector<double>);
+	Allele_zero(const std::vector<allele_type>);
 	Allele_zero(const Allele_zero &);
 	virtual ~Allele_zero() { }
 	
-	virtual std::shared_ptr<Allele> make_mutant(double mutsd) const;
+	virtual std::shared_ptr<Allele> make_mutant(allele_type mutsd) const;
     
 	private:
 		friend class boost::serialization::access;

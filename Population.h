@@ -71,7 +71,7 @@ class Population
 	    void update(void); 
 	    
 	    // Stuff for selection
-	    std::vector<basic_fitness> cumul_fitness() const;
+	    std::vector<fitness_type> cumul_fitness() const;
 	    const Individual & pick_parent(const std::vector<double>&) const;
 	    // different algorithms to optimize weighted random picking of parents
 	    long int search_fit_table(double, const std::vector<double>&) const;

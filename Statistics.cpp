@@ -11,21 +11,21 @@
 
 
 
-#include "Statistics.h"
+// #include "Statistics.h"
 
 #include <cassert>
 #include <iostream>
 #include <cmath>
 
-using namespace std;
-
+// This is a .hpp file, to be compiled along with Statistics.h
 
 
 ////////////////////////////////// UNIVARIATE ////////////////////////////////////////
 
 // Constructors and initialization 
 
-UnivariateStat::UnivariateStat(const vector<double> & vv)
+template<typename T>
+UnivariateStat<T>::UnivariateStat(const std::vector<T> & vv)
 	: data(vv)
 	, sum_i(0.0)
 	, sum_i2(0.0)
@@ -34,23 +34,24 @@ UnivariateStat::UnivariateStat(const vector<double> & vv)
 {
 	if (data.size() < 2) 
 	{
-		cerr << "A data set of size " << data.size() << " is not eligible for statistics." << endl;
+		std::cerr << "A data set of size " << data.size() << " is not eligible for statistics." << std::endl;
 		assert("Terminate.");
 	}
 	initialize();
 }
 
 /* computes and stores intermediate results. */
-void UnivariateStat::initialize()
+template<typename T>
+void UnivariateStat<T>::initialize()
 {
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
-		if (isfinite(data[i])) 
+		if (std::isfinite(data[i])) 
 		{
 			sum_i += data[i];
 			sum_i2 += data[i]*data[i];
 			
-			double log_data_i;
+			T log_data_i;
 			if(data[i] < EXPMINLOG)
 				log_data_i = MINLOG;
 			else
@@ -70,33 +71,38 @@ void UnivariateStat::initialize()
 
 // functions
 
-double UnivariateStat::mean() const {
-	return(sum_i / static_cast<double>(data.size()));
+template<typename T>
+T UnivariateStat<T>::mean() const {
+	return(sum_i / static_cast<T>(data.size()));
 }
 
-double UnivariateStat::var() const {
+template<typename T>
+T UnivariateStat<T>::var() const {
 	double mm = mean();
-	return(sum_i2/static_cast<double>(data.size()) - mm*mm);
+	return(sum_i2/static_cast<T>(data.size()) - mm*mm);
 }
 
-double UnivariateStat::mean_log() const {
-	return(sum_log_i / static_cast<double>(data.size()));
+template<typename T>
+T UnivariateStat<T>::mean_log() const {
+	return(sum_log_i / static_cast<T>(data.size()));
 }
 
-double UnivariateStat::var_log() const {
-	double mm_log = mean_log();
-	return(sum_log_i2/static_cast<double>(data.size()) - mm_log*mm_log);
+template<typename T>
+T UnivariateStat<T>::var_log() const {
+	T mm_log = mean_log();
+	return(sum_log_i2/static_cast<T>(data.size()) - mm_log*mm_log);
 }
 
 
 ////////////////////////////////// MULTIVARIATE /////////////////////////////////
 
-MultivariateStat::MultivariateStat(const vector<vector<double> > & v)
+template<typename T>
+MultivariateStat<T>::MultivariateStat(const std::vector<std::vector<T> > & v)
 	: data(v)
-    , sum_ij(vector<vector<double>>(v.size(), vector<double>(v.size(), 0.0)))
-    , sum_log_ij(vector<vector<double>>(v.size(), vector<double>(v.size(), 0.0)))
-    , sum_i(vector<double>(v.size()))
-    , sum_log_i(vector<double>(v.size()))
+    , sum_ij(std::vector<std::vector<T>>(v.size(), std::vector<T>(v.size(), 0.0)))
+    , sum_log_ij(std::vector<std::vector<T>>(v.size(), std::vector<T>(v.size(), 0.0)))
+    , sum_i(std::vector<T>(v.size()))
+    , sum_log_i(std::vector<T>(v.size()))
 { 
 	// It is a bit complicated to assert here whether the vector<vector<double> > is OK. 
 	// Temporary storage variables as well as checks on the dimensions will occur afterwards, 
@@ -104,7 +110,8 @@ MultivariateStat::MultivariateStat(const vector<vector<double> > & v)
 	initialize();
 }
 
-void MultivariateStat::initialize()
+template<typename T>
+void MultivariateStat<T>::initialize()
 {
 	unsigned int size1;
 	
@@ -126,7 +133,7 @@ void MultivariateStat::initialize()
 		// vector of sum_i
 		for (unsigned int k = 0; k < data[i].size(); k++) 
 		{
-            double d_ik =  data[i][k];
+            T d_ik =  data[i][k];
 			sum_i[i] += d_ik;
 			if (d_ik < EXPMINLOG)
 				sum_log_i[i] += MINLOG;
@@ -137,15 +144,15 @@ void MultivariateStat::initialize()
 		// matrix of sum_ij
 		for (unsigned int j = i; j < data.size(); j++) 
 		{
-            double tmp_sum_ij = 0.0;
-            double tmp_sum_log_ij = 0.0;
+            T tmp_sum_ij = 0.0;
+            T tmp_sum_log_ij = 0.0;
 			for (unsigned int k = 0; k < data[i].size(); k++)
 			{
-                double d_ik = data[i][k];
-                double d_jk = data[j][k];
+                T d_ik = data[i][k];
+                T d_jk = data[j][k];
 				tmp_sum_ij += d_ik * d_jk;
-				double log_data_ik = MINLOG;
-				double log_data_jk = MINLOG;
+				T log_data_ik = MINLOG;
+				T log_data_jk = MINLOG;
 				if (d_ik > EXPMINLOG)
 					log_data_ik = log(d_ik);
 				if (d_jk > EXPMINLOG)
@@ -162,9 +169,10 @@ void MultivariateStat::initialize()
 	}
 }
 
-vector<double> MultivariateStat::means() const
+template<typename T>
+std::vector<T> MultivariateStat<T>::means() const
 {
-	vector<double> ans(data.size());
+	std::vector<T> ans(data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
 		ans[i] = mean(i);
@@ -172,9 +180,10 @@ vector<double> MultivariateStat::means() const
 	return(ans);
 }
 
-vector<double> MultivariateStat::means_log() const
+template<typename T>
+std::vector<T> MultivariateStat<T>::means_log() const
 {
-	vector<double> ans(data.size());
+	std::vector<T> ans(data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
 		ans[i] = mean_log(i);
@@ -182,9 +191,10 @@ vector<double> MultivariateStat::means_log() const
 	return(ans);
 }
 
-vector<double> MultivariateStat::vars() const
+template<typename T>
+std::vector<T> MultivariateStat<T>::vars() const
 {
-	vector<double> ans(data.size());
+	std::vector<T> ans(data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
 		ans[i] = var(i);
@@ -192,9 +202,10 @@ vector<double> MultivariateStat::vars() const
 	return(ans);
 }
 
-vector<double> MultivariateStat::vars_log() const
+template<typename T>
+std::vector<T> MultivariateStat<T>::vars_log() const
 {
-	vector<double> ans(data.size());
+	std::vector<T> ans(data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
 		ans[i] = var_log(i);
@@ -202,12 +213,13 @@ vector<double> MultivariateStat::vars_log() const
 	return(ans);
 }
 
-vector<vector<double> > MultivariateStat::vcov() const
+template<typename T>
+std::vector<std::vector<T>> MultivariateStat<T>::vcov() const
 {
-	vector<vector<double> > ans (data.size());
+	std::vector<std::vector<T>> ans (data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
-		vector<double> tmp (data.size());
+		std::vector<T> tmp (data.size());
 		for (unsigned int j = 0; j < data.size(); j++) 
 		{
 			tmp[j] = cov(i, j);
@@ -217,12 +229,13 @@ vector<vector<double> > MultivariateStat::vcov() const
 	return(ans);
 }
 
-vector<vector<double> > MultivariateStat::vcov_log() const
+template<typename T>
+std::vector<std::vector<T>> MultivariateStat<T>::vcov_log() const
 {
-	vector<vector<double> > ans (data.size());
+	std::vector<std::vector<T>> ans (data.size());
 	for (unsigned int i = 0; i < data.size(); i++) 
 	{
-		vector<double> tmp (data.size());
+		std::vector<T> tmp (data.size());
 		for (unsigned int j = 0; j < data.size(); j++) 
 		{
 			tmp[j] = cov_log(i, j);
@@ -232,66 +245,76 @@ vector<vector<double> > MultivariateStat::vcov_log() const
 	return(ans);
 }
 
-double MultivariateStat::mean(unsigned int i) const
+template<typename T>
+T MultivariateStat<T>::mean(unsigned int i) const
 {
 	assert (i < data.size());
-	return(sum_i[i] / static_cast<double>(data[i].size()));
+	return(sum_i[i] / static_cast<T>(data[i].size()));
 }
 
-double MultivariateStat::mean_log(unsigned int i) const
+template<typename T>
+T MultivariateStat<T>::mean_log(unsigned int i) const
 {
 	assert (i < data.size());
-	return(sum_log_i[i] / static_cast<double>(data[i].size()));
+	return(sum_log_i[i] / static_cast<T>(data[i].size()));
 }
 
-double MultivariateStat::var(unsigned int i) const 
+template<typename T>
+T MultivariateStat<T>::var(unsigned int i) const 
 {
 	assert (i < data.size());
-	return(sum_ij[i][i]/static_cast<double>(data[i].size()) - mean(i)*mean(i));
+	return(sum_ij[i][i]/static_cast<T>(data[i].size()) - mean(i)*mean(i));
 }
 
-double MultivariateStat::var_log(unsigned int i) const 
+template<typename T>
+T MultivariateStat<T>::var_log(unsigned int i) const 
 {
 	assert (i < data.size());
-	return(sum_log_ij[i][i]/static_cast<double>(data[i].size()) - mean_log(i)*mean_log(i));
+	return(sum_log_ij[i][i]/static_cast<T>(data[i].size()) - mean_log(i)*mean_log(i));
 }
 
-double MultivariateStat::cov(unsigned int i, unsigned int j) const
+template<typename T>
+T MultivariateStat<T>::cov(unsigned int i, unsigned int j) const
 {
 	assert (i < data.size());
 	assert (j < data.size());
-	return(sum_ij[i][j]/static_cast<double>(data[i].size()) - mean(i)*mean(j));
+	return(sum_ij[i][j]/static_cast<T>(data[i].size()) - mean(i)*mean(j));
 }
 
-double MultivariateStat::cov_log(unsigned int i, unsigned int j) const
+template<typename T>
+T MultivariateStat<T>::cov_log(unsigned int i, unsigned int j) const
 {
 	assert (i < data.size());
 	assert (j < data.size());
-	return(sum_log_ij[i][j]/static_cast<double>(data[i].size()) - mean_log(i)*mean_log(j));
+	return(sum_log_ij[i][j]/static_cast<T>(data[i].size()) - mean_log(i)*mean_log(j));
 }
 
-double MultivariateStat::cor(unsigned int i, unsigned int j) const
+template<typename T>
+T MultivariateStat<T>::cor(unsigned int i, unsigned int j) const
 {
 	assert (i < data.size());
 	assert (j < data.size());
 	return(cov(i, j)/(sqrt(var(i)*var(j))));
 }
 
-double MultivariateStat::r2(unsigned int i, unsigned int j) const
+template<typename T>
+T MultivariateStat<T>::r2(unsigned int i, unsigned int j) const
 {
 	assert (i < data.size());
 	assert (j < data.size());
 	return(cor(i, j)*cor(i, j));	
 }
 
-double MultivariateStat::regression_slope(unsigned int i, unsigned int j) const
+template<typename T>
+T MultivariateStat<T>::regression_slope(unsigned int i, unsigned int j) const
 {
 	assert (i < data.size());
 	assert (j < data.size());
 	return(cov(i, j)/var(j));
 }
 
-ostream & operator << (ostream & os, const MultivariateStat & obj) 
+template<typename T>
+std::ostream & operator << (std::ostream & os, const MultivariateStat<T> & obj) 
 {
 	os << "\t";
 	for (unsigned int cat = 0; cat < obj.data.size(); cat++) 
@@ -346,22 +369,23 @@ ostream & operator << (ostream & os, const MultivariateStat & obj)
 ////////////////////////// InvertedMStat ///////////////////////////////
 
 // Inverted multivariate stats
-
-InvertedMStat::InvertedMStat(const vector<vector<double> > & vec_vec_d)
-	: MultivariateStat(transpose_double_matrix(vec_vec_d))
+template<typename T>
+InvertedMStat<T>::InvertedMStat(const std::vector<std::vector<T>> & vec_vec_d)
+	: MultivariateStat<T>(transpose_double_matrix(vec_vec_d))
 {
 }
 
 /* Exactly the same code as in Phenotype (:-@!!! )*/
-vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vector<double> > & vec_vec_d) 
+template<typename T>
+std::vector<std::vector<T> > InvertedMStat<T>::transpose_double_matrix(const std::vector<std::vector<T>> & vec_vec_d) 
 {
 	assert(!vec_vec_d.empty());
 	
 	unsigned int dim = vec_vec_d[0].size();
-	vector<vector<double> > ans;
+	std::vector<std::vector<T>> ans;
 	for (unsigned int k = 0; k < dim; k++) 
 	{
-		vector<double> tmp;
+		std::vector<T> tmp;
 		for (unsigned int i = 0; i < vec_vec_d.size(); i++) 
 		{
 			if (k==0) assert(vec_vec_d[i].size() == dim);
@@ -377,7 +401,8 @@ vector<vector<double> > InvertedMStat::transpose_double_matrix(const vector<vect
 // Fast (and non-exhaustive) version if InvertedMStat, just for 
 // internal calculation in the Network models
 
-FastIMStat::FastIMStat(const vector<vector<double>> & dd)
+template<typename T>
+FastIMStat<T>::FastIMStat(const std::vector<std::vector<T>> & dd)
 	: timesteps(dd.size())
 {
 	// data is a vector of expression values. 
@@ -385,8 +410,8 @@ FastIMStat::FastIMStat(const vector<vector<double>> & dd)
 	assert(!dd[0].empty());
 	size_t numphen = dd[0].size();
 	for (size_t i = 0; i < numphen; i++) {
-		double sx = 0.0;
-		double sx2 = 0.0;
+		T sx = 0.0;
+		T sx2 = 0.0;
 		for (size_t j = 0; j < timesteps; j++) {
 			sx += dd[j][i];
 			sx2 += dd[j][i]*dd[j][i];
@@ -396,20 +421,22 @@ FastIMStat::FastIMStat(const vector<vector<double>> & dd)
 	}
 }
 
-vector<double> FastIMStat::means() const 
+template<typename T>
+std::vector<T> FastIMStat<T>::means() const 
 {
-	vector<double> ans;
+	std::vector<T> ans;
 	for (size_t j = 0; j < sumx.size(); j++) {
 		ans.push_back(sumx[j]/timesteps);
 	}
 	return(ans);
 }
 
-vector<double> FastIMStat::vars() const
+template<typename T>
+std::vector<T> FastIMStat<T>::vars() const
 {
-	vector<double> ans;
+	std::vector<T> ans;
 	for (size_t j = 0; j < sumx.size(); j++) {
-		double m = sumx[j]/timesteps;
+		T m = sumx[j]/timesteps;
 		ans.push_back(sumx2[j]/timesteps - m*m);
 	}
 	return(ans);

@@ -26,15 +26,10 @@
 #endif
 
 class Phenotype;
-
 class PhenoBase;
-typedef double basic_pheno;
-typedef std::vector<Phenotype> pheno_container;
-typedef std::vector<basic_pheno> basic_container;
 
-// These ones should not really be used outside of Phenotype
-typedef std::unique_ptr<PhenoBase> pheno_type;
-typedef std::unique_ptr<const PhenoBase> const_pheno_type;
+typedef double pheno_type;
+typedef std::vector<Phenotype> pheno_container;
 
 void outformat(std::ostream &, const Phenotype &,
                       unsigned int width=13, unsigned int precision=5, std::string sep="");
@@ -49,7 +44,10 @@ class Phenotype
 			unsigned int width, unsigned int precision, std::string sep);  
 	friend void outformat2(std::ostream &, const Phenotype &, 
 			unsigned int width, unsigned int precision, std::string sep);  
-              
+    
+    public:
+        typedef std::vector<pheno_type> basic_container;
+
     public:
         Phenotype();
         Phenotype(const Phenotype &);
@@ -58,28 +56,28 @@ class Phenotype
         Phenotype& operator=(const Phenotype &);
         
         // Specialized constructors, call directly a subclass (good idea or not?)
-        Phenotype(basic_pheno);  // PhenoScalar
+        Phenotype(pheno_type);  // PhenoScalar
         Phenotype(size_t);       // PhenoVector
         Phenotype(const basic_container&); // PhenoVector
         Phenotype(const basic_container&, const basic_container&); // PhenoTranscriptome
         
-        static Phenotype sum (const pheno_container&);
+        static Phenotype sum  (const pheno_container&);
         static Phenotype sumsq(const pheno_container&);
-        static Phenotype mean(const pheno_container&);        
-        static Phenotype var(const pheno_container&);
+        static Phenotype mean (const pheno_container&);        
+        static Phenotype var  (const pheno_container&);
 
-    // Necessary for compatibility of the old code, should probably be avoided   
+    // Necessary for compatibility with old code, should probably be avoided   
         bool is_defined() const;
         std::size_t dimensionality() const;
-        basic_pheno operator[] (std::size_t) const;
-        basic_pheno &operator[] (std::size_t);
-        virtual basic_pheno get_pheno(std::size_t) const;
-        virtual basic_pheno get_pheno2(std::size_t) const;  
+        pheno_type operator[] (std::size_t) const;
+        pheno_type &operator[] (std::size_t);
+        virtual pheno_type get_pheno(std::size_t) const;
+        virtual pheno_type get_pheno2(std::size_t) const;  
         
     protected:
-        Phenotype(const_pheno_type); // these ones should not be available to the outside world
-        Phenotype(pheno_type);       // 
-        pheno_type pheno_ptr;
+        Phenotype(std::unique_ptr<const PhenoBase>); // these ones should not be available to the outside world
+        Phenotype(std::unique_ptr<PhenoBase>);       // 
+        std::unique_ptr<PhenoBase> pheno_ptr;
 };
 
 class PhenoBase    // This is the base class, it is just and interface (virtual pure)
@@ -87,17 +85,17 @@ class PhenoBase    // This is the base class, it is just and interface (virtual 
 	public:
 		virtual ~PhenoBase() { }
         
-        virtual pheno_type clone() const       = 0;
+        virtual std::unique_ptr<PhenoBase> clone() const = 0;
         virtual void add(const PhenoBase &)    = 0;
         virtual void remove(const PhenoBase &) = 0;
         virtual void divide(unsigned int)      = 0;
-        virtual void square()                  = 0;   
+        virtual void square()                  = 0;
         
         virtual std::size_t dimensionality() const = 0;
-        virtual basic_pheno operator[] (std::size_t) const  = 0;
-        virtual basic_pheno& operator[](std::size_t)        = 0;
-        virtual basic_pheno get_pheno(std::size_t) const;
-        virtual basic_pheno get_pheno2(std::size_t) const;      
+        virtual pheno_type operator[] (std::size_t) const  = 0;
+        virtual pheno_type& operator[](std::size_t)        = 0;
+        virtual pheno_type get_pheno(std::size_t) const;
+        virtual pheno_type get_pheno2(std::size_t) const;      
         
         virtual void outformat(std::ostream&, unsigned int, unsigned int, std::string) const = 0;
         virtual void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;
@@ -117,19 +115,19 @@ class PhenoScalar: public PhenoBase {
   public: 
     PhenoScalar();
     PhenoScalar(const PhenoScalar&);
-    PhenoScalar(basic_pheno);
+    PhenoScalar(pheno_type);
     PhenoScalar& operator=(const PhenoScalar&);
     ~PhenoScalar() { }
     
-    pheno_type clone() const;
+    std::unique_ptr<PhenoBase> clone() const;
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
     
     std::size_t dimensionality() const;
-    basic_pheno operator[] (std::size_t) const;
-    basic_pheno& operator[](std::size_t);
+    pheno_type  operator[](std::size_t) const;
+    pheno_type& operator[](std::size_t);
     
     void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;    
           
@@ -142,8 +140,7 @@ class PhenoScalar: public PhenoBase {
     PhenoScalar  operator /  (unsigned int) const;
     PhenoScalar& operator /= (unsigned int);  
   
-    basic_pheno pheno;
-    
+    pheno_type pheno;
 };
 
 class PhenoVector: public PhenoBase {
@@ -153,19 +150,19 @@ class PhenoVector: public PhenoBase {
     PhenoVector(); 
     PhenoVector(size_t);
     PhenoVector(const PhenoVector&);
-    PhenoVector(const basic_container&);
+    PhenoVector(const Phenotype::basic_container&);
     PhenoVector& operator = (const PhenoVector& p);
     ~PhenoVector() { }    
     
-    pheno_type clone() const;
+    std::unique_ptr<PhenoBase> clone() const;
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
     
     std::size_t dimensionality() const;
-    basic_pheno operator[] (std::size_t) const;
-    basic_pheno& operator[](std::size_t);
+    pheno_type  operator[](std::size_t) const;
+    pheno_type& operator[](std::size_t);
     
     void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;      
         
@@ -177,7 +174,7 @@ class PhenoVector: public PhenoBase {
     PhenoVector  operator /  (unsigned int) const;
     PhenoVector& operator /= (unsigned int);  
   
-    basic_container pheno;
+    Phenotype::basic_container pheno;
 };
 
 class PhenoTranscriptome: public PhenoBase {
@@ -189,22 +186,22 @@ class PhenoTranscriptome: public PhenoBase {
     PhenoTranscriptome();
     PhenoTranscriptome(size_t);
     PhenoTranscriptome(const PhenoTranscriptome&);
-    PhenoTranscriptome(const basic_container&, const basic_container&);
+    PhenoTranscriptome(const Phenotype::basic_container&, const Phenotype::basic_container&);
     PhenoTranscriptome& operator= (const PhenoTranscriptome&);
     ~PhenoTranscriptome() { }
     
-    pheno_type clone() const;     
+    std::unique_ptr<PhenoBase> clone() const;     
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
     
     std::size_t dimensionality() const;
-    basic_pheno operator[] (std::size_t) const;
-    basic_pheno& operator[](std::size_t); 
-    basic_pheno get_pheno2(std::size_t) const;  
+    pheno_type  operator[](std::size_t) const;
+    pheno_type& operator[](std::size_t); 
+    pheno_type  get_pheno2(std::size_t) const;  
     
-    void outformat(std::ostream&, unsigned int, unsigned int, std::string) const; 
+    void outformat (std::ostream&, unsigned int, unsigned int, std::string) const; 
     void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;             
     
   protected: 
@@ -216,8 +213,8 @@ class PhenoTranscriptome: public PhenoBase {
     PhenoTranscriptome  operator /  (unsigned int) const;
     PhenoTranscriptome& operator /= (unsigned int); 
   
-    basic_container expression;
-    basic_container stability;
+    Phenotype::basic_container expression;
+    Phenotype::basic_container stability;
 };
 
 #endif // PHENOTYPE_H_INCLUDED

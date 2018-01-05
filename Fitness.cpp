@@ -156,7 +156,7 @@ void Fitness::fluctuate(unsigned int generation_number)
    has to be provided, because some fitness functions requires a "population value".
    Fitness is the product of two components: a fitness score from the phenotypic values, 
    and a fitness score on stability (which has a meaning only for some genetic architectures). */
-basic_fitness Fitness::compute(const Phenotype & phenotype, const Population & population)
+fitness_type Fitness::compute(const Phenotype & phenotype, const Population & population)
 {
 	return(Fitness::instance->fitphen->get_fitness(phenotype, population) 
 		* Fitness::instance->fitstab->get_fitness(phenotype));
@@ -446,10 +446,10 @@ Fitness_Phenotype::~Fitness_Phenotype()
 	
 }
 
-basic_fitness Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Population & population)
 {
 	unsigned int dim = phenotype.dimensionality();
-	basic_fitness fitness = 1.0;
+	fitness_type fitness = 1.0;
 	for (unsigned int dd = 0; dd < dim; dd++) 
 	{
 		fitness *= get_fitness_trait(dd, phenotype, population);
@@ -501,7 +501,7 @@ Fitness_Phenotype_Linear::Fitness_Phenotype_Linear(const ParameterSet & param)
 {	
 }
 
-basic_fitness Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
@@ -513,7 +513,7 @@ basic_fitness Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, co
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	basic_fitness fit = strength[trait]*(phenotype[trait] - popmean[trait]);
+	fitness_type fit = strength[trait]*(phenotype[trait] - popmean[trait]);
 	if (fit < 0.0)
 	{ 
 		fit = 0.0;
@@ -526,7 +526,7 @@ Fitness_Phenotype_Expo::Fitness_Phenotype_Expo(const ParameterSet & param)
 {
 }
 
-basic_fitness Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
@@ -538,7 +538,7 @@ basic_fitness Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, cons
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	basic_pheno departure = phenotype[trait] - popmean[trait];
+	pheno_type departure = phenotype[trait] - popmean[trait];
 	return(exp(strength[trait]*departure)); 
 }
 
@@ -547,7 +547,7 @@ Fitness_Phenotype_Concave::Fitness_Phenotype_Concave(const ParameterSet & param)
 {
 }
 
-basic_fitness Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	if (strength.size() < phenotype.dimensionality())
 	{
@@ -559,7 +559,7 @@ basic_fitness Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, c
 		cerr << "Warning, Fitness was not updated after a population change." << endl;
 		update(population);
 	}
-	basic_fitness fit = 1.0 + 0.5*log(1.0+2.0*strength[trait]*(phenotype[trait] - popmean[trait]));
+	fitness_type fit = 1.0 + 0.5*log(1.0+2.0*strength[trait]*(phenotype[trait] - popmean[trait]));
 	if (fit < 0.0) 
 	{
 		fit = 0.0;
@@ -588,7 +588,7 @@ Fitness_Phenotype_Gaussian::Fitness_Phenotype_Gaussian(const ParameterSet & para
 {
 }
 
-basic_fitness Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -603,8 +603,8 @@ basic_fitness Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, 
         
 	}
 	
-	basic_pheno departure = phenotype[trait] - optimum[trait];
-	basic_fitness fit = exp(- strength[trait]*departure*departure);
+	pheno_type departure = phenotype[trait] - optimum[trait];
+	fitness_type fit = exp(- strength[trait]*departure*departure);
 	return(fit);
 }
 
@@ -613,7 +613,7 @@ Fitness_Phenotype_Quadratic::Fitness_Phenotype_Quadratic(const ParameterSet & pa
 {
 }
 
-basic_fitness Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -627,8 +627,8 @@ basic_fitness Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait,
 		optimum = expand_vec(optimum, phenotype.dimensionality());	
 	}
 
-	basic_pheno departure = phenotype[trait] - optimum[trait];
-	basic_fitness fit = 1.0 - strength[trait]*departure*departure;
+	pheno_type departure = phenotype[trait] - optimum[trait];
+	fitness_type fit = 1.0 - strength[trait]*departure*departure;
 	if (fit < 0.0)
 	{
 		fit = 0.0;
@@ -642,7 +642,7 @@ Fitness_Phenotype_Biconvex::Fitness_Phenotype_Biconvex(const ParameterSet & para
 {
 }
 
-basic_fitness Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
+fitness_type Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
 	assert(trait < phenotype.dimensionality());
 	
@@ -656,8 +656,8 @@ basic_fitness Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, 
 		optimum = expand_vec(optimum, phenotype.dimensionality());	
 	}
 
-	basic_pheno departure = phenotype[trait] - optimum[trait];
-	basic_fitness fit = exp(-sqrt(strength[trait]*strength[trait]*departure*departure));
+	pheno_type departure = phenotype[trait] - optimum[trait];
+	fitness_type fit = exp(-sqrt(strength[trait]*strength[trait]*departure*departure));
 	return(fit);	
 }
 
@@ -665,10 +665,10 @@ basic_fitness Fitness_Phenotype_Biconvex::get_fitness_trait(unsigned int trait, 
 
 /********************** Fitness_Stability *******************/
 
-basic_fitness Fitness_Stability::get_fitness(const Phenotype & phenotype)
+fitness_type Fitness_Stability::get_fitness(const Phenotype & phenotype)
 {
 	unsigned int dim = phenotype.dimensionality();
-	basic_fitness answer = 1.0;
+	fitness_type answer = 1.0;
 	for (unsigned int dd = 0; dd < dim; dd++) 
 	{
 		answer *= get_fitness_trait(dd, phenotype);
@@ -681,7 +681,7 @@ Fitness_Stability_Noselection::Fitness_Stability_Noselection(const ParameterSet 
 {
 }
 
-basic_fitness Fitness_Stability_Noselection::get_fitness_trait(unsigned int trait, const Phenotype & phenotype) 
+fitness_type Fitness_Stability_Noselection::get_fitness_trait(unsigned int trait, const Phenotype & phenotype) 
 { 
 	return(1.0); 
 }
@@ -692,7 +692,7 @@ Fitness_Stability_Exponential::Fitness_Stability_Exponential(const ParameterSet 
 {	
 }
 
-basic_fitness Fitness_Stability_Exponential::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
+fitness_type Fitness_Stability_Exponential::get_fitness_trait(unsigned int trait, const Phenotype & phenotype)
 {
 	assert(trait < phenotype.dimensionality());
 	

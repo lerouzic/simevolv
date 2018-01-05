@@ -19,105 +19,111 @@
 
 
 const double MINLOG = -20.0;
-const double EXPMINLOG = 2.061154e-9; // change both at the same time!
+constexpr double EXPMINLOG = 2.061154e-9; // change both at the same time!
 
 /* Univariate Statistics: provides the mean and variance of a vector of double */
+template<typename T>
 class UnivariateStat
 {
 	public:
 		// constructors/destructors
-		UnivariateStat(const std::vector<double> &);
+		UnivariateStat(const std::vector<T> &);
 		
 		// get results
-		double mean() const;
-		double var() const;
+		T mean() const;
+		T var() const;
 		
-		double mean_log() const;
-		double var_log() const;
+		T mean_log() const;
+		T var_log() const;
 		
 	protected:
 		// initialization
 		void initialize();
 		
-		// data and 
-		std::vector<double> data;
-		double sum_i;
-		double sum_i2;
-		double sum_log_i;
-		double sum_log_i2;
+		// data and buffers
+		std::vector<T> data;
+		T sum_i;
+		T sum_i2;
+		T sum_log_i;
+		T sum_log_i2;
 };
 
 
 /* Multivariate statistics. The input is a matrix of doubles (provided as a vector of vectors)
    The function provides: the mean and variance for each entry, as well as pairwise covariances, 
    correlations, and the slope of regressions between pairs of variables */
+template<typename T>
 class MultivariateStat
 {
 	public:
 		// constructors/destructors
-		MultivariateStat(const std::vector<std::vector<double> > &);
+		MultivariateStat(const std::vector<std::vector<T>> &);
 
 		// get infos: dimensions
 		unsigned int dim1() const {return(data.size());}
 		unsigned int dim2() const {if (dim1() > 0) return(data[0].size()); else return(0);}
 
 		// get results: vectorized
-		std::vector<double> means() const;
-		std::vector<double> means_log() const;		
-		std::vector<double> vars() const;
-		std::vector<double> vars_log() const;		
-		std::vector<std::vector<double> > vcov() const;		
-		std::vector<std::vector<double>> vcov_log() const;
+		std::vector<T> means() const;
+		std::vector<T> means_log() const;		
+		std::vector<T> vars() const;
+		std::vector<T> vars_log() const;		
+		std::vector<std::vector<T> > vcov() const;		
+		std::vector<std::vector<T>> vcov_log() const;
 		
 		// ... or as scalars by providing the indexes.
-		double mean(unsigned int) const;
-		double mean_log(unsigned int) const;
-		double var(unsigned int) const;
-		double var_log(unsigned int) const;
-		double cov(unsigned int, unsigned int) const;
-		double cov_log(unsigned int, unsigned int) const;
+		T mean(unsigned int) const;
+		T mean_log(unsigned int) const;
+		T var(unsigned int) const;
+		T var_log(unsigned int) const;
+		T cov(unsigned int, unsigned int) const;
+		T cov_log(unsigned int, unsigned int) const;
 		
-		double cor(unsigned int, unsigned int) const;
-		double r2(unsigned int, unsigned int) const;
-		double regression_slope(unsigned int, unsigned int) const; //param 1 = a*param 2 + b
+		T cor(unsigned int, unsigned int) const;
+		T r2(unsigned int, unsigned int) const;
+		T regression_slope(unsigned int, unsigned int) const; //param 1 = a*param 2 + b
 		
 		// output
-		friend std::ostream & operator << (std::ostream &, const MultivariateStat &);
+        template<typename T2>
+		friend std::ostream & operator << (std::ostream &, const MultivariateStat<T2> &);
 		
 	protected:
 		// initialization
 		void initialize();
 	
-		const std::vector<std::vector<double> > data;
-		std::vector<std::vector<double> > sum_ij;
-		std::vector<std::vector<double> > sum_log_ij;
-		std::vector<double> sum_i;
-		std::vector<double> sum_log_i;
+		const std::vector<std::vector<T>> data;
+		std::vector<std::vector<T>> sum_ij;
+		std::vector<std::vector<T>> sum_log_ij;
+		std::vector<T> sum_i;
+		std::vector<T> sum_log_i;
 };
 
-
-class InvertedMStat: public MultivariateStat
+template<typename T>
+class InvertedMStat: public MultivariateStat<T>
 {
 	public:
-		InvertedMStat(const std::vector<std::vector<double> > &);
+		InvertedMStat(const std::vector<std::vector<T>> &);
 	
 	protected:
 		// functions
-		static std::vector<std::vector<double> > transpose_double_matrix(const std::vector<std::vector<double> > &);
+		static std::vector<std::vector<T>> transpose_double_matrix(const std::vector<std::vector<T>> &);
 };
 
+template<typename T>
 class FastIMStat
 {
 	public: 
-		FastIMStat(const std::vector<std::vector<double>> &);
+		FastIMStat(const std::vector<std::vector<T>> &);
 		
-		std::vector<double> means() const;
-		std::vector<double> vars() const;
+		std::vector<T> means() const;
+		std::vector<T> vars() const;
 		
 	protected:
 		size_t timesteps;
-		std::vector<double> sumx;
-		std::vector<double> sumx2;
+		std::vector<T> sumx;
+		std::vector<T> sumx2;
 };
+
+#include "Statistics.cpp" // Template class initialization
 
 #endif // STATISTICS_H_INCLUDED

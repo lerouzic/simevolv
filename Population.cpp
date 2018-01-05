@@ -292,7 +292,7 @@ void Population::make_mutation()
 void Population::write(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
-	vector<basic_fitness> fit;
+	vector<fitness_type> fit;
 	vector<double> epi;
 	vector<Phenotype> genot; // this is temporary... 
 	
@@ -304,10 +304,10 @@ void Population::write(ostream & out, int generation) const
 		epi.push_back(i.get_epigenet());
 				
         // This is not clean. Stores genotype as a phenotype
-		vector<basic_pheno> matrix_vector_indiv;
+		vector<pheno_type> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
         {
-            vector<basic_pheno> tmp = i.genotype->combine_at_loc(loc, &Allele::combine_mean);
+            vector<pheno_type> tmp = i.genotype->combine_at_loc(loc, &Allele::combine_mean);
 
             for (auto j : tmp) // fills the matrix
                 matrix_vector_indiv.push_back(j);
@@ -317,8 +317,8 @@ void Population::write(ostream & out, int generation) const
 	}
 			 
 	// Calls the unidimensional routine for fitnesses. 
-	UnivariateStat fitstat(fit);
-	UnivariateStat epistat(epi);
+	UnivariateStat<fitness_type> fitstat(fit);
+	UnivariateStat<double> epistat(epi);
 			
 	/* First generation: need to write the headers. 
 	   This is not extremely clean. 

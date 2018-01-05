@@ -29,18 +29,18 @@ using namespace std;
 MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual & ref, bool logvar, bool meancentered)
 {
 	vector<Phenotype> phenos;
-	vector<basic_fitness> fitnesses;
+	vector<fitness_type> fitnesses;
 	for (auto variant : variants) {
 		phenos.push_back(variant.get_phenotype());
 		fitnesses.push_back(variant.get_fitness());
 	}
 
-	UnivariateStat fitnessstat(fitnesses);	
+	UnivariateStat<fitness_type> fitnessstat(fitnesses);	
 	
 	Phenotype rawmeanphen = Phenotype::mean(phenos);
 	Phenotype rawvarphen = Phenotype::var(phenos);
-	basic_fitness rawmeanfit = fitnessstat.mean_log();
-	basic_fitness rawvarfit = fitnessstat.var_log();
+	fitness_type rawmeanfit = fitnessstat.mean_log();
+	fitness_type rawvarfit = fitnessstat.var_log();
 	
 	if (!meancentered) {
 		Phenotype ref_pheno = ref.get_phenotype();
@@ -91,21 +91,21 @@ Phenotype Canalization::varpop_canphen() const
 	return(Phenotype::var(phenpop));
 }
 
-basic_fitness Canalization::meanpop_canlogfit() const
+fitness_type Canalization::meanpop_canlogfit() const
 {
-	UnivariateStat uvstat(canlogfit());
+	UnivariateStat<fitness_type> uvstat(canlogfit());
 	return(uvstat.mean());
 }
 
-basic_fitness Canalization::varpop_canlogfit() const
+fitness_type Canalization::varpop_canlogfit() const
 {
-	UnivariateStat uvstat(canlogfit());
+	UnivariateStat<fitness_type> uvstat(canlogfit());
 	return(uvstat.var());
 }
 
-vector<basic_fitness> Canalization::canlogfit() const
+vector<fitness_type> Canalization::canlogfit() const
 {
-	vector<basic_fitness> fitnesses;
+	vector<fitness_type> fitnesses;
 	for (auto minican : popcan) {
 		fitnesses.push_back(minican.canfitness);
 	}

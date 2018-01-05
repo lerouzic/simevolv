@@ -33,7 +33,7 @@ using namespace std;
 // constructors and destructor
 
 /* constructor called by Haplotype */
-Allele::Allele(const vector<double> content)
+Allele::Allele(const vector<allele_type> content)
 	: allele(content)
 {
 }
@@ -44,12 +44,12 @@ Allele::Allele(const Allele & copy)
 }
 
 // operator overload
-int Allele::operator==(const Allele& other) const
+bool Allele::operator==(const Allele& other) const
 {
     return((*this).allele == other.allele);
 }
 
-int Allele::operator!=(const Allele& other) const
+bool Allele::operator!=(const Allele& other) const
 {
     return(!(*this == other));
 }
@@ -67,9 +67,9 @@ unsigned int Allele::all_size() const
 
 /* adds of the value of the two alleles of a genotype
  * (static function) */
-vector<double> Allele::combine_add(const Allele & a1, const Allele & a2) 
+vector<allele_type> Allele::combine_add(const Allele & a1, const Allele & a2) 
 {
-	vector<double> ans;
+	vector<allele_type> ans;
 	unsigned int all_size =  a1.allele.size();
 	for (unsigned int sa = 0; sa < all_size; sa++) 
 	{
@@ -78,9 +78,9 @@ vector<double> Allele::combine_add(const Allele & a1, const Allele & a2)
 	return(ans);
 }
 
-vector<double> Allele::combine_mean(const Allele & a1, const Allele & a2) 
+vector<allele_type> Allele::combine_mean(const Allele & a1, const Allele & a2) 
 {
-	vector<double> ans;
+	vector<allele_type> ans;
 	unsigned int all_size =  a1.allele.size();
 	for (unsigned int sa = 0; sa < all_size; sa++) 
 	{
@@ -90,7 +90,7 @@ vector<double> Allele::combine_mean(const Allele & a1, const Allele & a2)
 }
 
 //Allele combination used in the Boolean Architecture. Combines the two alleles by using an OR function
-vector<double> Allele::combine_OR(const Allele & a1, const Allele & a2)
+vector<allele_type> Allele::combine_OR(const Allele & a1, const Allele & a2)
 {
     vector<double> ans;
     
@@ -105,10 +105,10 @@ vector<double> Allele::combine_OR(const Allele & a1, const Allele & a2)
     return(ans);
 }
 
-shared_ptr<Allele> Allele::make_mutant(double mutsd) const
+shared_ptr<Allele> Allele::make_mutant(allele_type mutsd) const
 {
     int mutated_site = floor(allele.size()*Random::randnum());
-    double modifier = mutsd * Random::randgauss();
+    allele_type modifier = mutsd * Random::randgauss();
     shared_ptr<Allele> a(new Allele(*this));
     a->allele[mutated_site] += modifier;
     return(a);
@@ -125,7 +125,7 @@ shared_ptr<Allele> Allele::make_boolean_mutant() const
     return(a);
 }
 
-std::vector<double> Allele::get_raw() const
+std::vector<allele_type> Allele::get_raw() const
 {
 	return(allele);
 }
@@ -134,7 +134,7 @@ std::vector<double> Allele::get_raw() const
 
 // Allele_zero
 
-Allele_zero::Allele_zero(const vector<double> content)
+Allele_zero::Allele_zero(const vector<allele_type> content)
 	: Allele(content)
 {
 }
@@ -144,7 +144,7 @@ Allele_zero::Allele_zero(const Allele_zero & copy)
 {
 }
 
-shared_ptr<Allele> Allele_zero::make_mutant(double mutsd) const
+shared_ptr<Allele> Allele_zero::make_mutant(allele_type mutsd) const
 {
 	vector<unsigned int> non_zero;
 	for (unsigned int i = 0; i < allele.size(); i++) {
@@ -155,7 +155,7 @@ shared_ptr<Allele> Allele_zero::make_mutant(double mutsd) const
     shared_ptr<Allele_zero> a(new Allele_zero(*this));	 
 	if (non_zero.size() > 0) {
 		int mutated_site = non_zero[floor(non_zero.size()*Random::randnum())];
-		double modifier = mutsd * Random::randgauss();
+		allele_type modifier = mutsd * Random::randgauss();
 		a->allele[mutated_site] += modifier;		
 	}
 	// Note: if all sites are 0, no mutation, but we create a new Allele instance.

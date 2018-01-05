@@ -54,7 +54,7 @@ class Individual
 	    void update_fitness(const Population &);
 
 		// getters
-	    basic_fitness get_fitness() const;
+	    fitness_type get_fitness() const;
 	    double get_epigenet() const;
 	    Phenotype get_phenotype() const;
 	    unsigned int ploidy() const;
@@ -79,7 +79,7 @@ class Individual
 	protected :
 	    std::unique_ptr<Genotype> genotype;
 	    Phenotype phenotype; 
-	    basic_fitness fitness;
+	    fitness_type fitness;
 	    double epigenet; // to be transmitted to the offspring
 	    
 	    EpigeneticInfo epiinfo; // from the mother

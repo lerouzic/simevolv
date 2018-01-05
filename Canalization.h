@@ -36,7 +36,7 @@ class MiniCanIndiv
 		MiniCanIndiv(const std::vector<Individual>&, const Individual &, bool, bool);
 		~MiniCanIndiv() {}
 		Phenotype canpheno;
-		basic_fitness canfitness;
+		fitness_type canfitness;
 };	
 	
 class Canalization // virtual pure
@@ -49,9 +49,9 @@ class Canalization // virtual pure
 		Phenotype meanpop_canphen() const;
 		Phenotype varpop_canphen() const;		
 		
-		basic_fitness meanpop_canlogfit() const;
-		basic_fitness varpop_canlogfit() const;
-		std::vector<basic_fitness> canlogfit() const;
+		fitness_type meanpop_canlogfit() const;
+		fitness_type varpop_canlogfit() const;
+		std::vector<fitness_type> canlogfit() const;
 		
 	protected:		
 		std::vector<MiniCanIndiv> popcan;		

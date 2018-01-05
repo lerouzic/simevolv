@@ -17,6 +17,7 @@
 
 #include "Phenotype.h" 
 #include "Population.h"
+#include "Fitness.h"
 
 #include <vector>
  
@@ -29,7 +30,7 @@ class Heritability
 		
 		// functions
 		Phenotype h2() const;	// Narrow-sense heritability (VA/VP)
-		double fit_h2() const;	// Narrow-sense heritability in fitness
+		fitness_type fit_h2() const;	// Narrow-sense heritability in fitness
 		
 	protected:
 		// internal structure for parent - offspring pairs (no need to make this visible from outside)
@@ -37,13 +38,13 @@ class Heritability
 		{
 			Phenotype mother_phen;
 			Phenotype mother_gen;
-			double mother_fit;
+			fitness_type mother_fit;
 			Phenotype father_phen;
 			Phenotype father_gen;
-			double father_fit;
+			fitness_type father_fit;
 			Phenotype offspring_phen;
 			Phenotype offspring_gen;
-			double offspring_fit;
+			fitness_type offspring_fit;
 		};
 		std::vector<ParentOffspring> parentoffspring;	
 };

@@ -192,8 +192,8 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 {
 	// Epigenetics not implemented!
-    vector<basic_pheno> sumloc(nloc);
-    basic_pheno phenotype = 0.0;
+    vector<pheno_type> sumloc(nloc);
+    pheno_type phenotype = 0.0;
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {	

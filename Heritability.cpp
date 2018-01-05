@@ -32,11 +32,11 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop)
 {
 	// nb_pairs is the number of pairs per individual
 	
-	vector<double> cumul_equal_fit; 
+	vector<fitness_type> cumul_equal_fit; 
 
 	// This is a trick to reuse the existing algorithm for sampling individuals uniformly: just assume 
 	// a constant fitness function, and generate the corresponding cumulative fitness vector. 
-	double equal_fit = 1.0/pop.size();
+	fitness_type equal_fit = 1.0/pop.size();
 	for (unsigned int i = 0; i < pop.size(); i++) 
 	{
 		cumul_equal_fit.push_back(equal_fit);
@@ -83,40 +83,40 @@ Phenotype Heritability::h2() const
 	// In practice, for each phenotypic dimension, a MultivariateStat object is filled with 
 	// mid-parent phenotypic value and offspring phenotype. The slope of the regression between
 	// them provides a good estimate of heritability. 
-	vector<double> result;
+	vector<pheno_type> result;
 	for(unsigned int trait = 0; trait < parentoffspring[0].father_phen.dimensionality(); trait++) 
 	{
-		vector<double> midpar;
-		vector<double> offspring;
+		vector<pheno_type> midpar;
+		vector<pheno_type> offspring;
 		for (unsigned int i = 0; i < parentoffspring.size(); i++) 
 		{
 			midpar.push_back(0.5*parentoffspring[i].father_phen[trait] + 0.5*parentoffspring[i].mother_phen[trait]);
 			offspring.push_back(parentoffspring[i].offspring_phen[trait]);
 		}
-		vector<vector<double> > data;
+		vector<vector<pheno_type> > data;
 		data.push_back(midpar);
 		data.push_back(offspring);
-		MultivariateStat stat(data);
+		MultivariateStat<pheno_type> stat(data);
 		result.push_back(stat.regression_slope(1, 0));
 	}
 	return(Phenotype(result));
 }
 
-double Heritability::fit_h2() const 
+fitness_type Heritability::fit_h2() const 
 {
 	// Heritability for fitness. Basically the same algorithm than for phenotypes. 
 	// Is it necessary to factorize the code? This could generate more problems than 
 	// what it solves. 
-	vector<double> midpar;
-	vector<double> offspring;
+	vector<fitness_type> midpar;
+	vector<fitness_type> offspring;
 	for (unsigned int i = 0; i < parentoffspring.size(); i++) 
 	{
 		midpar.push_back(0.5*parentoffspring[i].father_fit + 0.5*parentoffspring[i].mother_fit);
 			offspring.push_back(parentoffspring[i].offspring_fit);
 	}
-	vector<vector<double> > data;
+	vector<vector<fitness_type> > data;
 	data.push_back(midpar);
 	data.push_back(offspring);
-	MultivariateStat stat(data);
+	MultivariateStat<fitness_type> stat(data);
 	return(stat.regression_slope(1,0));
 }

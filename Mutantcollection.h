@@ -29,7 +29,7 @@ struct MiniIndividual
 		MiniIndividual(const Individual & ind) : phen(ind.get_phenotype()), fitness(ind.get_fitness()) { }
 				
 		Phenotype phen;
-		basic_fitness fitness;
+		fitness_type fitness;
 };
 
 
@@ -45,8 +45,8 @@ class Mutantcollection
 		
 		Phenotype mean_phen() const;
 		Phenotype var_phen() const;
-		basic_fitness mean_fit() const;
-		basic_fitness var_fit() const;
+		fitness_type mean_fit() const;
+		fitness_type var_fit() const;
 		
 	protected:
 		MiniIndividual reference;
@@ -64,13 +64,13 @@ class DoubleMutantcollection
 		
 		Phenotype ref_mean_phen() const;
 		Phenotype ref_var_phen() const;
-		basic_fitness ref_mean_fit() const;
-		basic_fitness ref_var_fit() const;
+		fitness_type ref_mean_fit() const;
+		fitness_type ref_var_fit() const;
 		
 		std::vector<Phenotype> ref_phen() const;
 		std::vector<Phenotype> var_mutant_phen() const;		
-		std::vector<basic_fitness> ref_fit() const;
-		std::vector<basic_fitness> var_mutant_fit() const;
+		std::vector<fitness_type> ref_fit() const;
+		std::vector<fitness_type> var_mutant_fit() const;
 		
 	protected:
 		std::vector<Mutantcollection> dcollection;

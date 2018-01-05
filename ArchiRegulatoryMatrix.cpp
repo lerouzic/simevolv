@@ -38,7 +38,8 @@ BOOST_CLASS_EXPORT(ArchiSiegal)
 BOOST_CLASS_EXPORT(ArchiM2)
 #endif
 
-std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const std::vector<double> & s) 
+template<typename T>
+std::vector<T> naive_prod(const std::vector<std::vector<T>> & m, const std::vector<T> & s) 
 {
     //Expects(s.size() > 0);
     //Expects(s.size() == m.size());
@@ -46,7 +47,7 @@ std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const
     
     unsigned int ssz = s.size();
     
-    std::vector<double> ans(ssz);
+    std::vector<T> ans(ssz);
     
     for (unsigned int i = 0; i < ssz; i++) {
         ans[i] = 0.0;
@@ -57,7 +58,8 @@ std::vector<double> naive_prod(const std::vector<std::vector<double>> & m, const
     return(ans);
 }
 
-std::vector<double> naive_prod(const std::vector<double> & s, const std::vector<std::vector<double>> & m) 
+template<typename T>
+std::vector<T> naive_prod(const std::vector<T> & s, const std::vector<std::vector<T>> & m) 
 {
     //Expects(s.size() > 0);
     //Expects(s.size() == m.size());
@@ -65,7 +67,7 @@ std::vector<double> naive_prod(const std::vector<double> & s, const std::vector<
     
     unsigned int ssz = s.size();    
     
-    std::vector<double> ans(ssz);
+    std::vector<T> ans(ssz);
     
     for (unsigned int i = 0; i < ssz; i++) {
         ans[i] = 0.0;
@@ -106,7 +108,7 @@ ArchiRegulatoryMatrix::~ArchiRegulatoryMatrix()
 shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param, unsigned int loc) const
 {
 	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
-	vector<double> temp_allele;
+	vector<allele_type> temp_allele;
 	for (unsigned int i = 0; i < sall; i++) 
 	{
 		assert(connectivity_matrix.size() > loc);
@@ -117,7 +119,7 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 		} 
 		else 
 		{
-			double value;
+			allele_type value;
 			if (clonal) 
 			{
 				value = connectivity_matrix[loc][i];
@@ -159,14 +161,14 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
     
     
 	// creation of the W matrix;
-	std::vector<std::vector<double>> matrix;
+	std::vector<std::vector<allele_type>> matrix;
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
 		matrix.push_back(genotype.combine_at_loc(loc, &Allele::combine_mean));
 	}
 
     unsigned int nloc = nb_loc();
-	std::vector<double> St(nloc);
+	std::vector<pheno_type> St(nloc);
 	
 	// Initial state of the network
 	for (unsigned int i = 0 ; i<nloc ; i++)
@@ -187,8 +189,8 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 
 	
 	// dynamic simulation
-	std::vector<double> St_next(nloc);
-	std::vector<std::vector<double>> unstability = vector<vector<double>>(calcsteps, vector<double>(nloc, 0.0));
+	std::vector<pheno_type> St_next(nloc);
+	std::vector<std::vector<pheno_type>> unstability = vector<vector<pheno_type>>(calcsteps, vector<pheno_type>(nloc, 0.0));
 	
 	for (unsigned int t=0 ; t<timesteps ;t++)
 	{
@@ -215,10 +217,9 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		}
 	}
 	
-	// output (from ublas to std)
-	FastIMStat stat_steps(unstability);
-	vector<double> Sf_mean = stat_steps.means();
-	vector<double> Sf_var = stat_steps.vars();
+	FastIMStat<pheno_type> stat_steps(unstability);
+	vector<pheno_type> Sf_mean = stat_steps.means();
+	vector<pheno_type> Sf_var = stat_steps.vars();
 	
 	for (unsigned int i = 0; i < Sf_mean.size(); i++)
 		Sf_mean[i] += Environment::final_disturb();
@@ -231,28 +232,29 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 // Protected functions
 
 /* Theoretically useless. Just in case, running the model on the base class just calls the identity function (no sigmoid)*/
-void ArchiRegulatoryMatrix::sigma(double& h) const 
+void ArchiRegulatoryMatrix::sigma(pheno_type& h) const 
 {
 }
 
-void ArchiRegulatoryMatrix::sigma_v(vector<double> & vh) const
+void ArchiRegulatoryMatrix::sigma_v(vector<pheno_type> & vh) const
 {
     for (auto &i: vh) 
         this->sigma(i);
 }
 
-void ArchiRegulatoryMatrix::haircut(double & d) const
+void ArchiRegulatoryMatrix::haircut(pheno_type & d) const
 {
 }
 
-void ArchiRegulatoryMatrix::haircut_v(vector<double> & vh) const 
+void ArchiRegulatoryMatrix::haircut_v(vector<pheno_type> & vh) const 
 {
     for (auto &i: vh)
 		this->haircut(i);
 }
 
-void ArchiRegulatoryMatrix::plasticity_v(vector<double> & vh) const
+void ArchiRegulatoryMatrix::plasticity_v(vector<pheno_type> & vh) const
 {
+    // a bit optimized...
     auto vh_it = vh.begin();
     auto pst_it = plasticity_strength.begin(); // this is probably a const_iterator because of the const method
     auto psi_it = plasticity_signal.begin();
@@ -261,7 +263,7 @@ void ArchiRegulatoryMatrix::plasticity_v(vector<double> & vh) const
     }
 }
 
-void ArchiRegulatoryMatrix::recur_v(vector<double> & vh, const std::vector<double> & oldvh) const
+void ArchiRegulatoryMatrix::recur_v(vector<pheno_type> & vh, const std::vector<pheno_type> & oldvh) const
 {
     auto vh_it = vh.begin();
     auto oldvh_it = oldvh.begin();
@@ -270,7 +272,7 @@ void ArchiRegulatoryMatrix::recur_v(vector<double> & vh, const std::vector<doubl
     }
 }
 
-void ArchiRegulatoryMatrix::enviro_v(vector<double> & vh, bool sddynamtest) const
+void ArchiRegulatoryMatrix::enviro_v(vector<pheno_type> & vh, bool sddynamtest) const
 {
     for (auto &i: vh)
         i += Environment::dynam_disturb(sddynamtest);
@@ -292,7 +294,7 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 	
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
-		vector<double> allele_pattern;
+		vector<allele_type> allele_pattern;
 		for (unsigned int n=0 ; n<sall ; n++)
 		{
 			double threshold = connectivity;
@@ -305,7 +307,7 @@ void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 			{
 				/* This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
 				 * double value = 1.0  - in non-clonal, this would be enough */
-				double value = param.getpar(INIT_ALLELES) -> GetDouble();
+				allele_type value = param.getpar(INIT_ALLELES) -> GetDouble();
 				allele_pattern.push_back(value);
 			}
 			else
@@ -358,7 +360,7 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = Random::randnum();
+			pheno_type s = Random::randnum();
 			if (s < 0.5) { So.push_back(min); }
 			else { So.push_back(max); }
 		}	
@@ -368,7 +370,7 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 		cerr << "Random So has no real significance in Wagner model." << endl << endl;
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = (max-min)*Random::randnum()+min;
+			pheno_type s = (max-min)*Random::randnum()+min;
 			So.push_back(s);
 		}
 	}
@@ -377,7 +379,7 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 		cerr <<	"Basal So cannot be used in Wagner model : switch to random binary !" << endl;
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = Random::randnum();
+			pheno_type s = Random::randnum();
 			if (s < 0.5) { So.push_back(min); }
 			else { So.push_back(max); }
 		}	
@@ -397,8 +399,7 @@ ArchiWagner::~ArchiWagner()
 	}
 }
 
-
-void ArchiWagner::sigma(double & h) const 
+void ArchiWagner::sigma(pheno_type & h) const 
 {
 	if (h < 0.) {
 		h = -1.;
@@ -409,20 +410,20 @@ void ArchiWagner::sigma(double & h) const
     }
 }	
 
-void ArchiWagner::sigma_v(vector<double> & vh) const
+void ArchiWagner::sigma_v(vector<pheno_type> & vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
         ArchiWagner::sigma(vh[i]);
     }
 }
 
-void ArchiWagner::haircut(double & d) const 
+void ArchiWagner::haircut(pheno_type & d) const 
 {
 	if (d < -1.) d = -1.;
 	else if (d > 1.) d = 1.;
 }
 
-void ArchiWagner::haircut_v(vector<double> & vd) const
+void ArchiWagner::haircut_v(vector<pheno_type> & vd) const
 {
     for (unsigned int i = 0; i < vd.size(); ++i) {
         ArchiWagner::haircut(vd[i]);
@@ -465,7 +466,7 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = Random::randnum();
+			pheno_type s = Random::randnum();
 			if (s < 0.5) { So.push_back(min); }
 			else { So.push_back(max); }
 		}	
@@ -474,7 +475,7 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = (max-min)*Random::randnum()+min;
+			pheno_type s = (max-min)*Random::randnum()+min;
 			So.push_back(s);
 		}
 	}
@@ -501,25 +502,25 @@ ArchiSiegal::~ArchiSiegal()
 }
 
 
-void ArchiSiegal::sigma(double &h) const 
+void ArchiSiegal::sigma(pheno_type &h) const 
 {
 	h = (2. / (1. + exp(-basal*h)) ) -1.;
 }
 
-void ArchiSiegal::sigma_v(vector<double>& vh) const
+void ArchiSiegal::sigma_v(vector<pheno_type>& vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
         ArchiSiegal::sigma(vh[i]);
     }
 }
 
-void ArchiSiegal::haircut(double & d) const 
+void ArchiSiegal::haircut(pheno_type & d) const 
 {
 	if (d < -1.) d = -1.;
 	else if (d > 1.) d = 1.;
 }
 
-void ArchiSiegal::haircut_v(vector<double> & vd) const
+void ArchiSiegal::haircut_v(vector<pheno_type> & vd) const
 {
     for (unsigned int i = 0; i < vd.size(); ++i) {
         ArchiSiegal::haircut(vd[i]);
@@ -536,8 +537,8 @@ ArchiM2::ArchiM2(const ParameterSet& param)
     b1 = 1./basal - 1.;
     b2 = 1./(basal*(basal-1.))    ;
     
-	double min = 0;
-	double max = 1;
+	pheno_type min = 0;
+	pheno_type max = 1;
 	
 	string type_so = param.getpar(TYPE_SO)->GetString();
     if (type_so==SO_min)
@@ -565,7 +566,7 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = Random::randnum();
+			pheno_type s = Random::randnum();
 			if (s < 0.5) { So.push_back(min); }
 			else { So.push_back(max); }
 		}	
@@ -574,7 +575,7 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	{
 		for (unsigned int n=0; n<nb_loc(); n++)
 		{
-			double s = (max-min)*Random::randnum()+min;
+			pheno_type s = (max-min)*Random::randnum()+min;
 			So.push_back(s);
 		}
 	}
@@ -587,26 +588,26 @@ ArchiM2::ArchiM2(const ParameterSet& param)
 	}
 }
 
-void ArchiM2::sigma(double& h) const 
+void ArchiM2::sigma(pheno_type& h) const 
 {
 	// return (1. / (1. + exp((-h/(basal*(1.-basal)))+log(1./basal-1.)) ));
     h = 1./(1.+b1*exp(b2*h));
 }
 
-void ArchiM2::sigma_v(vector<double>& vh) const
+void ArchiM2::sigma_v(vector<pheno_type>& vh) const
 {
     for (unsigned int i = 0; i < vh.size(); ++i) {
         ArchiM2::sigma(vh[i]);
     }
 }
 
-void ArchiM2::haircut(double & d) const 
+void ArchiM2::haircut(pheno_type& d) const 
 {
 	if (d < 0.) d = 0.;
 	else if (d > 1.) d = 1.;
 }
 
-void ArchiM2::haircut_v(vector<double>& vd) const
+void ArchiM2::haircut_v(vector<pheno_type>& vd) const
 {
     for (unsigned int i = 0; i < vd.size(); ++i) {
         ArchiM2::haircut(vd[i]);
