@@ -24,8 +24,10 @@
 #include <vector>
 #include <memory> // shared_ptr
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/shared_ptr.hpp>
+#endif
 
 class Haplotype
 {
@@ -69,10 +71,12 @@ class Haplotype
 	    std::vector<std::shared_ptr<Allele> > haplotype;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & haplotype;
-        }        
+        }
+        #endif        
 };
 
 #endif // HAPLOTYPE_H_INCLUDED

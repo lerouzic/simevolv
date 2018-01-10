@@ -64,9 +64,9 @@ void Environment::initialize(const ParameterSet & param)
     Environment::instance = new Environment(param);
 }
 
-double Environment::init_disturb(bool test) 
+pheno_type Environment::init_disturb(bool test) 
 {
-	double sd = instance->sd_init;
+	pheno_type sd = instance->sd_init;
 	if (test) sd = instance->sd_init_test;
 	
 	if (sd == 0.)
@@ -75,9 +75,9 @@ double Environment::init_disturb(bool test)
 		return(sd*Random::randgauss());
 }
 
-double Environment::dynam_disturb(bool test) 
+pheno_type Environment::dynam_disturb(bool test) 
 {
-	double sd = instance->sd_dynam;
+	pheno_type sd = instance->sd_dynam;
 	if (test) sd = instance->sd_dynam_test;
 	
 	if (sd == 0.)
@@ -86,7 +86,7 @@ double Environment::dynam_disturb(bool test)
 		return(sd*Random::randgauss());
 }
 
-double Environment::final_disturb() 
+pheno_type Environment::final_disturb() 
 {
 	if (instance->sd_final == 0.)
 		return(0.0);

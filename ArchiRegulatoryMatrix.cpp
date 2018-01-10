@@ -289,15 +289,15 @@ unsigned int ArchiRegulatoryMatrix::nb_phen() const
 /* initialization of the connectivity matrix depend off the connectivity value */
 void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 {	
-	double connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
-	double connectivity_diag = param.getpar(INIT_CONDIAG)->GetDouble();
+	rate_type connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
+	rate_type connectivity_diag = param.getpar(INIT_CONDIAG)->GetDouble();
 	
 	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
 	{
 		vector<allele_type> allele_pattern;
 		for (unsigned int n=0 ; n<sall ; n++)
 		{
-			double threshold = connectivity;
+			rate_type threshold = connectivity;
 			if (n == loc)
 			{
 				threshold = connectivity_diag;

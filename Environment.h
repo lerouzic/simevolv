@@ -15,6 +15,7 @@
 #ifndef ENVIRONMENT_H_INCLUDED
 #define ENVIRONMENT_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 #include "Phenotype.h"
 
@@ -33,16 +34,16 @@ class Environment
 	    static void initialize(const ParameterSet&);
 	
 	    // functions
-		static double init_disturb(bool test = false);
-		static double dynam_disturb(bool test = false);
-		static double final_disturb();
+		static pheno_type init_disturb(bool test = false);
+		static pheno_type dynam_disturb(bool test = false);
+		static pheno_type final_disturb();
 	
 	private:
-	    double sd_init;
-	    double sd_init_test;
-	    double sd_dynam;
-	    double sd_dynam_test;
-	    double sd_final;	
+	    pheno_type sd_init;
+	    pheno_type sd_init_test;
+	    pheno_type sd_dynam;
+	    pheno_type sd_dynam_test;
+	    pheno_type sd_final;	
 };
 
 #endif // ENVIRONMENT_H_INCLUDED

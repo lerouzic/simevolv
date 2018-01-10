@@ -130,12 +130,12 @@ void Individual::update_fitness(const Population & pop)
 
 
 // getters
-double Individual::get_fitness() const
+fitness_type Individual::get_fitness() const
 {
     return(fitness);
 }
 
-double Individual::get_epigenet() const
+fitness_type Individual::get_epigenet() const
 {
 	return(epigenet);
 }

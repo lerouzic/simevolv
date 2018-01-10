@@ -81,9 +81,9 @@ long int Parameter_int::GetInt() const
 	return(Get());
 }
 
-double Parameter_int::GetDouble() const 
+float_type Parameter_int::GetDouble() const 
 {
-	return(double(Get()));
+	return(float_type(Get()));
 }
 	    
 void Parameter_int::Set(long int v)
@@ -99,7 +99,7 @@ bool Parameter_int::is_nil() const
 }
 
 
-Parameter_double::Parameter_double(double minimum, double maximum)
+Parameter_double::Parameter_double(float_type minimum, float_type maximum)
     : Parameter()
     , min(minimum)
     , max(maximum)
@@ -108,7 +108,7 @@ Parameter_double::Parameter_double(double minimum, double maximum)
 
 void Parameter_double::read(istream & i)
 {
-    double val;
+    float_type val;
     assert (i >> val && "Unable to read parameter");
     Set(val);
 }
@@ -125,7 +125,7 @@ void Parameter_double::write(ostream & out) const
     }
 }
 
-double Parameter_double::Get() const
+float_type Parameter_double::Get() const
 {
     assert (is_initialized() && "Parameter not initialized");
     count++;
@@ -137,12 +137,12 @@ long int Parameter_double::GetInt() const
 	return(int(Get()));
 }
 
-double Parameter_double::GetDouble() const 
+float_type Parameter_double::GetDouble() const 
 {
 	return(Get());
 }
 
-void Parameter_double::Set(double v)
+void Parameter_double::Set(float_type v)
 {
     initialized = true;
     assert (v >= min && v <= max && "Parameter out of range");
@@ -155,7 +155,7 @@ bool Parameter_double::is_nil() const
 }
 
 
-Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
+Parameter_vector_double::Parameter_vector_double(float_type minimum, float_type maximum)
     : Parameter()
     , min(minimum)
     , max(maximum)
@@ -165,7 +165,7 @@ Parameter_vector_double::Parameter_vector_double(double minimum, double maximum)
 void Parameter_vector_double::read(istream & i)
 {
 	value.clear();
-    double val;
+    float_type val;
     while (i >> val)
     {
         Add(val);
@@ -176,7 +176,7 @@ void Parameter_vector_double::write(ostream & out) const
 {
     if (is_initialized())
     {
-        for (vector<double>::const_iterator it = value.begin(); it != value.end(); it++)
+        for (vector<float_type>::const_iterator it = value.begin(); it != value.end(); it++)
         {
             out << *it << "\t";
         }
@@ -187,19 +187,19 @@ void Parameter_vector_double::write(ostream & out) const
     }
 }
 
-vector<double> Parameter_vector_double::Get() const
+vector<float_type> Parameter_vector_double::Get() const
 {
     assert (is_initialized() && "Parameter not initialized");
     count++;
     return(value);
 }
 
-vector<double> Parameter_vector_double::GetVectorDouble() const 
+vector<float_type> Parameter_vector_double::GetVectorDouble() const 
 {
 	return(Get());
 }
 
-double Parameter_vector_double::Get_element(int elem) const
+float_type Parameter_vector_double::Get_element(int elem) const
 {
     assert (is_initialized() && "Parameter not initialized");
     if (count == 0)
@@ -216,14 +216,14 @@ double Parameter_vector_double::Get_element(int elem) const
 	}
 }
 
-double Parameter_vector_double:: GetDouble(int el) const 
+float_type Parameter_vector_double:: GetDouble(int el) const 
 {
 	return(Get_element(el));
 }
 
-void Parameter_vector_double::Set(const vector<double>& v)
+void Parameter_vector_double::Set(const vector<float_type>& v)
 {
-    for (vector<double>::const_iterator it = v.begin(); it != v.end(); it++)
+    for (vector<float_type>::const_iterator it = v.begin(); it != v.end(); it++)
     {
         assert(*it >= min && *it <= max && "Parameter out of range");
     }
@@ -231,7 +231,7 @@ void Parameter_vector_double::Set(const vector<double>& v)
     value = v;
 }
 
-void Parameter_vector_double::Add(double e)
+void Parameter_vector_double::Add(float_type e)
 {
     assert (e >= min && e <= max && "Parameter out of range");
     initialized=true;
@@ -239,7 +239,7 @@ void Parameter_vector_double::Add(double e)
 }
 
 
-Parameter_gaussian::Parameter_gaussian(double minimum_mean, double maximum_mean, double maximum_sd)
+Parameter_gaussian::Parameter_gaussian(float_type minimum_mean, float_type maximum_mean, float_type maximum_sd)
     : Parameter()
     , mean(minimum_mean, maximum_mean)
     , sd(0.0, maximum_sd)
@@ -248,7 +248,7 @@ Parameter_gaussian::Parameter_gaussian(double minimum_mean, double maximum_mean,
 
 void Parameter_gaussian::read(istream & i)
 {
-    double val;
+    float_type val;
     assert(i >> val &&  "Unable to read parameter");
     SetMean(val);
     assert(i >> val &&  "Unable to read parameter");
@@ -263,24 +263,24 @@ void Parameter_gaussian::write(ostream & out) const
     out << "\t";
 }
 
-void Parameter_gaussian::SetMean(double m)
+void Parameter_gaussian::SetMean(float_type m)
 {
     mean.Set(m);
 }
 
-void Parameter_gaussian::SetSd(double s)
+void Parameter_gaussian::SetSd(float_type s)
 {
     sd.Set(s);
 }
 
-double Parameter_gaussian::draw() const
+float_type Parameter_gaussian::draw() const
 {
 	assert(is_initialized() && "Parameter not initialized");
 	count ++;
     return(mean.Get() + sd.Get()*Random::randgauss());
 }
 
-double Parameter_gaussian::GetDouble() const 
+float_type Parameter_gaussian::GetDouble() const 
 {
 	return(draw());
 }

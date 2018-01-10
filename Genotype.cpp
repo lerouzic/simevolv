@@ -23,11 +23,13 @@
 #include <cassert>
 #include <cmath>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
 
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Genotype)
 BOOST_CLASS_EXPORT(DiploGenotype)
 BOOST_CLASS_EXPORT(HaploGenotype)
+#endif
 
 using namespace std;
 
@@ -100,7 +102,7 @@ Haplotype DiploGenotype::produce_gamete() const
 	return(Haplotype::recombine(gam_father, gam_mother));
 }
 
-std::vector<double> DiploGenotype::combine_at_loc(unsigned int loc, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const 
+std::vector<allele_type> DiploGenotype::combine_at_loc(unsigned int loc, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const 
 {
 	assert(loc < nb_loc());
 	return(combineFUN(*gam_father.haplotype[loc], *gam_mother.haplotype[loc]));
@@ -150,7 +152,7 @@ Haplotype HaploGenotype::produce_gamete() const
 	return(gam);
 }
 
-std::vector<double> HaploGenotype::combine_at_loc(unsigned int loc, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const 
+std::vector<allele_type> HaploGenotype::combine_at_loc(unsigned int loc, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const 
 {
 	assert(loc < nb_loc());
 	// For haploid genomes, the "combine" function does not make sense. 

@@ -16,13 +16,16 @@
 #ifndef GENOTYPE_H_INCLUDED
 #define GENOTYPE_H_INCLUDED
 
+#include "types.h"
 #include "Haplotype.h"
 #include "Parameters.h"
 #include "Phenotype.h"
 
 #include <iostream>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#endif
 
 class Genotype
 {
@@ -48,13 +51,15 @@ class Genotype
 	    virtual void make_mutation(bool test = false) = 0;
 		virtual Haplotype produce_gamete() const = 0;
 		
-		virtual std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const = 0;
+		virtual std::vector<allele_type> combine_at_loc(unsigned int, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const = 0;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             // nothing to do
         }
+        #endif
 };
 
 class DiploGenotype : public Genotype {
@@ -70,19 +75,21 @@ class DiploGenotype : public Genotype {
 	    void make_mutation(bool test = false);
 		Haplotype produce_gamete() const;
 		
-		std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const;	
+		std::vector<allele_type> combine_at_loc(unsigned int, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const;	
 		
 	protected:
 	    Haplotype gam_father;
 	    Haplotype gam_mother;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::base_object<Genotype>(*this);
             ar & gam_father;
             ar & gam_mother;
         }        
+        #endif
 };
 
 class HaploGenotype : public Genotype {
@@ -98,17 +105,19 @@ class HaploGenotype : public Genotype {
 	    void make_mutation(bool test = false);
 		Haplotype produce_gamete() const;		
 		
-		std::vector<double> combine_at_loc(unsigned int, std::vector<double> (*combineFUN)(const Allele &, const Allele &)) const;
+		std::vector<allele_type> combine_at_loc(unsigned int, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const;
 			
 	protected: 
 		Haplotype gam;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::base_object<Genotype>(*this);
             ar & gam;
         }           
+        #endif
 };
 
 #endif // GENOTYPE_H_INCLUDED

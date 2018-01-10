@@ -29,18 +29,18 @@ class ArchiMultilinear : public Architecture
 	    virtual ~ArchiMultilinear();
 	
 	    // getters
-	    virtual double get_epsilon2(unsigned int, unsigned int) const;
-	    virtual double get_epsilon3(unsigned int, unsigned int, unsigned int) const;
+	    virtual allele_type get_epsilon2(unsigned int, unsigned int) const;
+	    virtual allele_type get_epsilon3(unsigned int, unsigned int, unsigned int) const;
 	    
 	    // setters
-	    virtual void set_epsilon2(unsigned int, unsigned int, double);
-	    virtual void set_epsilon3(unsigned int, unsigned int, unsigned int, double);
+	    virtual void set_epsilon2(unsigned int, unsigned int, allele_type);
+	    virtual void set_epsilon3(unsigned int, unsigned int, unsigned int, allele_type);
 	
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &, bool sdinittest = false, bool sddynamtest = false) const;
 	
 	protected :
-	    std::vector<std::vector<double>> epsilon2;
-	    std::vector<std::vector<std::vector<double>>> epsilon3;
+	    std::vector<std::vector<allele_type>> epsilon2;
+	    std::vector<std::vector<std::vector<allele_type>>> epsilon3;
 	    bool flag_epistasis2;
 	    bool flag_epistasis3;
 	    

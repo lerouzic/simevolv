@@ -14,27 +14,21 @@
 
 
 #include "GeneticMap.h"
-
 #include "Parconst.h"
 
 #include <cassert>
-
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/export.hpp>
-
-BOOST_CLASS_EXPORT(GeneticMap)
 
 using namespace std;
 
 // constructors and destructor
 
 GeneticMap::GeneticMap()
-    : recrate(vector<double> (0))
+    : recrate(vector<rate_type> (0))
 {
 }
 
 GeneticMap::GeneticMap(const ParameterSet& param)
-    : recrate(vector<double> (0))
+    : recrate(vector<rate_type> (0))
 {
     int nloc = param.getpar(GENET_NBLOC) -> GetInt();
 
@@ -56,7 +50,7 @@ int GeneticMap::nb_loc() const
 }
 
 /* calculate and return the recombination rate for the given locus */
-double GeneticMap::recombination_rate(unsigned int loc) const
+rate_type GeneticMap::recombination_rate(unsigned int loc) const
 {
     unsigned int nloc = GeneticMap::nb_loc();
 	assert(loc < nloc - 1);

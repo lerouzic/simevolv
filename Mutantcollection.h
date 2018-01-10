@@ -14,6 +14,7 @@
 #ifndef MUTANTCOLLECTION_H_INCLUDED
 #define MUTANTCOLLECTION_H_INCLUDED
 
+#include "types.h"
 #include "Phenotype.h"
 #include "Population.h"
 #include "Individual.h"

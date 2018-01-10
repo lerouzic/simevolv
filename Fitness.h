@@ -15,6 +15,7 @@
 #ifndef FITNESS_H_INCLUDED
 #define FITNESS_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 #include "Phenotype.h"
 
@@ -28,7 +29,6 @@ class Fitness_Fluct;
 class Fitness_Phenotype;
 class Fitness_Stability;
 
-typedef double fitness_type;
 typedef std::vector<pheno_type> FitnessOptimum;
 typedef std::vector<fitness_type> FitnessStrength;
 

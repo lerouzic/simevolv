@@ -15,15 +15,16 @@
 #ifndef ALLELE_H_INCLUDED
 #define ALLELE_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 
 #include <vector>
 #include <memory>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/vector.hpp>
-
-typedef double allele_type;
+#endif
 
 class Allele
 {
@@ -62,10 +63,12 @@ class Allele
 	    std::vector<allele_type> allele;
         
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & allele;
         }          
+        #endif
 };
 
 
@@ -90,10 +93,12 @@ class Allele_zero: public Allele
 	virtual std::shared_ptr<Allele> make_mutant(allele_type mutsd) const;
     
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & boost::serialization::base_object<Allele>(*this);
         }      
+        #endif
 };
 
 #endif // ALLELE_H_INCLUDED

@@ -23,10 +23,12 @@
 #include <string>
 #include <cmath>
 
+ #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(Allele)
 BOOST_CLASS_EXPORT(Allele_zero)
+#endif
 
 using namespace std;
 
@@ -92,7 +94,7 @@ vector<allele_type> Allele::combine_mean(const Allele & a1, const Allele & a2)
 //Allele combination used in the Boolean Architecture. Combines the two alleles by using an OR function
 vector<allele_type> Allele::combine_OR(const Allele & a1, const Allele & a2)
 {
-    vector<double> ans;
+    vector<allele_type> ans;
     
     unsigned int all_size =  a1.allele.size();
     for (unsigned int sa = 0; sa < all_size; sa++)

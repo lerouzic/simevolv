@@ -15,6 +15,7 @@
 #ifndef ARCHITECTURE_H_INCLUDED
 #define ARCHITECTURE_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 #include "GeneticMap.h"
 #include "Allele.h"
@@ -29,6 +30,7 @@
 
 #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/vector.hpp>
 #endif
 
 class Architecture  	/* Pure virtual class */
@@ -53,10 +55,10 @@ class Architecture  	/* Pure virtual class */
 	    unsigned int nb_loc() const;
         virtual unsigned int nb_phen() const;
 	    unsigned int all_size() const;
-	    double mutation_rate(unsigned int) const;
-	    double mutation_sd(unsigned int) const;
-	    double mutation_sd_test(unsigned int) const;
-	    double recombination_rate(unsigned int) const;
+	    rate_type mutation_rate(unsigned int) const;
+	    allele_type mutation_sd(unsigned int) const;
+	    allele_type mutation_sd_test(unsigned int) const;
+	    rate_type recombination_rate(unsigned int) const;
 	    		
 		// to be defined by inherited classes 
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo&, bool sdinittest = false, bool sddynamtest = false) const = 0; // no default
@@ -70,12 +72,12 @@ class Architecture  	/* Pure virtual class */
 	    GeneticMap gmap;
 	    unsigned int nloc; // number of loci
 	    unsigned int sall; // size of alleles
-	    std::vector<double> mutrate;
-	    std::vector<double> mutsd;
-	    std::vector<double> mutsd_test;
+	    std::vector<rate_type> mutrate;
+	    std::vector<allele_type> mutsd;
+	    std::vector<allele_type> mutsd_test;
         
-        std::vector<double> plasticity_strength;
-        std::vector<double> plasticity_signal;
+        std::vector<pheno_type> plasticity_strength;
+        std::vector<pheno_type> plasticity_signal;
 	    
 	    std::string iofile; // this should not be serialized
 	    
@@ -85,24 +87,18 @@ class Architecture  	/* Pure virtual class */
 	private:
         #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive &, const unsigned int);
+		template<class Archive> void serialize(Archive & ar, const unsigned int version)
+        {
+            ar & gmap;
+            ar & nloc;
+            ar & sall; 
+            ar & mutrate;
+            ar & mutsd;
+            ar & mutsd_test;
+            ar & plasticity_strength;
+            ar & plasticity_signal;
+        }
         #endif
 };
-
-#ifdef SERIALIZATION_TEXT
-// Templates have to be written in the header file
-template<class Archive>
-void Architecture::serialize(Archive & ar, const unsigned int version) 
-{
-	ar & gmap;
-	ar & nloc;
-	ar & sall; 
-	ar & mutrate;
-	ar & mutsd;
-	ar & mutsd_test;
-    ar & plasticity_strength;
-    ar & plasticity_signal;
-}
-#endif
 
 #endif // ARCHITECTURE_H_INCLUDED

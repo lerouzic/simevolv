@@ -16,6 +16,7 @@
 #ifndef POPULATION_H_INCLUDED
 #define POPULATION_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 #include "Phenotype.h"
 #include "Individual.h"
@@ -72,16 +73,16 @@ class Population
 	    
 	    // Stuff for selection
 	    std::vector<fitness_type> cumul_fitness() const;
-	    const Individual & pick_parent(const std::vector<double>&) const;
+	    const Individual & pick_parent(const std::vector<fitness_type>&) const;
 	    // different algorithms to optimize weighted random picking of parents
-	    long int search_fit_table(double, const std::vector<double>&) const;
-	    long int sequential_search_fit_table(double, const std::vector<double>&) const;
-	    long int stl_search_fit_table(double, const std::vector<double>&) const;		
+	    long int search_fit_table(fitness_type, const std::vector<fitness_type>&) const;
+	    long int sequential_search_fit_table(fitness_type, const std::vector<fitness_type>&) const;
+	    long int stl_search_fit_table(fitness_type, const std::vector<fitness_type>&) const;		
 	
 	    std::vector<Individual> pop;
 	    
 	    // output parameters, to be stored and copied (design problem?)
-	    float selfing_rate;	    
+	    rate_type selfing_rate;	    
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;

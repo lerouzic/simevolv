@@ -127,7 +127,7 @@ void Population::update_param(const ParameterSet & param)
     
     // Individuals don't know how to update themselves
     // Note: useless (duplicated code) when initializing for the first time
-    double new_epigenet = param.getpar(GENET_EPIGENET)->GetDouble();
+    rate_type new_epigenet = param.getpar(GENET_EPIGENET)->GetDouble();
     for (size_t i = 0; i < pop.size(); i++) {
         pop[i].epigenet = new_epigenet;
     }
@@ -152,7 +152,7 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     offspring.out_unstab = out_unstab;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
-    vector<double> cumul_fit = cumul_fitness();
+    vector<fitness_type> cumul_fit = cumul_fitness();
 
     if (offspr_number == 0)
     {	// When the population size is not provided, it is expected to be
@@ -211,10 +211,10 @@ long int Population::size() const
    fitnesses, in the same order as in the pop vector.
    The purpose of this function is to fasten the reproduction algorithm.
    The function scales fitnesses such as the sum is 1.0 */ 
-vector<double> Population::cumul_fitness() const
+vector<fitness_type> Population::cumul_fitness() const
 {
-    vector<double> cum_fit(pop.size());
-    double cumul = 0.0;
+    vector<fitness_type> cum_fit(pop.size());
+    fitness_type cumul = 0.0;
 
 	for (unsigned int i = 0; i < pop.size(); i++) 
 	{
@@ -232,7 +232,7 @@ vector<double> Population::cumul_fitness() const
 /* Picks a parent randomly, proportionally to individual fitnesses. Requires a vector
    of cumulated fitnesses. This function is just a wrapper for search_fit_table
    (just in case several algorithms should be compared) */
-const Individual & Population::pick_parent(const vector<double>& cumfit) const
+const Individual & Population::pick_parent(const vector<fitness_type>& cumfit) const
 {
     int i = search_fit_table(Random::randnum(), cumfit);
     return(pop[i]);
@@ -240,14 +240,14 @@ const Individual & Population::pick_parent(const vector<double>& cumfit) const
 
 /* Returns the index of the individuals matching the random number 0 < rnum < 1, from the cumulated 
    fitness vector. Several algorithms can be used here. */
-long int Population::search_fit_table(double rnum, const vector<double>& cumfit) const
+long int Population::search_fit_table(fitness_type rnum, const vector<fitness_type>& cumfit) const
 {
     return(stl_search_fit_table(rnum, cumfit));
 }
 
 /* Old (and not efficient) search algorithm (sequential search: tries all sorted values until 
    finding the proper one.  */
-long int Population::sequential_search_fit_table(double rnum, const vector<double>& cumfit) const
+long int Population::sequential_search_fit_table(fitness_type rnum, const vector<fitness_type>& cumfit) const
 {
     long int i = 0;
     while (cumfit[i] < rnum)
@@ -256,7 +256,7 @@ long int Population::sequential_search_fit_table(double rnum, const vector<doubl
 }
 
 /* New (and efficient) search algorithm based on a binary search (using the STL library). */
-long int Population::stl_search_fit_table(double rnum, const vector<double>& cumfit) const
+long int Population::stl_search_fit_table(fitness_type rnum, const vector<fitness_type>& cumfit) const
 {
     auto solution = std::lower_bound(cumfit.begin(), cumfit.end(), rnum);
     assert(solution != cumfit.end());
@@ -293,7 +293,7 @@ void Population::write(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
 	vector<fitness_type> fit;
-	vector<double> epi;
+	vector<rate_type> epi;
 	vector<Phenotype> genot; // this is temporary... 
 	
 	// stores vectors of phenotypic values, genotypic values, fitnesses. 
@@ -318,7 +318,7 @@ void Population::write(ostream & out, int generation) const
 			 
 	// Calls the unidimensional routine for fitnesses. 
 	UnivariateStat<fitness_type> fitstat(fit);
-	UnivariateStat<double> epistat(epi);
+	UnivariateStat<rate_type> epistat(epi);
 			
 	/* First generation: need to write the headers. 
 	   This is not extremely clean. 

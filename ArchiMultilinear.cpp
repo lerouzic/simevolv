@@ -41,8 +41,8 @@ using namespace std;
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     : Architecture(param)
-    , epsilon2(vector<vector<double>>(0))
-    , epsilon3(vector<vector<vector<double>>>(0))
+    , epsilon2(vector<vector<allele_type>>(0))
+    , epsilon3(vector<vector<vector<allele_type>>>(0))
 {
 	update_param_internal(param); 
 
@@ -87,7 +87,7 @@ ArchiMultilinear::~ArchiMultilinear()
 // functions
 
 /* return the value for 2nd-order epistasis */
-double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) const
+allele_type ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) const
 {
     if (loc1 > loc2)
     {
@@ -101,7 +101,7 @@ double ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) cons
 }
 
 /* return the value for 3rd-order epistasis */
-double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3) const
+allele_type ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3) const
 {
     if (loc1 > loc2)
     {
@@ -125,7 +125,7 @@ double ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsi
 }
 
 /* sets the value of 2nd-order epistasis */
-void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double value)
+void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, allele_type value)
 {
     if (loc1 > loc2)
     {
@@ -136,7 +136,7 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
 
     while(epsilon2.size() < (loc1+1))
     {
-        vector<double> v(0);
+        vector<allele_type> v(0);
         epsilon2.push_back(v);
     }
 
@@ -149,7 +149,7 @@ void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, double
 }
 
 /* sets the value of 3rd-order epistasis */
-void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, double value)
+void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, allele_type value)
 {
     if (loc1 > loc2)
     {
@@ -169,13 +169,13 @@ void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsign
 
     while(epsilon3.size() < nb_loc()-2)
     {
-        vector<vector<double> > v(0);
+        vector<vector<allele_type> > v(0);
         epsilon3.push_back(v);
     }
 
     while(epsilon3[loc1].size() < (nb_loc()-loc1-2))
     {
-        vector<double> v(0);
+        vector<allele_type> v(0);
         epsilon3[loc1].push_back(v);
     }
 
@@ -197,7 +197,7 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
 
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {	
-		vector<double> tmp_sum = genotype.combine_at_loc(loc, &Allele::combine_add);
+		vector<pheno_type> tmp_sum = genotype.combine_at_loc(loc, &Allele::combine_add);
 
         sumloc[loc] = 0.0;
         for (unsigned int all = 0; all < sall; all++)

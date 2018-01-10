@@ -14,6 +14,7 @@
 #ifndef CANALIZATION_H_INCLUDED
 #define CANALIZATION_H_INCLUDED
 
+#include "types.h"
 #include "Phenotype.h"
 #include "Statistics.h"
 #include "Parameters.h"

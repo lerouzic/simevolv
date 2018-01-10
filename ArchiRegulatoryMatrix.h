@@ -42,7 +42,7 @@ class ArchiRegulatoryMatrix : public Architecture
 	protected :
 		unsigned int sall;
 		std::vector<pheno_type> So;
-		double recur;
+		rate_type recur;
 		std::vector<std::vector<allele_type>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
 		unsigned int timesteps;
 		unsigned int calcsteps;
@@ -127,7 +127,7 @@ class ArchiSiegal : public ArchiRegulatoryMatrix
 	    virtual ~ArchiSiegal();
 
 	protected :
-		double basal;
+		pheno_type basal;
 		
 		// Inherited functions
 		virtual void sigma(pheno_type&) const; 
@@ -163,9 +163,9 @@ class ArchiM2 : public ArchiRegulatoryMatrix
 	    virtual ~ArchiM2();
 			
 	protected :
-		double basal;
-        double b1; // = 1/basal - 1
-        double b2; // = 1/(basal*(basal-1))
+		pheno_type basal;
+        pheno_type b1; // = 1/basal - 1
+        pheno_type b2; // = 1/(basal*(basal-1))
 		
 		// Inherited functions
 		virtual void sigma(pheno_type&) const; 

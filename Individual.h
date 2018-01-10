@@ -16,6 +16,7 @@
 #ifndef INDIVIDUAL_H_INCLUDED
 #define INDIVIDUAL_H_INCLUDED
 
+#include "types.h"
 #include "Phenotype.h"
 #include "Haplotype.h"
 #include "Genotype.h"
@@ -29,6 +30,7 @@
 
 #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 #endif
 
 class Population;
@@ -55,7 +57,7 @@ class Individual
 
 		// getters
 	    fitness_type get_fitness() const;
-	    double get_epigenet() const;
+	    rate_type get_epigenet() const;
 	    Phenotype get_phenotype() const;
 	    unsigned int ploidy() const;
 	    
@@ -80,7 +82,7 @@ class Individual
 	    std::unique_ptr<Genotype> genotype;
 	    Phenotype phenotype; 
 	    fitness_type fitness;
-	    double epigenet; // to be transmitted to the offspring
+	    rate_type epigenet; // to be transmitted to the offspring
 	    
 	    EpigeneticInfo epiinfo; // from the mother
         

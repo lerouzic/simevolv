@@ -31,7 +31,7 @@ EpigeneticInfo::EpigeneticInfo(const EpigeneticInfo & copy)
 	assert(epigenet <= 1.0);	
 }
 
-EpigeneticInfo::EpigeneticInfo(const double epi, const Phenotype & mothphen)
+EpigeneticInfo::EpigeneticInfo(const rate_type epi, const Phenotype & mothphen)
 	: epigenet(epi)
 	, mother_phen(mothphen)
 { 
@@ -50,7 +50,7 @@ EpigeneticInfo::EpigeneticInfo(const Individual & mother)
 EpigeneticInfo::~EpigeneticInfo() 
 { }
 
-double EpigeneticInfo::get_epigenet() const
+rate_type EpigeneticInfo::get_epigenet() const
 {
 	return(epigenet);
 }

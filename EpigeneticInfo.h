@@ -13,6 +13,7 @@
 #ifndef EPIGENETICINFO_H_INCLUDED
 #define EPIGENETICINFO_H_INCLUDED
 
+#include "types.h"
 #include "Phenotype.h"
 
 #include <memory>
@@ -28,17 +29,17 @@ class EpigeneticInfo {
 	public:
 		EpigeneticInfo();
 		EpigeneticInfo(const EpigeneticInfo &);
-		EpigeneticInfo(const double, const Phenotype &);
+		EpigeneticInfo(const rate_type, const Phenotype &);
 		EpigeneticInfo(const Individual &);
 		~ EpigeneticInfo();
 		EpigeneticInfo & operator = (const EpigeneticInfo &);
 			
-		double get_epigenet() const;
+		rate_type get_epigenet() const;
 		Phenotype get_phenotype() const;
 		bool is_defined() const;
 	
 	protected:
-		double epigenet;
+		rate_type epigenet;
 		Phenotype mother_phen;
         
 	private:

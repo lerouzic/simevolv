@@ -15,6 +15,8 @@
 #ifndef PARAMETERS_H_INCLUDED
 #define PARAMETERS_H_INCLUDED
 
+#include "types.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -39,10 +41,10 @@ class Parameter
 	
 	    //functions
 	    virtual long int GetInt() const {assert(false && "function unavailable");}
-	    virtual double GetDouble() const {assert(false && "function unavailable");}
-	    virtual double GetDouble(int) const {assert(false && "function unavailable");}
+	    virtual float_type GetDouble() const {assert(false && "function unavailable");}
+	    virtual float_type GetDouble(int) const {assert(false && "function unavailable");}
 	    virtual std::string GetString() const {assert(false && "function unavailable");}
-	    virtual std::vector<double> GetVectorDouble() const {assert(false && "function unavailable");}
+	    virtual std::vector<float_type> GetVectorDouble() const {assert(false && "function unavailable");}
 	    virtual bool is_nil() const {assert(false && "function unavailable");}
 	    virtual bool is_initialized() const;
 	    unsigned int get_count() const;
@@ -66,7 +68,7 @@ class Parameter_int: public Parameter
 	    // functions
 	    long int Get() const;
 	    long int GetInt() const;
-	    double GetDouble() const;
+	    float_type GetDouble() const;
 	    void Set(long int);
 	    bool is_nil() const;
 	
@@ -80,7 +82,7 @@ class Parameter_double: public Parameter
 {
 	public:
 	    // constructors/destructor
-	    Parameter_double(double minimum=-999.9, double maximum=999.9);
+	    Parameter_double(float_type minimum=-999.9, float_type maximum=999.9);
 	    ~Parameter_double() {}
 	
 	    // input/output
@@ -88,23 +90,23 @@ class Parameter_double: public Parameter
 	    void write(std::ostream&) const;
 	
 	    // functions
-	    double Get() const;
+	    float_type Get() const;
 	    long int GetInt() const;
-	    double GetDouble() const;
-	    void Set(double);
+	    float_type GetDouble() const;
+	    void Set(float_type);
 	    bool is_nil() const;
 	
 	protected:
-	    double value;
-	    double min;
-	    double max;
+	    float_type value;
+	    float_type min;
+	    float_type max;
 };
 
 class Parameter_vector_double: public Parameter
 {
 	public:
 	    // constructors/destructor
-	    Parameter_vector_double(double minimum=-999.9, double maximum=999.9);
+	    Parameter_vector_double(float_type minimum=-999.9, float_type maximum=999.9);
 	    ~Parameter_vector_double() {}
 	
 	    // input/output
@@ -112,24 +114,24 @@ class Parameter_vector_double: public Parameter
 	    void write(std::ostream&) const;
 	
 	    // functions
-	    std::vector<double> Get() const;
-	    std::vector<double> GetVectorDouble() const;
-	    double Get_element(int) const;
-	    double GetDouble(int) const;
-	    void Set(const std::vector<double>&);
-	    void Add(double);
+	    std::vector<float_type> Get() const;
+	    std::vector<float_type> GetVectorDouble() const;
+	    float_type Get_element(int) const;
+	    float_type GetDouble(int) const;
+	    void Set(const std::vector<float_type>&);
+	    void Add(float_type);
 	
 	protected:
-	    std::vector<double> value;
-	    double min;
-	    double max;
+	    std::vector<float_type> value;
+	    float_type min;
+	    float_type max;
 };
 
 class Parameter_gaussian: public Parameter
 {
 	public:
 	    // constructors/destructor
-	    Parameter_gaussian(double minimum_mean=-999.9, double maximum_mean=999.9, double maximum_sd=999.9);
+	    Parameter_gaussian(float_type minimum_mean=-999.9, float_type maximum_mean=999.9, float_type maximum_sd=999.9);
 	    ~Parameter_gaussian() {}
 	
 	    // input/output
@@ -137,10 +139,10 @@ class Parameter_gaussian: public Parameter
 	    void write(std::ostream&) const;
 	
 	    // functions
-	    void SetMean(double);
-	    void SetSd(double);
-	    double draw() const;
-	    double GetDouble() const;
+	    void SetMean(float_type);
+	    void SetSd(float_type);
+	    float_type draw() const;
+	    float_type GetDouble() const;
 	    bool is_nil() const;
 	    bool is_initialized() const;
 	

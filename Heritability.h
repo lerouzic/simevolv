@@ -14,7 +14,7 @@
 #ifndef HERITABILITY_H_INCLUDED
 #define HERITABILITY_H_INCLUDED
 
-
+#include "types.h"
 #include "Phenotype.h" 
 #include "Population.h"
 #include "Fitness.h"

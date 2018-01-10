@@ -16,12 +16,16 @@
 #ifndef GENETICMAP_H_INCLUDED
 #define GENETICMAP_H_INCLUDED
 
+#include "types.h"
 #include "Parameters.h"
 
 #include <vector>
 
+ #ifdef SERIALIZATION_TEXT
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#endif
 
 class GeneticMap 
 {
@@ -34,20 +38,19 @@ class GeneticMap
 	
 	    //functions
 	    int nb_loc() const;
-	    double recombination_rate(unsigned int loc) const;
+	    rate_type recombination_rate(unsigned int loc) const;
 	
 	protected:
-	    std::vector<double> recrate;
+	    std::vector<rate_type> recrate;
 	    
 	private:
+         #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;	
-		template<class Archive> void serialize(Archive &, const unsigned int);
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & recrate;
+        }
+        #endif
 };
 
-template<class Archive>
-void GeneticMap::serialize(Archive & ar, const unsigned int version) 
-{
-	ar & recrate;
-}
 
 #endif // GENETICMAP_H_INCLUDED

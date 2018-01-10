@@ -42,8 +42,8 @@ using namespace std;
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiBoolean::ArchiBoolean(const ParameterSet& param)
 : Architecture(param)
-, bucket_matrix(vector<vector<double>>(0))
-, logic_operator(vector<double>(0))
+, bucket_matrix(vector<vector<float_type>>(0))
+, logic_operator(vector<float_type>(0))
 , ploc (param.getpar(PHEN_NBLOC) -> GetInt())
 , type(param.getpar(SCALE)->GetString())
 
@@ -51,12 +51,12 @@ ArchiBoolean::ArchiBoolean(const ParameterSet& param)
     update_param_internal(param); 
 
     
-    double threshold_matrix = param.getpar(MATRIX_DENS)->GetDouble();
-    double threshold_operator = param.getpar(LOG_OPERATOR_DENS)->GetDouble();
+    float_type threshold_matrix = param.getpar(MATRIX_DENS)->GetDouble();
+    float_type threshold_operator = param.getpar(LOG_OPERATOR_DENS)->GetDouble();
     
     // building matrices
     //TODO: Test for "empty" lines -> if a line has no ones, then the locus in the phenotype is not build by any locus of the genotype!
-    vector<double> v(0);
+    vector<float_type> v(0);
     for (unsigned int loc1 = 0; loc1 < ploc; loc1++)
     {
         for (unsigned int loc2 = 0; loc2 < nloc; loc2++ )
@@ -100,20 +100,20 @@ unsigned int ArchiBoolean::nb_phen() const {
 }
 
 /* return value of bucket-matrix */
-double ArchiBoolean::get_bucket_matrix(unsigned int loc1, unsigned int loc2) const
+float_type ArchiBoolean::get_bucket_matrix(unsigned int loc1, unsigned int loc2) const
 {
     return(bucket_matrix[loc1][loc2]);
 }
 
 //return value of the vector logic_operator
-double ArchiBoolean::get_logic_operator(unsigned int loc) const
+float_type ArchiBoolean::get_logic_operator(unsigned int loc) const
 {
     return(logic_operator[loc]);
 }
 
 /* sets row of bucket_matrix */
 //TODO: should set whole matrix --> get the setting out of the constructor
-void ArchiBoolean::set_bucket_matrix(unsigned int loc1, vector<double> value)
+void ArchiBoolean::set_bucket_matrix(unsigned int loc1, vector<float_type> value)
 {
     bucket_matrix.push_back(value);
 }
@@ -132,7 +132,7 @@ void ArchiBoolean::set_bucket_matrix(unsigned int loc1, vector<double> value)
 //TODO: Maybe change to uniform distribution? (Random:randnum) -> then parameter has to be changed! Parameter_gaussian to Parameter_double
 shared_ptr<Allele> ArchiBoolean::allele_init(const ParameterSet & param, unsigned int loc /* = 0 */) const
 {
-    vector<double> tmp;
+    vector<float_type> tmp;
     
     if(param.getpar(INIT_ALLELES) -> GetDouble()<0.5)
         tmp.push_back(0);
@@ -153,13 +153,13 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
 	// Warning: the variable "envir" has no effect in this model. 
 	// Warning: epigenetic transmission not implemented yet.
 {
-    double phenotype_calc =1;
-    vector<double> phenotype(0);
+    pheno_type phenotype_calc =1;
+    vector<pheno_type> phenotype(0);
     int phenotypesum =0;
     
 //calculation of the diploid genotype, based on OR operation. Each locus of the father and the mother gets combined by an OR function
 //function is defined in Allele.cpp
-    vector<vector<double>> y;
+    vector<vector<allele_type>> y;
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
 		y.push_back(genotype.combine_at_loc(loc, &Allele::combine_OR));

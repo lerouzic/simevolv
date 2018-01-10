@@ -33,11 +33,11 @@ class ArchiBoolean : public Architecture
     
     // getters
     virtual unsigned int nb_phen() const;
-    virtual double get_bucket_matrix(unsigned int, unsigned int) const;
-    virtual double get_logic_operator(unsigned int) const;
+    virtual float_type get_bucket_matrix(unsigned int, unsigned int) const;
+    virtual float_type get_logic_operator(unsigned int) const;
     
     // setters
-    virtual void set_bucket_matrix(unsigned int, std::vector<double>);
+    virtual void set_bucket_matrix(unsigned int, std::vector<float_type>);
     
     // debug/check
    // virtual std::string print_epsilon2() const;
@@ -48,8 +48,8 @@ class ArchiBoolean : public Architecture
     virtual std::shared_ptr<Allele> allele_mutation_test(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
     
     protected :
-    std::vector<std::vector<double>> bucket_matrix;
-    std::vector<double> logic_operator;
+    std::vector<std::vector<float_type>> bucket_matrix;
+    std::vector<float_type> logic_operator;
     unsigned int ploc;
     std::string type;
     

@@ -13,6 +13,7 @@
 #ifndef DIREPISTASIS_H_INCLUDED
 #define DIREPISTASIS_H_INCLUDED
 
+#include "types.h"
 #include "Population.h"
 #include "Individual.h"
 #include "Phenotype.h"

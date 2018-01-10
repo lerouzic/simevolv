@@ -32,11 +32,13 @@
 #include <vector>
 #include <memory>
 
+#ifdef SERIALIZATION_TEXT
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(Architecture)
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Architecture)
+#endif
 
 using namespace std;
 
@@ -47,11 +49,11 @@ Architecture::Architecture(const ParameterSet& param)
     : gmap (param)                                    // This cannot change when the parameter file changes
     , nloc (param.getpar(GENET_NBLOC) -> GetInt())    // The same, this cannot change even if the parameter file changes
     , sall (1) // by default, change for the architecture that needed a vector as allele
-    , mutrate (vector<double> (0))
-    , mutsd (vector<double> (0))
-    , mutsd_test (vector<double> (0))
-    , plasticity_strength (vector<double> (0))
-    , plasticity_signal (vector<double> (0))
+    , mutrate (vector<rate_type> (0))
+    , mutsd (vector<allele_type> (0))
+    , mutsd_test (vector<allele_type> (0))
+    , plasticity_strength (vector<pheno_type> (0))
+    , plasticity_signal (vector<pheno_type> (0))
     , iofile ("")
 {
 	// update_param_internal(param); // This should be called in derived classes only
@@ -182,28 +184,28 @@ unsigned int Architecture::all_size() const
 }
 
 /* return the mutation rate at a given locus */
-double Architecture::mutation_rate(unsigned int locus) const
+rate_type Architecture::mutation_rate(unsigned int locus) const
 {
     assert (locus < nloc);
     return(mutrate[locus]);
 }
 
 /* return the mutation effect at a given locus */
-double Architecture::mutation_sd(unsigned int locus) const
+allele_type Architecture::mutation_sd(unsigned int locus) const
 {
     assert(locus < nloc);
     return(mutsd[locus]);
 }
 
 /* return the mutation effect for canalization tests at a given locus */
-double Architecture::mutation_sd_test(unsigned int locus) const
+allele_type Architecture::mutation_sd_test(unsigned int locus) const
 {
     assert(locus < nloc);
     return(mutsd_test[locus]);
 }
 
 /* return the recombination rate at a given locus */
-double Architecture::recombination_rate(unsigned int locus) const
+rate_type Architecture::recombination_rate(unsigned int locus) const
 {
     assert(locus < nloc-1);
     return(gmap.recombination_rate(locus));
@@ -216,7 +218,7 @@ double Architecture::recombination_rate(unsigned int locus) const
 shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigned int loc /* = 0 */) const 
 {
 	// Here we don't need to know the locus, but inherited classes may.
-	vector<double> tmp;
+	vector<allele_type> tmp;
 	for(unsigned int i = 0; i < sall; i++)
     {
         tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
@@ -266,7 +268,7 @@ void Architecture::update_param_internal(const ParameterSet& param)
 		if (param.getpar(GENET_MUTTYPE)->GetString() == MT_locus)
 			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
 		else 
-			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<double>(nloc));
+			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<rate_type>(nloc));
         mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
         mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
     }
@@ -277,8 +279,8 @@ void Architecture::update_param_internal(const ParameterSet& param)
             plasticity_signal.push_back(param.getpar(FITNESS_OPTIMUM)->GetDouble(i));
         }
     } else {
-        plasticity_strength = vector<double>(this->nb_phen(), 0.0);
-        plasticity_signal = vector<double>(this->nb_phen(), 0.0);
+        plasticity_strength = vector<pheno_type>(this->nb_phen(), 0.0);
+        plasticity_signal = vector<pheno_type>(this->nb_phen(), 0.0);
     }
 
     

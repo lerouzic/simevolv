@@ -34,15 +34,13 @@ class ArchiAdditive : public Architecture
 	    ArchiAdditive() { }	
 	
 	private:
+        #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive &, const unsigned int);
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+            ar & boost::serialization::base_object<Architecture>(*this);
+        }
+        #endif
 };
 
-template<class Archive>
-void ArchiAdditive::serialize(Archive & ar, const unsigned int version)
-{
-	ar & boost::serialization::base_object<Architecture>(*this);
-	// nothing to do here
-}
 
 #endif // ARCHIADDITIVE_H_INCLUDED
