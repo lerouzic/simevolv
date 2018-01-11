@@ -34,8 +34,9 @@ UnivariateStat<T>::UnivariateStat(const std::vector<T> & vv)
 {
 	if (data.size() < 2) 
 	{
-		std::cerr << "A data set of size " << data.size() << " is not eligible for statistics." << std::endl;
-		assert("Terminate.");
+		// std::cerr << "A data set of size " << data.size() << " may not lead to meaningful statistical estimates." << std::endl;
+        // Actually, everything behaves more or less properly when n=1
+        // Variances are sample variance (sum sq /n) and can thus be computed
 	}
 	initialize();
 }
