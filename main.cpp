@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 		Architecture::initialize(param);
 	}
 	
-	unsigned int global_generation = 1;
+	unsigned int global_generation = 0;
 	
 	// This is needed for the initial population
 	// (explaining the unfortunate code duplication later)
@@ -125,9 +125,9 @@ int main(int argc, char *argv[])
 	bool continue_simulation = false;
     
 	do { // while continue_simulation
-			
+			            
 		// Partially duplicated code -- probably harmless, but not elegant
-		if (global_generation > 1) {
+		if (global_generation > 0) {
 			Fitness::initialize(param);
 			Environment::initialize(param);
 			Architecture::update_param(param);		
@@ -136,19 +136,19 @@ int main(int argc, char *argv[])
 
 		unsigned int current_pargen = param.getpar(SIMUL_GENER)->GetInt();
 		unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
-		unsigned int maxgen = global_generation;
+		unsigned int maxgen;
 		if (param.exists(SIMUL_MAXGEN))
 			maxgen = param.getpar(SIMUL_MAXGEN)->GetInt();
 		else
-			maxgen += current_pargen + 1;
+			maxgen = global_generation + current_pargen;
 		
-		// Inner loop: for one parameter file    
+		// Inner loop: for each parameter file    
 		for (unsigned int inner_generation = 1; 
 				(inner_generation <= current_pargen) && (global_generation <= maxgen); 
 						inner_generation++, global_generation++)
 		{
-			// Fitness::fluctuate(local_generation); // Obsolete
-			if ((global_generation == 1) || (global_generation == maxgen) || (global_generation % intervgen == 0))
+            // Step 1: Output if necessary
+			if ((global_generation == 0) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
 
@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
                 }
 			}
         
+            // Step 2: Run a generation (except at the last generation)
 			if (global_generation < maxgen) {
 				// no need to compute a new population if the simulation is over
 				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
@@ -174,7 +175,7 @@ int main(int argc, char *argv[])
 		
 		continue_simulation = (param.exists(FILE_NEXTPAR) 
 			&& (param.getpar(FILE_NEXTPAR)->GetString() != next_parfile) 
-			&& (global_generation < maxgen));
+			&& (global_generation <= maxgen));
 
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();

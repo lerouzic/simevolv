@@ -131,6 +131,10 @@ void Population::update_param(const ParameterSet & param)
     for (size_t i = 0; i < pop.size(); i++) {
         pop[i].epigenet = new_epigenet;
     }
+    
+    update(); // This is because other parameters (such as fitness function) might
+              // have changed. Not totally clean, as it is unclear what should happen
+              // if Population::update_param is called before Fitness::update_param. 
 }
 
 // functions
@@ -294,8 +298,8 @@ void Population::write(ostream & out, int generation) const
 	vector<Phenotype> phen;
 	vector<fitness_type> fit;
 	vector<rate_type> epi;
-	vector<Phenotype> genot; // this is temporary... 
-	
+	vector<Phenotype> genot; // Strange...
+	    
 	// stores vectors of phenotypic values, genotypic values, fitnesses. 
 	for (const auto & i : pop) 
 	{
@@ -329,7 +333,7 @@ void Population::write(ostream & out, int generation) const
     const size_t dim_phen = phen[0].dimensionality();   // Clearly not elegant
     const size_t dim_gen  = genot[0].dimensionality();
        
-	if (generation==1)
+	if (generation==0)
 	{ 
 		outformat(out, "Gen");
 		for (unsigned int i = 0; i < dim_phen; i++) 
