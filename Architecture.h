@@ -44,12 +44,12 @@ class Architecture  	/* Pure virtual class */
 	
 	    // instance / initialization
 	    static void initialize(const ParameterSet&); // from the parameter file
-	    static void initialize(const std::string&);  // from the architecture file
 	    static void update_param(const ParameterSet&);
 	    
-	    static /* const */ Architecture* Get();
-	    static void terminate();
-	
+	    static void load(const std::string&);  // from the architecture file
+        static void save(const std::string&);         
+        
+	    static /* const */ Architecture* Get();	
   
 	    // getters
 	    unsigned int nb_loc() const;
@@ -78,9 +78,7 @@ class Architecture  	/* Pure virtual class */
         
         std::vector<pheno_type> plasticity_strength;
         std::vector<pheno_type> plasticity_signal;
-	    
-	    std::string iofile; // this should not be serialized
-	    
+	    	    
 		Architecture() {} // default constructor necessary for serialization
 	    virtual void update_param_internal(const ParameterSet&);		
 	

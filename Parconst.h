@@ -79,8 +79,6 @@ const std::string DEV_TIMESTEPS = "DEV_TIMESTEPS";
 const std::string DEV_CALCSTEPS = "DEV_CALCSTEPS";
 
 // INPUT/OUTPUT
-const std::string FILE_ARCHI = "FILE_ARCHI";
-const std::string FILE_POP = "FILE_POP";
 const std::string FILE_NEXTPAR = "FILE_NEXTPAR";
 
 

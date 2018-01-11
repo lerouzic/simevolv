@@ -44,17 +44,6 @@ ArchiAdditive::ArchiAdditive(const ParameterSet& param)
 
 ArchiAdditive::~ArchiAdditive()
 {
-	// iofile is not empty when the param constructor have been called 
-	// and the FILE_ARCHI option was provided.
-    #ifdef SERIALIZATION_TEXT
-	if (iofile != "") {
-		ofstream os(iofile);
-		boost::archive::text_oarchive oa(os);
-		Architecture * tmp = this;
-		oa << tmp;
-		// streams closed along with the destructors
-	}
-    #endif
 }
 
 

@@ -34,8 +34,10 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	string input_file;
-	string archi_file;
-    string popin_file;
+	string iarchi_file;
+    string oarchi_file;
+    string ipop_file;
+    string opop_file;
 	string output_file;
 	long int seed;
 
@@ -45,8 +47,10 @@ int main(int argc, char *argv[])
     desc.add_options()
       ("help,h", "Print help messages")
       ("parameter,p", po::value<string>(&input_file), "Parameter file")
-      ("architecture,a", po::value<string>(&archi_file), "Architecture file")
-      ("population,P", po::value<string>(&popin_file), "Population file")
+      ("iarchitecture,a", po::value<string>(&iarchi_file), "Input architecture file")
+      ("oarchitecture,b", po::value<string>(&oarchi_file), "Output architecture file")
+      ("ipopulation,P", po::value<string>(&ipop_file), "Input population file")
+      ("opopulation,Q", po::value<string>(&opop_file), "Output population file")
       ("output,o", po::value<string>(&output_file), "Output file")
       ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
       ("template,t", "Print a template for the parameter file")
@@ -96,9 +100,9 @@ int main(int argc, char *argv[])
 
 	ParameterSet param(input_file);
 
-	if (vm.count("architecture")) 
+	if (vm.count("iarchitecture")) 
 	{
-		Architecture::initialize(archi_file);
+		Architecture::load(iarchi_file);
 	} else {
 		Architecture::initialize(param);
 	}
@@ -111,13 +115,14 @@ int main(int argc, char *argv[])
 	Environment::initialize(param);
 	
     Population pop(param);
-    if (vm.count("population")) {
+    
+    if (vm.count("ipopulation")) {
         #ifdef SERIALIZATION_TEXT 
-            ifstream popin(popin_file.c_str(), ios::in);
+            ifstream popin(ipop_file.c_str(), ios::in);
             popin >> pop;
             popin.close();
         #else
-            assert("Compile the program with the SERIALIZATION flag before using the FILE_POP option");
+            assert("Compile the program with a SERIALIZATION flag before using the \"Input population\" option");
         #endif
     }
     
@@ -151,18 +156,6 @@ int main(int argc, char *argv[])
 			if ((global_generation == 0) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
-
-                if (param.exists(FILE_POP)) { // serializes the current population
-                    #ifdef SERIALIZATION_TEXT                    
-                        ostringstream ss;
-                        ss << param.getpar(FILE_POP)->GetString() << "-" << global_generation;
-                        ofstream os(ss.str());
-                        os << pop;
-                        os.close();
-                    #else
-                        assert("Compile the program with the SERIALIZATION flag before using the FILE_POP option");
-                    #endif
-                }
 			}
         
             // Step 2: Run a generation (except at the last generation)
@@ -189,7 +182,20 @@ int main(int argc, char *argv[])
 		param.warning_multicalls();
 	}
 	
-	Architecture::terminate();    // This allows to write the architecture content in a file if necessary
+	if (vm.count("oarchitecture")) { // serializes the current architecture
+        Architecture::save(oarchi_file);     
+    }
+    
+    if (vm.count("opopulation")) { // serializes the current population
+    #ifdef SERIALIZATION_TEXT                    
+        ofstream popout(opop_file.c_str());
+        popout << pop;
+        popout.close();
+    #else
+        assert("Compile the program with a SERIALIZATION flag before using the \"Output population\" option");
+    #endif
+    }
+    
 	file_out.close();	// This probably does not harm if the file is not open
 	return(EXIT_SUCCESS);
 }

@@ -83,14 +83,6 @@ ArchiBoolean::ArchiBoolean(const ParameterSet& param)
 
 ArchiBoolean::~ArchiBoolean()
 {
-    #ifdef SERIALIZATION_TEXT
-	if (iofile != "") {
-		ofstream os(iofile);
-		boost::archive::text_oarchive oa(os);
-		Architecture * tmp = this;
-		oa << tmp;
-	}	
-    #endif
 }
 
 // functions

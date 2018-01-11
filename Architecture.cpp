@@ -54,13 +54,8 @@ Architecture::Architecture(const ParameterSet& param)
     , mutsd_test (vector<allele_type> (0))
     , plasticity_strength (vector<pheno_type> (0))
     , plasticity_signal (vector<pheno_type> (0))
-    , iofile ("")
 {
 	// update_param_internal(param); // This should be called in derived classes only
-       
-    // This happens only when the param constructor is called.
-    if (param.exists(FILE_ARCHI))
-		iofile = param.getpar(FILE_ARCHI) -> GetString();
 }
 
 Architecture::~Architecture() 
@@ -118,8 +113,9 @@ void Architecture::initialize(const ParameterSet& param)
 	}
 }
 
-/* Reads the serialized architecture file */
-void Architecture::initialize (const string & archi_file) 
+/* Loads/Save the serialized architecture in a file */
+
+void Architecture::load (const string & iarchi_file) 
 {	
     if (Architecture::instance != NULL)
     {
@@ -129,21 +125,55 @@ void Architecture::initialize (const string & archi_file)
     }
     
     try {
-		ifstream infile(archi_file);
+		ifstream infile(iarchi_file);
 		if (infile.good()) {
-			boost::archive::text_iarchive ar(infile);
-			ar >> Architecture::instance;
+            #ifdef SERIALIZATION_TEXT            
+                boost::archive::text_iarchive ar(infile);
+                ar >> Architecture::instance;
+            #else
+                assert("Compile the program with a SERIALIZATION flag before using the \"Input architecture\" option");
+            #endif   
 		}
 	}
 	catch (std::exception & e)
 	{
-		cerr << "Exception " << e.what() << " when reading architecture file " << archi_file << endl;
+		cerr << "Exception " << e.what() << " when loading architecture file " << iarchi_file << endl;
 		exit(EXIT_FAILURE);
 	}
 	catch (...) {
-		cerr << "Error when reading architecture file " << archi_file << endl;
+		cerr << "Error when loading architecture file " << iarchi_file << endl;
 		exit(EXIT_FAILURE);
 	}
+}
+
+void Architecture::save (const string & oarchi_file)
+{
+    if (Architecture::instance == NULL)
+    {
+        cerr << "Strange, the Architecture has not been initialized before saving. This should not happen." << endl;
+    }
+    
+    try {
+		ofstream outfile(oarchi_file);
+		if (outfile.good()) {
+            #ifdef SERIALIZATION_TEXT
+                boost::archive::text_oarchive ar(outfile);
+                ar << Architecture::instance;
+            #else
+                assert("Compile the program with a SERIALIZATION flag before using the \"Output architecture\" option");
+            #endif
+            outfile.close();
+		}
+	}
+	catch (std::exception & e)
+	{
+		cerr << "Exception " << e.what() << " when saving architecture file " << oarchi_file << endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...) {
+		cerr << "Error when saving architecture file " << oarchi_file << endl;
+		exit(EXIT_FAILURE);
+	}    
 }
 
 // Updates the parameter values (at least, those that can change meaningfully during simulation)
@@ -157,11 +187,6 @@ Architecture* Architecture::Get()
 {
     assert(Architecture::instance != NULL && "Attempt to access Architecture::Get() before initialization.");
     return(Architecture::instance);
-}
-
-void Architecture::terminate() 
-{
-	delete Architecture::instance;
 }
 
 // functions

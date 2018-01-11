@@ -459,8 +459,6 @@ void ParameterSet::initialize()
     parameters[FITNESS_STABSTR] = new Parameter_vector_double(0.0, 1000.*1000.);
     
     // Input/Output
-    parameters[FILE_ARCHI] = new Parameter_string();
-    parameters[FILE_POP] = new Parameter_string();
     parameters[FILE_NEXTPAR] = new Parameter_string();
 }
 

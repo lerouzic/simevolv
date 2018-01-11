@@ -388,15 +388,6 @@ ArchiWagner::ArchiWagner(const ParameterSet& param)
 
 ArchiWagner::~ArchiWagner()
 {
-	// iofile is not empty when the param constructor have been called 
-	// and the FILE_ARCHI option was provided.
-	if (iofile != "") {
-		ofstream os(iofile);
-		boost::archive::text_oarchive oa(os);
-		Architecture * tmp = this;
-		oa << tmp;
-		// streams closed along with the destructors
-	}
 }
 
 void ArchiWagner::sigma(pheno_type & h) const 
@@ -490,15 +481,6 @@ ArchiSiegal::ArchiSiegal(const ParameterSet& param)
 
 ArchiSiegal::~ArchiSiegal()
 {
-	// iofile is not empty when the param constructor have been called 
-	// and the FILE_ARCHI option was provided.
-	if (iofile != "") {
-		ofstream os(iofile);
-		boost::archive::text_oarchive oa(os);
-		Architecture * tmp = this;
-		oa << tmp;
-		// streams closed along with the destructors
-	}
 }
 
 
@@ -616,13 +598,4 @@ void ArchiM2::haircut_v(vector<pheno_type>& vd) const
 
 ArchiM2::~ArchiM2()
 {
-	// iofile is not empty when the param constructor have been called 
-	// and the FILE_ARCHI option was provided.
-	if (iofile != "") {
-		ofstream os(iofile);
-		boost::archive::text_oarchive oa(os);
-		Architecture * tmp = this;
-		oa << tmp;
-		// streams closed along with the destructors
-	}
 }
