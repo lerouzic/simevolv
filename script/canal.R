@@ -1,98 +1,100 @@
-# #########################################################
+#########################################################
 # canal.R
 #
-# Various ways to analyse the evolution of canalization scores
+# runs canalization tests
+#
 # 
-# Copyright Arnaud Le Rouzic / CNRS 2016
+# Copyright Arnaud Le Rouzic / CNRS 2017
 # <lerouzic@egce.cnrs-gif.fr>
 #
 # Released under the WTFPL version 2.0
 # * No warranty *
-#
-#
-# Quick and Dirty documentation:
-# 
-# example of usage in R:
-# 
-# DeltaCan(c("file1.txt", "file2.txt", "file3.txt"), from=5000)
-#
-# options:
-# * method = "lm" or "raw". "lm" performs a linear regression, while "raw" computes a difference.
-# * from = generation from which the DeltaC is calculated. 
-# * outcan = "can" or "mut" according to the option in the simulation parameter
-# * avg.files = whether the deltaC should be averaged over the files
-# * avg.genes = whether the deltaC should be averaged over the genes
-#
-# In case "from" is missing, an educated guess is made. The calculation starts from the timepoint
-# following the minimal canalization. This has a number of drawbacks, mainly
-# - if the time series is decreasing, returns NA
-# - if several files/genes are considered, the starting point may be different and thus
-#   the results will not be completely comparable
-# - using the timepoint after the minimum decreases the bias due to starting from the lowest point, 
-#   but this assumes no correlation between consecutive canalization measurements. 
-#############################################################
+###########################################################
 
+library(parallel)
 
-DeltaCan <- function(files, method="lm", from=NA, outcan="can", avg.files=TRUE, avg.genes=FALSE) 
-{
-	dd <- lapply(files, function(ff) {
-		dat <- read.table(ff, header=TRUE)
-		dat[,c(1, grep("MCan", colnames(dat)))] })
-	
-	if (outcan == "mut")
-		dd <- lapply(dd, function(d) cbind(d[,1], -log(d[,-1])))
+library(R.utils, quiet=TRUE, warn=FALSE)
+script.dir <- dirname(names(findSourceTraceback())[1])
+source(paste(script.dir, "Wcanal.R", sep="/"))
 
-	cs <- lapply(dd, canscore, method=method, from=from)
-	cs <- do.call(rbind, cs)
-	rownames(cs) <- files
-	colnames(cs) <- paste0("MCan", 1:ncol(cs))
-	if (avg.genes) cs <- apply(cs, 1, mean)
-	if (avg.files) if (is.matrix(cs)) cs <- apply(cs, 2, mean) else cs <- mean(cs)
-	return(cs)
+options(mc.cores=detectCores()-2)
+
+testcanal <- function(sizeW, muW=0, sdW=1, microSdE=0.1, mutsd=0.1, stab.thresh=1, density=1, target=rep(NA, sizeW), mindist=0.1*sizeW, max.tries=1e6, mat.replicates=100, can.replicates=100, fullD=FALSE, prog=FALSE, ...) {
+    # if fullD, sizeW should be of size 1.
+    stopifnot(!(length(sizeW) > 1 && fullD))
+    mc.cores <- getOption("mc.cores", 2)
+    
+    pb <- if(prog && require(utils)) {txtProgressBar(min=1, max=mat.replicates, initial=1, style=3)} else NULL
+    
+    can.replicates <- round(can.replicates/mc.cores)*mc.cores # Optimal core use
+    ll <- expand.grid(sizeW=sizeW, muW=muW, sdW=sdW, microSdE=microSdE, mutsd=mutsd)
+    ll <- ll[rep(1:nrow(ll), mat.replicates), ]
+    ans <- cbind(ll, do.call(rbind, mclapply(1:nrow(ll), function(ln) {
+        if (ln %% mc.cores == 0 && !is.null(pb)) setTxtProgressBar(pb, ln)
+        canW(W=makeRandW(ll$sizeW[ln], muW=ll$muW[ln], sdW=ll$sdW[ln], stab.thresh=stab.thresh, density=density, target=target, mindist=mindist, max.tries=max.tries, ...),
+        replicates=can.replicates, 
+        microSdE=ll$microSdE[ln],
+        mutsd=ll$mutsd[ln], 
+        fullD=fullD, ...)})))
+    if (!is.null(pb)) { setTxtProgressBar(pb, mat.replicates);  close(pb)}
+    return(ans)
+} 
+
+makeRandW <- function(n, muW=0, sdW=1, stab.thresh=1, density=1, target=rep(NA, n), mindist=0.1*n, max.tries=1e6, ...) {
+    stopifnot(n > 0)
+    stopifnot(density > 0 && density <= 1)
+    stopifnot(length(target) == 1 || length(target) == n)
+    stopifnot(sdW >= 0)
+    stopifnot(stab.thresh > 0) 
+    stopifnot(mindist > 0)
+    stopifnot(max.tries > 0)
+    
+    num0 <- ceiling(n*n*(1-density))
+    if (length(target) < n) target <- rep(target[1], n)
+    
+    bestW <- NA
+    bestdist <- NA
+    trynb <- 1
+    repeat {
+        currW <- matrix(rnorm(n*n, mean=muW, sd=sdW), ncol=n)
+        currW[sample(1:(n*n), size=num0)] <- 0
+        mm <- model.M2(W=currW, ...)
+        if (mean(mm$var) < stab.thresh) {
+            if (all(is.na(target))) {
+                bestW <- currW    
+            } else {
+                di <- dist(rbind(target, mm$mean))
+                if (is.na(bestdist) || di < bestdist) {
+                    bestdist <- di
+                    bestW <- currW
+                }
+            }
+        }
+        if (all(is.na(target)) && !all(is.na(bestW))) break
+        if (!is.na(bestdist) && bestdist <= mindist) break
+        if (trynb >= max.tries) {
+            warning("makeRandW: max.tries (", max.tries, ") failed attempts.")
+            break
+        }
+        trynb <- trynb + 1
+    }
+    return(bestW)
 }
 
-canscore <- function(x, method, from) {
-	if (method=="lm") {
-		return(sapply(2:ncol(x), function(i) canscore.lm(x[,i], from, gen=x[,1])))
-	} else if (method=="raw") {
-		return(sapply(2:ncol(x), function(i) canscore.raw(x[,i], from, gen=x[,1])))
-	} else {
-		stop("Method", method, "unknown.")
-	}
-}
-
-canscore.raw <- function(x, from, gen) {
-	gen <- as.numeric(gen)
-	stopifnot(
-		length(x) == length(gen),
-		is.na(from) || (from >= min(gen) && from < max(gen) && from %in% gen))
-	if (is.na(from)) {
-		# Guessing: from the timestep following the minimum.
-		wm <- which.min(x)
-		if (wm > length(x)-2) {
-			warning("Decreasing time series, impossible to guess the beginning.")
-			return(NA)
-		}
-		from <- gen[wm+1]
-	}
-	fm <- which(gen==from)
-	return((x[length(x)] - x[fm])/(gen[length(x)] - from))
-}
-
-canscore.lm <- function(x, from, gen) {
-	gen <- as.numeric(gen)
-	stopifnot(
-		length(x) == length(gen),
-		is.na(from) || (from >= min(gen) && from < max(gen) && from %in% gen))
-	if (is.na(from)) {
-		# Guessing: from the timestep following the minimum.
-		wm <- which.min(x)
-		if (wm > length(x)-2) {
-			warning("Increasing time series, impossible to guess the beginning.")
-			return(NA)
-		}
-		from <- gen[wm+1]
-	}
-	ll <- lm(x[from <= gen] ~ gen[from <= gen])
-	return(coef(ll)[2])
+canW <- function(W, replicates=100, microSdE=0.1, mutsd=0.1, fullD=FALSE, index="avg", ...) {
+    stopifnot(is.matrix(W))
+    stopifnot(nrow(W) == ncol(W))
+    if (any(is.na(W))) return(NA)
+    n <- ncol(W)
+    ans <- c(model.M2(W, ...)$mean, 
+        dev.stability(W, index=index, ...), 
+        homeostasis(W, index=index, microSdE=microSdE, ..., replicates=replicates),
+        dev.canalization(W, index=index, ..., replicates=replicates),
+        genet.canalization(W, index=index, mutsd=mutsd, ..., replicates=replicates),
+        somatic.canalization(W, index=index, mutsd=mutsd, ..., replicates=replicates))
+    nn <- c("Mean", "Stab", "Homeo", "EnvCan", "GenCan", "SomCan")
+    names(ans) <- paste0(rep(nn, each=n), ".", 1:n)
+    ans <- c(sapply(nn, function(ss) mean(ans[grepl(names(ans), pattern=ss)])), ans)
+    names(ans)[1:length(nn)] <- nn
+    if (fullD) ans else ans[1:length(nn)]
 }

@@ -3,7 +3,7 @@
 #
 # Computes the canalization properties of a W matrix
 # 
-# Copyright Arnaud Le Rouzic / CNRS 2015
+# Copyright Arnaud Le Rouzic / CNRS 2015-2017
 # <lerouzic@egce.cnrs-gif.fr>
 #
 # Released under the WTFPL version 2.0
@@ -11,10 +11,8 @@
 ###########################################################
 
 
-script.dir <- normalizePath(dirname(parent.frame(2)$ofile))
-if (is.null(script.dir))
-	script.dir <- normalizePath(dirname(sys.frame(1)$ofile))
-	
+library(R.utils)
+script.dir <- dirname(names(findSourceTraceback())[1])
 source(paste(script.dir, "netw.R", sep="/"))
 
 
@@ -161,7 +159,7 @@ genet.canalization <- function(W, ..., index="var", which.i=1:nrow(W), which.j=1
 }
 
 
-somatic.canalization <- function(W, index="var", ..., which.i=1:nrow(W), which.j=1:ncol(W), mutsd=0.1, exclude.0=TRUE, delay=1, replicates=100) {
+somatic.canalization <- function(W, index="var", ..., which.i=1:nrow(W), which.j=1:ncol(W), mutsd=0.1, exclude.0=TRUE, delay=10, replicates=100) {
         # Influence of mutations at the end of the development
     
     precond(W=W, index=index, which.i=which.i, which.j=which.j)
@@ -181,7 +179,7 @@ somatic.canalization <- function(W, index="var", ..., which.i=1:nrow(W), which.j
     rr <- sapply(1:replicates, function(i) {
 		myW <- W
 		myW[Wbox[i]] <- W[Wbox[i]]+Wdev[i]
-		model.M2(W=myW, S0=ref$mean, steps=delay, measure=1, ...)$mean
+		model.M2(W=myW, S0=ref$mean, steps=delay, measure=5, ...)$mean
     })
 	ans <- NULL
 	rrt <- rr - ref$mean

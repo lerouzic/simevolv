@@ -12,10 +12,9 @@
 # * No warranty *
 ###########################################################
 
-script.dir <- normalizePath(dirname(parent.frame(2)$ofile))
-if (is.null(script.dir))
-	script.dir <- normalizePath(dirname(sys.frame(1)$ofile))
+library(envDocument)
 
+script.dir <- dirname(getScriptPath())
 source(paste(script.dir, "netw.R", sep="/"))
 
 Mmatrix.MonteCarlo.ij.run <- function(W, sdmut, i, j, what="mean", ...) {

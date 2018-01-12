@@ -1,44 +1,61 @@
+#########################################################
+# netW.R
+#
+# The version of the Wagner model used in 
+# Rünneburger & Le Rouzic 2016 BMC Evol. Biol. 
+#
+# 
+# Copyright Arnaud Le Rouzic / CNRS 2015-2017
+# <lerouzic@egce.cnrs-gif.fr>
+#
+# Released under the WTFPL version 2.0
+# * No warranty *
+###########################################################
+
 sigma.M2 <- function(x, a) {
 	1. / (1. + exp((-x/(a*(a-1)))+log(1/a-1)))
 }
 
-sigma.M2p <- function(x, aam1, l1am1) {
-	1. / (1. + exp((-x/aam1)+l1am1))
+sigma.M2p <- function(x, lambda, mu) {
+	1. / (1. + lambda * exp(-mu*x))
 }
 
-library(Rcpp)
+suppressMessages(library(compiler))
+sigma.M2c <- cmpfun(sigma.M2p)
 
-cppFunction('
-NumericVector sigma_M2p(NumericVector x, double aam1, double l1am1) {
-    NumericVector ans(x.size());
-    // double aam1 = a*(1.-a);
-    // double l1am1 = log(1./a-1.);
-    for (int i = 0; i < x.size(); i++) {
-        ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
-    }
-    return ans;
-}
-')
+#~ library(Rcpp)
 
-cppFunction('
-NumericVector sigma_M2(NumericVector x, double a) {
-    NumericVector ans(x.size());
-    double aam1 = a*(1.-a);
-    double l1am1 = log(1./a-1.);
-    for (int i = 0; i < x.size(); i++) {
-        ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
-    }
-    return ans;
-}
-')
+#~ cppFunction('
+#~ NumericVector sigma_M2p(NumericVector x, double aam1, double l1am1) {
+#~     NumericVector ans(x.size());
+#~     // double aam1 = a*(1.-a);
+#~     // double l1am1 = log(1./a-1.);
+#~     for (int i = 0; i < x.size(); i++) {
+#~         ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
+#~     }
+#~     return ans;
+#~ }
+#~ ')
 
-model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=FALSE, varFUN=function(x) mean((x-mean(x))^2)) {
-    aam1 <- a*(a-1)
-    l1am1 <- log(1/a-1)
+#~ cppFunction('
+#~ NumericVector sigma_M2(NumericVector x, double a) {
+#~     NumericVector ans(x.size());
+#~     double aam1 = a*(1.-a);
+#~     double l1am1 = log(1./a-1.);
+#~     for (int i = 0; i < x.size(); i++) {
+#~         ans[i] = 1. / (1. + exp((-x[i]/aam1)+l1am1));
+#~     }
+#~     return ans;
+#~ }
+#~ ')
+
+model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=20, measure=4, full=FALSE, varFUN=function(x) mean((x-mean(x))^2)) {
+    lambda <- (1-a)/a
+    mu <- 1/(a*(1-a))
 	sto <- matrix(NA, nrow=length(S0), ncol=steps+1)
 	sto[,1] <- S0
 	for (i in 1:steps) {
-		S0 <- sigma.M2p((S0 %*% W), aam1, l1am1) 			
+		S0 <- sigma.M2c((W %*% S0), lambda=lambda, mu=mu) 			
 		sto[,i+1] <- S0
 	}
 	ans <- list()
@@ -48,68 +65,4 @@ model.M2 <- function(W, a=0.5, S0=rep(a, nrow(W)), steps=100, measure=10, full=F
 	return(ans)
 }
 
-plot.dyn <- function(W, y1=0, y2=0, steps=100, measure=10, model=model.M2, ylim=c(0,1), ...) {
-	W[is.na(W)] <- c(y1, y2)
-	mod <- model(W, steps=steps, measure=measure, full=TRUE, ...)
-	plot(NULL, ylim=ylim, xlim=c(1, steps+1), xlab="Steps", ylab="Expression")
-	for (i in 1:nrow(mod$full)) {
-		lines(mod$full[i,], col=i)
-	}
-	abline(v=steps-measure, lty=2)
-	legend("topleft", lty=1, col=1:nrow(mod$full), legend=as.character(1:nrow(mod$full)))
-}
-
-plot.Wmatrix <- function(W, ...) {
-	plot(NULL, xlim=0:1, ylim=0:1, xaxt="n", yaxt="n", xlab="", ylab="", bty="n", ...)
-	arrows(x0=seq(0,1,length.out=nrow(W)+1), y0=0, y1=1, code=0)
-	arrows(x0=0, x1=1, y0=seq(0,1,length.out=nrow(W)+1), code=0)
-	shft <- 1/(2*nrow(W))
-	unk <- 0
-	for (y in 1:nrow(W)) {
-		text(x=shft+2*shft*(0:(nrow(W)-1)), y=1-shft-2*shft*(y-1), ifelse(is.na(W[y,]), { unk <- unk+1; paste0("y",unk)}, W[y,]))
-	}
-}
-
-plot.image <- function(data, variable, main=variable, xlab="y1", ylab="y2", zlim=c(0,1), col=gray(seq(0.9,0.1,length.out=101)), nlevels=4, ...) {
-	mm <- matrix(data[,variable], nrow=length(unique(data$y1)))
-	#mm <- t(mm)[nrow(mm):1,]
-	image(x=unique(data$y1), y=unique(data$y2), z=mm, main=main, xlab=xlab, ylab=ylab, col=col, zlim=zlim, ...)
-	if (var(c(mm), na.rm=TRUE) > 1e-10)
-		contour(x=unique(data$y1), y=unique(data$y2), z=mm, add=TRUE, col="white", nlevels=nlevels)
-}
-
-test.bigene <- function(W, density=11, range=c(-5,5), a=0.5, steps=100, measure=10, accept.var=FALSE) {
-	# W should contain one NA per line (the dimensions to be tested)
-	
-	alleles <- seq(from=range[1], to=range[2], length.out=density)
-	ans <- expand.grid(list(y1=alleles, y2=alleles))
-	ans$mean1 <- rep(NA, nrow(ans))
-	ans$mean2 <- rep(NA, nrow(ans))
-	ans$var1 <- rep(NA, nrow(ans))
-	ans$var2 <- rep(NA, nrow(ans))	
-	for (i in 1:nrow(ans)) {
-		W.tmp <- W
-		W.tmp[is.na(W.tmp)] <- unlist(ans[i, 1:2])
-		getmod <- model.M2(W=W.tmp, a=a, steps=steps, measure=measure)
-		ans[i,3:6] <- c(getmod$mean, getmod$var)
-	}
-	if (accept.var) {
-		layout(cbind(c(1,2,4), c(0,3,5)))
-		
-		plot.Wmatrix(W)
-		plot.image(ans, "mean1")
-		plot.image(ans, "var1", zlim=c(0, 0.251))
-		plot.image(ans, "mean2")
-		plot.image(ans, "var2", zlim=c(0, 0.251))
-	} else {
-		layout(cbind(1:3))
-		ans[ans$var1 > 1e-5, "mean1"] <- NA
-		ans[ans$var2 > 1e-5, "mean2"] <- NA
-		
-		plot.Wmatrix(W)
-		plot.image(ans, "mean1")
-		plot.image(ans, "mean2")
-	}
-	layout(1)
-	invisible(ans)
-}
+model.M2 <- cmpfun(model.M2)
