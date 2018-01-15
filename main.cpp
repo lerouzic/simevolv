@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 			maxgen = global_generation + current_pargen;
 		
 		// Inner loop: for each parameter file    
-		for (unsigned int inner_generation = 1; 
+		for (unsigned int inner_generation = 0; 
 				(inner_generation <= current_pargen) && (global_generation <= maxgen); 
 						inner_generation++, global_generation++)
 		{
