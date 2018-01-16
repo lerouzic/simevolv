@@ -152,11 +152,9 @@ int main(int argc, char *argv[])
             (inner_generation <= current_pargen) && (global_generation <= maxgen); 
 						inner_generation++, global_generation++)
 		{
-            cerr << inner_generation << "\t" << global_generation << "\t" << current_pargen << "\t" << maxgen << "\n";
             // Step 1: Output if necessary
 			if ((global_generation == 0) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
-                cerr << "Write!\n";
 				pop.write(*pt_output, global_generation);
 			}
         
