@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
         #endif
     }
     
-	string next_parfile = "";
+	string next_parfile = string("");
 	bool continue_simulation = false;
     
 	do { // while continue_simulation
@@ -147,14 +147,16 @@ int main(int argc, char *argv[])
 		else
 			maxgen = global_generation + current_pargen;
 		
-		// Inner loop: for each parameter file    
-		for (unsigned int inner_generation = 0; 
-				(inner_generation <= current_pargen) && (global_generation <= maxgen); 
+		// Inner loop: for each parameter file
+		for (unsigned int inner_generation = (global_generation == 0 ? 0 : 1); 
+            (inner_generation <= current_pargen) && (global_generation <= maxgen); 
 						inner_generation++, global_generation++)
 		{
+            cerr << inner_generation << "\t" << global_generation << "\t" << current_pargen << "\t" << maxgen << "\n";
             // Step 1: Output if necessary
 			if ((global_generation == 0) || (global_generation == maxgen) || (global_generation % intervgen == 0))
 			{
+                cerr << "Write!\n";
 				pop.write(*pt_output, global_generation);
 			}
         
@@ -167,13 +169,19 @@ int main(int argc, char *argv[])
 		} // end of inner loop
 		
 		continue_simulation = (param.exists(FILE_NEXTPAR) 
-			&& (param.getpar(FILE_NEXTPAR)->GetString() != next_parfile) 
 			&& (global_generation <= maxgen));
+            
 
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
 			param.read(next_parfile);
 		}
+        if ((param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
+            && (!param.exists(SIMUL_MAXGEN))) {
+            // Avoid infinite loop
+              continue_simulation = false;
+        }        
+        
     } while (continue_simulation);
     
     if (vm.count("parcheck")) 
