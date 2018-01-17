@@ -173,12 +173,12 @@ int main(int argc, char *argv[])
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
 			param.read(next_parfile);
-		}
-        if ((param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
-            && (!param.exists(SIMUL_MAXGEN))) {
-            // Avoid infinite loop
-              continue_simulation = false;
-        }        
+            if ((param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
+                && (!param.exists(SIMUL_MAXGEN))) {
+                // Avoid infinite loop
+                continue_simulation = false;
+            }
+        }
         
     } while (continue_simulation);
     
