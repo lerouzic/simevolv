@@ -158,6 +158,7 @@ void Fitness::fluctuate(unsigned int generation_number)
    and a fitness score on stability (which has a meaning only for some genetic architectures). */
 fitness_type Fitness::compute(const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	return(Fitness::instance->fitphen->get_fitness(phenotype, population) 
 		* Fitness::instance->fitstab->get_fitness(phenotype));
 }
@@ -448,6 +449,7 @@ Fitness_Phenotype::~Fitness_Phenotype()
 
 fitness_type Fitness_Phenotype::get_fitness(const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	unsigned int dim = phenotype.dimensionality();
 	fitness_type fitness = 1.0;
 	for (unsigned int dd = 0; dd < dim; dd++) 
@@ -503,6 +505,7 @@ Fitness_Phenotype_Linear::Fitness_Phenotype_Linear(const ParameterSet & param)
 
 fitness_type Fitness_Phenotype_Linear::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	if (strength.size() < phenotype.dimensionality())
 	{
 		strength = expand_vec(strength, phenotype.dimensionality());
@@ -528,6 +531,7 @@ Fitness_Phenotype_Expo::Fitness_Phenotype_Expo(const ParameterSet & param)
 
 fitness_type Fitness_Phenotype_Expo::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	if (strength.size() < phenotype.dimensionality())
 	{
 		strength = expand_vec(strength, phenotype.dimensionality());
@@ -549,6 +553,7 @@ Fitness_Phenotype_Concave::Fitness_Phenotype_Concave(const ParameterSet & param)
 
 fitness_type Fitness_Phenotype_Concave::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	if (strength.size() < phenotype.dimensionality())
 	{
 		strength = expand_vec(strength, phenotype.dimensionality());
@@ -590,6 +595,7 @@ Fitness_Phenotype_Gaussian::Fitness_Phenotype_Gaussian(const ParameterSet & para
 
 fitness_type Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())
@@ -615,6 +621,7 @@ Fitness_Phenotype_Quadratic::Fitness_Phenotype_Quadratic(const ParameterSet & pa
 
 fitness_type Fitness_Phenotype_Quadratic::get_fitness_trait(unsigned int trait, const Phenotype & phenotype, const Population & population)
 {
+    assert(phenotype.is_defined());
 	assert(trait < phenotype.dimensionality());
 	
 	if (strength.size() < phenotype.dimensionality())

@@ -25,12 +25,14 @@ using namespace std;
 void outformat(ostream & out, const Phenotype & pheno,
                       unsigned int width, unsigned int precision, string sep)
 {
+    assert(pheno.is_defined());
     pheno.pheno_ptr->outformat(out, width, precision, sep);
 }
 
 void outformat2(ostream & out, const Phenotype & pheno,
                       unsigned int width, unsigned int precision, string sep)
 {
+    assert(pheno.is_defined());
     pheno.pheno_ptr->outformat2(out, width, precision, sep);
 }
 
@@ -41,18 +43,18 @@ Phenotype::Phenotype()
 
 Phenotype::Phenotype(const Phenotype& p)
 {
-    if (p.pheno_ptr != nullptr)
+    if (p.is_defined())
         pheno_ptr = p.pheno_ptr->clone();
 }
 
 Phenotype::~Phenotype()
 {
-    // No need to delete anything because of the 
+    // No need to delete anything because of the unique_ptr
 }
 
 Phenotype& Phenotype::operator=(const Phenotype& p)
 {
-    if (this != &p) {
+    if (p.is_defined() && (this != &p)) {
         pheno_ptr = move(p.pheno_ptr->clone());
     }
     return *this;
@@ -99,10 +101,15 @@ Phenotype::Phenotype(std::unique_ptr<const PhenoBase> pp)
 Phenotype Phenotype::sum(const vector<Phenotype>& vp)
 {
     auto first = vp.begin();
+    assert(first->is_defined());
+    
     auto result = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone()); // because *first is const
 
     for (++first; first != vp.end(); ++first) // don't add again the first element!
+    {
+        assert(first->is_defined());
         result->add(*(first->pheno_ptr)); 
+    }
         
     return result;    
 }
@@ -111,11 +118,14 @@ Phenotype Phenotype::sum(const vector<Phenotype>& vp)
 Phenotype Phenotype::sumsq(const vector<Phenotype>& vp)
 {
     auto first = vp.begin();
+    assert(first->is_defined());
+     
     auto result = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone()); // because *first is const
     result->square();
     
     for (++first; first != vp.end(); ++first) // don't add again the first element!
     {
+        assert(first->is_defined());
         auto tmp = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone());
         tmp->square();
         result->add(*tmp);
@@ -147,25 +157,31 @@ bool Phenotype::is_defined() const
 
 size_t Phenotype::dimensionality() const
 {
+    if(!is_defined()) return 0;
+    
     return pheno_ptr->dimensionality();
 }
 
 pheno_type Phenotype::operator[] (size_t pos) const
 {
+    assert(is_defined());
     return (*pheno_ptr)[pos];
 }
 
 pheno_type& Phenotype::operator[] (size_t pos)
 {
+    assert(is_defined());
     return (*pheno_ptr)[pos];
 }
 
 pheno_type Phenotype::get_pheno(size_t pos) const
 {
+    assert(is_defined());
     return pheno_ptr->get_pheno(pos);
 }
 
 pheno_type Phenotype::get_pheno2(size_t pos) const
 {
+    assert(is_defined());
     return pheno_ptr->get_pheno2(pos);
 }
