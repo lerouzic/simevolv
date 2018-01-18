@@ -189,6 +189,8 @@ void ArchiM2::serialize(Archive & ar, const unsigned int version)
 {
 	ar & boost::serialization::base_object<ArchiRegulatoryMatrix>(*this);	
 	ar & basal;
+    ar & b1;
+    ar & b2;
 }
 #endif
 
