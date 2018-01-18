@@ -8,6 +8,7 @@ GENET_MUTRATES          0.01
 GENET_MUTSD             0.1
 GENET_RECRATES          0.5
 GENET_SELFING		0.0
+GENET_CLONAL        0.5
 GENET_EPIGENET			0.0
 INIT_PSIZE              100
 INIT_ALLELES            0    0.0001

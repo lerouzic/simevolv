@@ -32,6 +32,7 @@ const std::string GENET_PLOIDY = "GENET_PLOIDY";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
 const std::string GENET_SELFING = "GENET_SELFING";
+const std::string GENET_CLONAL  = "GENET_CLONAL";
 const std::string GENET_EPIGENET = "GENET_EPIGENET";
 const std::string INIT_PSIZE = "INIT_PSIZE";
 const std::string INIT_ALLELES = "INIT_ALLELES";

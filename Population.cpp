@@ -43,6 +43,7 @@ using namespace std;
 /* default constructor (necessary a build a population individual by individual, but might reflect a design error) */ 
 Population::Population()
 	: selfing_rate(0.0)	
+    , clonal_rate(0.0)
 	, nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
@@ -54,6 +55,7 @@ Population::Population()
 Population::Population(const Population & copy)
     : pop(copy.pop)
 	, selfing_rate(copy.selfing_rate)    
+    , clonal_rate(copy.clonal_rate)
     , nb_canal_test(copy.nb_canal_test)
     , nb_herit_test(copy.nb_herit_test)
     , nb_direpi_test(copy.nb_direpi_test)
@@ -65,6 +67,7 @@ Population::Population(const Population & copy)
 Population::Population(const std::vector<Individual>& vecindiv)
     : pop(vecindiv)
 	, selfing_rate(0.0)    
+    , clonal_rate(0.0)
     , nb_canal_test(0)
 	, nb_herit_test(0)
 	, nb_direpi_test(0)
@@ -86,6 +89,7 @@ Population & Population::operator=(const Population& copy)
 
     pop = copy.pop;
  	selfing_rate = copy.selfing_rate;   
+    clonal_rate = copy.clonal_rate;
     nb_canal_test = copy.nb_canal_test; 
     nb_herit_test = copy.nb_herit_test;
     nb_direpi_test = copy.nb_direpi_test;
@@ -121,6 +125,7 @@ void Population::initialize(const ParameterSet& param)
 void Population::update_param(const ParameterSet & param)
 {
     selfing_rate = param.getpar(GENET_SELFING)->GetDouble();    
+    clonal_rate  = param.getpar(GENET_CLONAL)->GetDouble();
     nb_canal_test = param.getpar(OUT_CANAL_TESTS)->GetInt();
     nb_herit_test = param.getpar(OUT_HERIT_TESTS)->GetInt();
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
@@ -139,7 +144,7 @@ void Population::update_param(const ParameterSet & param)
 
 // functions
 
-/* Sexual reproduction of the population 
+/* Sexual / asexual reproduction of the population 
      returns the offspring population (of size offspr_number) */
 Population Population::reproduce(long int offspr_number /* = 0 */) const
 {
@@ -148,12 +153,13 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     // Information about the number of canalization, heritability, and directionality tests
     // is transmitted to the offspring. Strange design, but the Population
     // class does not save a copy of the parameter set. 
-    offspring.selfing_rate = selfing_rate;    
-    offspring.nb_canal_test = nb_canal_test; 
-    offspring.nb_herit_test = nb_herit_test;
+    offspring.selfing_rate   = selfing_rate;
+    offspring.clonal_rate    = clonal_rate; 
+    offspring.nb_canal_test  = nb_canal_test; 
+    offspring.nb_herit_test  = nb_herit_test;
     offspring.nb_direpi_test = nb_direpi_test;
-    offspring.out_geno = out_geno;
-    offspring.out_unstab = out_unstab;
+    offspring.out_geno       = out_geno;
+    offspring.out_unstab     = out_unstab;
     
     // cumulated fitnesses. Computing it here fastens the random sampling algorithm.
     vector<fitness_type> cumul_fit = cumul_fitness();
@@ -166,16 +172,21 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
 
     for (long int i = 0; i < offspr_number; i++)
     {
-		// Each offspring results from a cross between two random parents.
-		// (Hermaphrodite, sexual individuals)
-		
 		const Individual & firstpar = this->pick_parent(cumul_fit);
 		
-		if (Random::randnum() < selfing_rate) {
-			offspring.pop.push_back(Individual::mate(firstpar, firstpar));
-		} else {
-			offspring.pop.push_back(Individual::mate(firstpar, this->pick_parent(cumul_fit)));
-		}
+        if (Random::randnum() < clonal_rate) { 
+            // Clonal reproduction
+            offspring.pop.push_back(firstpar.clone());
+        } else { 
+            // Sexual reproduction
+            if (Random::randnum() < selfing_rate) {  
+                // Self-fertilization: one parent
+                offspring.pop.push_back(Individual::mate(firstpar, firstpar));
+            } else { 
+                // Outcrossing: two parents
+                offspring.pop.push_back(Individual::mate(firstpar, this->pick_parent(cumul_fit)));
+            }
+        }
     }
     offspring.update();
     return(offspring);
@@ -306,7 +317,7 @@ void Population::write(ostream & out, int generation) const
 		phen.push_back(i.get_phenotype());
 		fit.push_back(i.get_fitness());
 		epi.push_back(i.get_epigenet());
-				
+                
         // This is not clean. Stores genotype as a phenotype
 		vector<pheno_type> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 

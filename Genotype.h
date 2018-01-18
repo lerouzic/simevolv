@@ -68,7 +68,7 @@ class DiploGenotype : public Genotype {
 		DiploGenotype(const DiploGenotype &);
 		DiploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		DiploGenotype(const ParameterSet &);
-		DiploGenotype* clone() const;
+		Genotype* clone() const;
 
 		unsigned int ploidy() const {return 2;}
 	    void draw_mutation();
@@ -98,7 +98,7 @@ class HaploGenotype : public Genotype {
 		HaploGenotype(const HaploGenotype &);
 		HaploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		HaploGenotype(const ParameterSet &);
-		HaploGenotype* clone() const;
+		Genotype* clone() const;
 		
 		unsigned int ploidy() const {return 1;}
 	    void draw_mutation();

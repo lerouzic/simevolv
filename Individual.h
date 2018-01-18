@@ -41,10 +41,14 @@ class Individual
 	public :
 	    // constructors/destructor
 	    Individual();
-	    Individual(const Haplotype&, const Haplotype&, const unsigned int);
-	    Individual(const Haplotype&, const Haplotype&, const unsigned int, const EpigeneticInfo&);
 	    Individual(const Individual&);
 	    Individual(const ParameterSet&);
+                
+	    Individual(const Haplotype&, const Haplotype&, const unsigned int);
+	    Individual(const Haplotype&, const Haplotype&, const unsigned int, const EpigeneticInfo&);
+        Individual(const Genotype&);
+        Individual(const Genotype&, const EpigeneticInfo&);
+
 	    virtual ~Individual();
 	
 	    // operator overload
@@ -66,6 +70,7 @@ class Individual
 	    // reproduction
 	    Haplotype produce_gamete() const;
 	    static Individual mate(const Individual&, const Individual&);
+        Individual clone() const;
 	    
 	    void draw_mutation();
 	    void make_mutation(bool test = false);

@@ -70,7 +70,7 @@ DiploGenotype::DiploGenotype(const ParameterSet & param)
 {
 }
 
-DiploGenotype* DiploGenotype::clone() const 
+Genotype* DiploGenotype::clone() const 
 {
 	return (new DiploGenotype(*this));
 }
@@ -128,7 +128,7 @@ HaploGenotype::HaploGenotype(const ParameterSet & param)
 {
 }
 
-HaploGenotype* HaploGenotype::clone() const
+Genotype* HaploGenotype::clone() const
 {
 	return (new HaploGenotype(*this));
 }

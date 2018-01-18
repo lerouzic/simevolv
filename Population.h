@@ -82,7 +82,8 @@ class Population
 	    std::vector<Individual> pop;
 	    
 	    // output parameters, to be stored and copied (design problem?)
-	    rate_type selfing_rate;	    
+	    rate_type selfing_rate;	 
+        rate_type clonal_rate;   
 	    unsigned int nb_canal_test;
 	    unsigned int nb_herit_test;
 	    unsigned int nb_direpi_test;
@@ -95,6 +96,7 @@ class Population
 		template<class Archive> void serialize(Archive & ar, const unsigned int version){
             ar & pop;
             ar & selfing_rate;
+            ar & clonal_rate;
             ar & nb_canal_test;
             ar & nb_herit_test;
             ar & nb_direpi_test;

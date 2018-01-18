@@ -404,6 +404,7 @@ void ParameterSet::initialize()
     parameters[GENET_MUTSD] = new Parameter_vector_double(0.0, 999.9);
     parameters[GENET_RECRATES] = new Parameter_vector_double(0.0, 0.5);
     parameters[GENET_SELFING] = new Parameter_double(0.0, 1.0);
+    parameters[GENET_CLONAL]  = new Parameter_double(0.0, 1.0);
     parameters[GENET_EPIGENET] = new Parameter_double(0.0, 1.0);
    
     // Initial population parameters

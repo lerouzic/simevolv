@@ -59,6 +59,20 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 	initialize();
 }
 
+/* constructors using a genotype */
+Individual::Individual(const Genotype& gen)
+    : genotype(std::unique_ptr<Genotype>(gen.clone()))
+{
+    initialize();
+}
+
+Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
+    : genotype(std::unique_ptr<Genotype>(gen.clone()))
+    , epiinfo(epimother)
+{
+    initialize();
+}
+
 /* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
 	: genotype()
@@ -108,10 +122,13 @@ Individual & Individual::operator = (const Individual& copy)
 /* initialize the individual, with genotypic, phenotypic and environmental values */
 void Individual::initialize()
 {
-    if (genotype != NULL) {
+    if (genotype) {
         Architecture * archi = Architecture::Get();
         phenotype = archi -> phenotypic_value(*genotype, true, epiinfo);
+    } else {
+        cerr << "Trying to initialize an individual without genotype" << endl;
     }
+    
     fitness = 0;
     
     // So far, the epigenetic factor does not evolve).
@@ -175,6 +192,21 @@ Haplotype Individual::produce_gamete() const
     return(gamete);
 }
 
+/* Cloning is slightly more complicated than a simple copy. 
+ * Only the genotype should be copied ; the phenotype should
+ * be re-calculated in case it involves environmental components.
+ * Note that this might be a strong time cost in absence of 
+ * environmental/plasticity mechanisms. Testing the conditions in
+ * which cloning should be perfect or requires phenotype calculation
+ * is not trivial yet. */
+Individual Individual::clone() const
+{
+    Genotype* clonegen = genotype->clone();
+    clonegen->draw_mutation();
+    Individual myclone = Individual(*clonegen, epiinfo);
+    return(myclone);
+}
+
 /* determines if there will be a mutation in the individual */
 /* This should be called in special cases (like when generating mutant clones)
  * but not for regular simulations during which draw_mutation() is called on the
@@ -200,7 +232,7 @@ void Individual::make_mutation(bool test /* = false */)
 /* test the canalization : produce the clones used for the calculation */
 Individual Individual::test_canalization(unsigned int nb_mut, const Population & pop) const 
 {
-	Individual clone(*this);
+	Individual clone(*this); // Perfect copy (genotype and phenotype).
 	for (unsigned int mut = 0; mut < nb_mut; mut++) 
 	{
 		clone.make_mutation(true);
@@ -212,7 +244,7 @@ Individual Individual::test_canalization(unsigned int nb_mut, const Population &
 /* tests the impact of initial disturbances: produces clones differing by their initial S */
 Individual Individual::test_disturb(const Population & pop) const
 {
-	Individual clone(*this);
+	Individual clone(*this); // Perfect copy (genotype and phenotype).
 	clone.phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, clone.epiinfo, true, false);
 	clone.update_fitness(pop);
 	return(clone);
@@ -221,7 +253,7 @@ Individual Individual::test_disturb(const Population & pop) const
 /* tests the impact of environmental disturbances during development */
 Individual Individual::test_enviro(const Population & pop) const
 {
-	Individual clone(*this);
+	Individual clone(*this); // Perfect copy (genotype and phenotype).
 	clone.phenotype = Architecture::Get() -> phenotypic_value(*genotype, true, clone.epiinfo, false, true);
 	clone.update_fitness(pop);
 	return(clone);
