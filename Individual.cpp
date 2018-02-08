@@ -29,7 +29,7 @@ Individual::Individual()
     , phenotype()
     , fitness(0.0)
 {    
-    initialize();
+    // initialize(); // This does not make sense. 
 }
 
 /* constructor using two haplotypes */
