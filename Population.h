@@ -95,6 +95,9 @@ class Population
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version){
             ar & pop;
+            // It probably does not make sense to serialize these rates, as they simply reflect
+            // a problem in the software architecture (parameters are not stored in a global variable
+            // and are available only when constructing the Population). 
             ar & selfing_rate;
             ar & clonal_rate;
             ar & nb_canal_test;

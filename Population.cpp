@@ -173,7 +173,7 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
     for (long int i = 0; i < offspr_number; i++)
     {
 		const Individual & firstpar = this->pick_parent(cumul_fit);
-		
+        		
         if (Random::randnum() < clonal_rate) { 
             // Clonal reproduction
             offspring.pop.push_back(firstpar.clone());

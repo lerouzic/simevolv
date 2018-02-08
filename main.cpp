@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
         #ifdef SERIALIZATION_TEXT 
             ifstream popin(ipop_file.c_str(), ios::in);
             popin >> pop;
+            pop.update_param(param); // warning: some rates are stored in the population class, they should be updated. 
             popin.close();
         #else
             assert("Compile the program with a SERIALIZATION flag before using the \"Input population\" option");
