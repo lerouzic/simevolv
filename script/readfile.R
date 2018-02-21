@@ -2,7 +2,7 @@
 # readfile.R
 #
 # Reads simulation files and extract information
-# (such as W matrices)
+# 
 # 
 # Copyright 
 #    Arnaud Le Rouzic 
