@@ -32,7 +32,7 @@ launchprogevol = function(myfile="param.txt") { #launch the program with a param
   runevo=runevolution(N=gv("INIT_PSIZE", theparamsare),
                       gen=gv("SIMUL_GENER", theparamsare),
                       L=L,
-                      mucis=gv("GENET_CISMUTRATES", theparamsare),
+                      mucis=gv("GENET_MUTRATES", theparamsare),
                       mutrans=gv("GENET_TRANSMUTRATES", theparamsare),
                       muteff=gv("GENET_MUTSD", theparamsare),
                       a=gv("INIT_BASAL", theparamsare),
@@ -48,7 +48,7 @@ launchprogevol = function(myfile="param.txt") { #launch the program with a param
 
 gv=function(input, param2){
 	# gv: get value
-	# First parameter: 
+	# First parameter:
 
   stopifnot(is.character(input), length(input)==1)
   stopifnot(is.list(param2))
@@ -62,15 +62,15 @@ gv.test=function(input,myfile="param.txt"){dat=read.param(myfile);value = as.num
 read.param = function(paramfile) { #from Estelle: turn un fichier genre table into a list
 	filterpar = function(line) {
 		line = line[-1] # Remove the name tag
-		
-		# Two possibilities: 
+
+		# Two possibilities:
 		#    the line contains only numbers -> returns a numeric vector
 		#    the line contains at least a non-number -> returns a character vector
 		ans = suppressWarnings(as.numeric(line))
 		if(any(is.na(ans))) ans = line
 		return(ans)
 	}
-	
+
 	stopifnot(is.character(paramfile), file.exists(paramfile))
 	ss  = scan(file=paramfile, what=character(), sep="\n", quiet=TRUE)
 	ss  = strsplit(ss, split="\\s+")
