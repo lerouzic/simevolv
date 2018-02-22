@@ -9,8 +9,6 @@
 #
 ######################################################
 
-#My first commit
-
 cmd <- commandArgs(trailingOnly=FALSE)
 my.path <- cmd[grep(cmd, pattern="--file=")]
 my.path <- dirname(strsplit(my.path, split='=')[[1]][2])
