@@ -3,12 +3,13 @@
 #####################################################
 #
 # Simul_Prog.R
-# 
+#
 # R clone of the C++ Simul_Prog simulation program
 # So far, many functions and parameters are missing
 #
 ######################################################
 
+#My first commit
 
 cmd <- commandArgs(trailingOnly=FALSE)
 my.path <- cmd[grep(cmd, pattern="--file=")]
@@ -31,4 +32,3 @@ if (length(which.o > 0) && length(cmd) > which.o) {
 }
 
 write.table(sim, file=output.file, sep="\t", quote=FALSE, row.names=FALSE)
-
