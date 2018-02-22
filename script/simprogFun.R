@@ -339,7 +339,7 @@ graphfitexp = function(output=test){ #output est en fait l'input ici, cad le dat
 }
 
 graphfit = function(output=test){
-  L=polynom2nd(2,6,3-ncol(output)) #compule L from dataframe number of columns
+  L=length(grep(x = colnames(output), pattern = "MPhen.*"))
   par(bg=bgcol())
   plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(0,1), main="Fitness of the population", xlab="Generations", ylab="Fitness of pop")
   polygon(c(output$Gen, rev(output$Gen)), c(output$MFit+output$VFit, rev(output$MFit-output$VFit)), col=varcol(), border=NA)
@@ -347,7 +347,7 @@ graphfit = function(output=test){
 }
 
 graphexp=function(output=test){
-  L=polynom2nd(2,6,3-ncol(output))
+  L=length(grep(x = colnames(output), pattern = "MPhen.*"))
   par(bg=bgcol())
   plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(0,1), main="Gene expressions - Phenotype moyen", xlab="Generations", ylab="Expression")
   mycolors=mycolors() ; if (length(mycolors)<L) {for (i in (length(mycolors)+1):L){mycolors[i]=mycolors[1]}} #si ya pas assez de couleurs, ce sera affiché quand meme avec la premiere couleur
@@ -358,8 +358,8 @@ graphexp=function(output=test){
 
 graphmtrxvalues = function(output=test){ #GRAPH les valeurs de la matrice
   par(bg=bgcol())
-  L=polynom2nd(2,6,3-ncol(output))
-  tt=output[,(6*L+4):(6*L+3+L*L)] #extracts values of the MeanAll
+  L=length(grep(x = colnames(output), pattern = "MPhen.*"))
+  tt=output[,grep(x = colnames(output), pattern = "MeanAll.*")] #extracts values of the MeanAll
   plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(min(tt)-0.1,max(tt)+0.1), main="Mean Matrix values (alleles) in population", xlab="Generations", ylab="Strength of interaction")
   mycolors=mycolors() ; newcolors=c();
   #colors par colonnes (par effet DU gene sur les autres):
@@ -373,8 +373,8 @@ graphmtrxvalues = function(output=test){ #GRAPH les valeurs de la matrice
 
 graphtransvector = function(output=test){
   par(bg=bgcol())
-  L=polynom2nd(2,6,3-ncol(output))
-  tt=output[,(4*L+2):(5*L+1)]
+  L=length(grep(x = colnames(output), pattern = "MPhen.*"))
+  tt=output[,grep(x = colnames(output), pattern = "MTrans.*")]
   plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(0,2), main="Trans values in pop", xlab="Generations", ylab="Strength of interaction / activation force") #ylim=c(min(tt)-0.1,max(tt)+0.1)
   mycolors=mycolors() ; if (length(mycolors)<L) {for (i in (length(mycolors)+1):L){mycolors[i]=mycolors[1]}}
   for (i in 1:L){ polygon(c(output$Gen, rev(output$Gen)), c(output[[paste("MTrans", i, sep="")]]+output[[paste("VTrans", i, sep="")]], rev(output[[paste("MTrans", i, sep="")]]-output[[paste("VTrans", i, sep="")]])), col=varcol(), border=NA)}
@@ -391,7 +391,7 @@ graphall=function(output=test){
 }
 
 matrixFinale.Matrx = function(fichierdesortie=test){ #extraire la matrice moyenne de la derniere generation du dataframe de sortie
-  L=polynom2nd(2,6,3-ncol(fichierdesortie)) #guess L from number of columns of the dataframe
+  L=length(grep(x = colnames(fichierdesortie), pattern = "MPhen.*")) #guess L from number of columns of the dataframe
   taille=nrow(fichierdesortie) #test$gen[nrow(test)]
   lastW=c()
   for (i in 1:(L*L)){ lastW[length(lastW)+1] = fichierdesortie[[paste("MeanAll", i, sep="")]][taille] }
@@ -403,7 +403,7 @@ matrixFinale.Matrx = function(fichierdesortie=test){ #extraire la matrice moyenn
 }
 
 matrixFinale.Genotype = function(fichierdesortie=test){ #extraire la matrice moyenne de la derniere generation du dataframe de sortie
-  L=polynom2nd(2,6,3-ncol(fichierdesortie)) #guess L from number of columns of the dataframe
+  L=length(grep(x = colnames(fichierdesortie), pattern = "MPhen.*"))#guess L from number of columns of the dataframe
   taille=nrow(fichierdesortie) #test$gen[nrow(test)]
   lastW=c()
   for (i in 1:(L*L)){ lastW[length(lastW)+1] = fichierdesortie[[paste("MeanAll", i, sep="")]][taille] }
@@ -411,21 +411,6 @@ matrixFinale.Genotype = function(fichierdesortie=test){ #extraire la matrice moy
   lastW=matrix(lastW, nrow=L)
   return(lastW)
 }
-
-# Constructing Quadratic Formula
-polynom2nd <- function(a,b,c){
-  if(delta(a,b,c) > 0){ # first case D>0
-        x_1 = (-b+sqrt(delta(a,b,c)))/(2*a)
-        x_2 = (-b-sqrt(delta(a,b,c)))/(2*a)
-        result = c(x_1,x_2)
-        return(max(result))
-  }
-  else if(delta(a,b,c) == 0){ # second case D=0
-        x = -b/(2*a)
-  }
-  else {"There are no real roots."} # third case D<0
-}
-delta<-function(a,b,c){b^2-4*a*c}
 
 #==============================================================================================
 #==============================================================================================
@@ -461,3 +446,18 @@ dna=function(n=2500){ #just for fun
 #  W=cbind(W,transef0 fect)
 #  return(W)
 #}
+
+## Constructing Quadratic Formula
+#polynom2nd <- function(a,b,c){
+#  if(delta(a,b,c) > 0){ # first case D>0
+#        x_1 = (-b+sqrt(delta(a,b,c)))/(2*a)
+#        x_2 = (-b-sqrt(delta(a,b,c)))/(2*a)
+#        result = c(x_1,x_2)
+#        return(max(result))
+#  }
+#  else if(delta(a,b,c) == 0){ # second case D=0
+#        x = -b/(2*a)
+#  }
+#  else {"There are no real roots."} # third case D<0
+#}
+#delta<-function(a,b,c){b^2-4*a*c}
