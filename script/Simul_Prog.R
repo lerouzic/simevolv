@@ -19,9 +19,9 @@ which.p <- which(cmd=="-p")
 stopifnot(length(which.p)==1, length(cmd) > which.p)
 param.file <- cmd[which.p+1]
 
-Rprof("prof.prof")
+#Rprof("prof.prof")
 sim <- launchprogevol(myfile = param.file)
-Rprof(NULL)
+#Rprof(NULL)
 
 output.file <- ""
 which.o <- which(cmd=="-o")
