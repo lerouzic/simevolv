@@ -42,7 +42,8 @@ launchprogevol = function(myfile="param.txt") { #launch the program with a param
                       pas=gv("SIMUL_OUTPUT", theparamsare),
                       steps=gv("DEV_TIMESTEPS", theparamsare),
                       measure=gv("DEV_CALCSTEPS", theparamsare),
-                      diag=gv("INIT_CONDIAG", theparamsare))
+                      diag=gv("INIT_CONDIAG", theparamsare),
+                      clon=gv("INIT_CLONAL", theparamsare))
   return(runevo)
 } #end launchevol2
 
@@ -83,9 +84,9 @@ read.param = function(paramfile) { #from Estelle: turn un fichier genre table in
 #===================================================================================================================
 #===================================================================================================================
 
-runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1, steps, measure, diag, muteff, ...){ ##N=individus gen=generations L=genes ...qui permettent d'acceder aux parametres des functions downstream
+runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1, steps, measure, diag, muteff, clon, ...){ ##N=individus gen=generations L=genes ...qui permettent d'acceder aux parametres des functions downstream
 
-  if (gv("INIT_CLONAL", read.param("param.txt"))=="clonal"){    #~~mettre en init_clonal yesss ##hard
+  if (clon=="clonal"){    #~~mettre en init_clonal yesss ##hard
         pop = development(populclonale(N, L,diag, ...), N, a, L, steps, measure,...)
   }else{pop = development(populrandom(N, L, diag, ...), N, a, L, steps, measure,...)}
 
@@ -166,6 +167,18 @@ indiv = function(L=5, diag=1, ...){
   return(ind)
 }
 
+indivhomoz = function(L=5, diag=1, ...){
+  ind=list()                   #INIT_ALLELES
+  ind$mom = matrix(rnorm(L*L,0,0.1), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$mom =  #haplo mother #Commence avec des matrix vides pour checker si ca marche indeed
+  ind$dad = ind$mom
+  if (diag==0){for (i in 1:L){ind$mom[i,i]=0 ; ind$dad[i,i]=0}}
+  trans=rep(1,L)
+  ind$mom = cbind(ind$mom,trans)
+  ind$dad = cbind(ind$dad,trans)
+  ind$ind = (ind$mom+ind$dad)/2
+  return(ind)
+}
+
 populrandom = function(N=10, L=5, diag=1, ...){ #ind, #genes
   pop=list()
   #for (i in 1:N) {pop[[i]]=indiv(L, diag, ...)}
@@ -175,7 +188,7 @@ populrandom = function(N=10, L=5, diag=1, ...){ #ind, #genes
 
 populclonale = function(N=10, L=5, diag=1, ...){
   pop = list()
-  Lelu = indiv(L, diag,...) #car cest lui l'elu
+  Lelu = indivhomoz(L, diag,...) #car cest lui l'elu
   #for (i in 1:N) {pop[[i]]=Lelu} #OPTIMISATION:apply
   pop = lapply(1:N, function(i) pop[[i]]=Lelu)
   return(pop)
