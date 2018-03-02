@@ -308,7 +308,7 @@ cismutation = function(W, L=5, mucis=0.001, diag=1, muteff){
       gene=sample(c(1:L),1) ; bindsite=sample(c(1:L),1)#tire quel gene va etre mutE, quelle ligne
       if (diag==0){while (gene==bindsite){ bindsite=sample(c(1:L),1) }} #on garde les diag à zero
       combien=rnorm(1,0,muteff) #on tire de combien on va muter
-      W[bindsite,gene]=combien
+      W[bindsite,gene]=W[bindsite,gene]+combien
     }
   }
   W=cbind(W,transeffect)
