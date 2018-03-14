@@ -1,23 +1,3 @@
-#library(parallel) #for mclapply
-#library(stringr) #for str_pad function #its just a detail really
-
-comparesimuls=function(paramfile="param.txt", repl=20,procs=3, outdir="~/Desktop/Playground/PROG/simulations", name="default"){ #laucnch la simulation et sort les datas
-  cat(' Launched')
-  results=list()
-  myfun=function(i){
-    results[[length(results)+1]]=launchprogevol(paramfile)
-    cat(" SIMULATION ", i, "|", repl, " COMPLETED ", floor(i/repl*100),"%",sep="")
-    return(results)
-  }
-  results=mclapply(1:(repl), myfun, mc.cores=procs)
-  moyresults=results[[1]][[1]] ; for (i in 2:repl){moyresults=moyresults+results[[i]][[1]]} #sums the simulations
-  moyresults=moyresults/(repl)
-
-  setwd(outdir)
-  write.csv(moyresults,file=paste (name, ".csv", sep=""))
-  pdf(paste (name,".pdf", sep=""), width=15, height=10)     ; graphall(moyresults) ; dev.off()
-  png(paste (name,".png", sep=""), width=1500, height=1000) ; graphall(moyresults) ; dev.off()
-}
 
 #Use a  paramfile===============================================================================================================
 launchprogevol = function(myfile="param.txt") { #launch the program with a parameter file à mettre entre "" - ca fonctionne
@@ -433,44 +413,3 @@ matrixFinale.Genotype = function(fichierdesortie=test){ #extraire la matrice moy
 dna=function(n=2500){ #just for fun
   paste(sample(c("A", "T", "G", "C"), n, replace=TRUE), collapse = '')
 }
-
-#input=deparse(substitute(input)) #turns name of variable into string, car flemme de le faire dans les parentheses
-#fonction prod() ??? nan ca sert à faire genre 4!=24
-#launchevol2.time = function(){ system.time(launchevol2()) } #Lancer et mesurer le temps que ca prend
-
-##Old version of the transmutation: cahnge l'affinitE sue la colonne, mais non transmissible de facon coherente : cest une sorte de mutation en CIS globale ca en fait !!!
-##Nempeche elle est sympa car quand mutation BIM ca part vraiment dans tous les sens et ca se voit sur graphmtrxvalues()
-#transmutation = function(W, L=5, mutrans=0.001, diag=1, muteff){ #bit like cismut
-#  transeffect=W[,L+1] ; W=W[,1:L]
-#  r=rpois(1,mutrans)
-#  if (r>0){ #determine si on va bouger la matrice de l'individu qui passe dans la fonction
-#    for (i in 1:r){
-#      gene=sample(c(1:L),1) #tire sur quel gene on va toucher l'affinitE
-#      combien=rnorm(1,0,muteff) #on tire de combien on va bouger l'affinitE
-#      for (i in 1:L){
-#        if (W[i,gene]<=0){sign=-1}else{sign=1}
-#        W[i,gene]=abs(W[i,gene])
-#        W[i,gene]=W[i,gene]+combien
-#        if (W[i,gene]>0){W[i,gene]=W[i,gene]*sign}else{W[i,gene]=0}
-#      } #end for (i in 1:L)
-#    } #end for (i in 1:r)
-#  } #end if (r>0)
-#  if (diag==0){for (i in 1:L){W[i,i]=0}}#~A REVOIR
-#  W=cbind(W,transef0 fect)
-#  return(W)
-#}
-
-## Constructing Quadratic Formula
-#polynom2nd <- function(a,b,c){
-#  if(delta(a,b,c) > 0){ # first case D>0
-#        x_1 = (-b+sqrt(delta(a,b,c)))/(2*a)
-#        x_2 = (-b-sqrt(delta(a,b,c)))/(2*a)
-#        result = c(x_1,x_2)
-#        return(max(result))
-#  }
-#  else if(delta(a,b,c) == 0){ # second case D=0
-#        x = -b/(2*a)
-#  }
-#  else {"There are no real roots."} # third case D<0
-#}
-#delta<-function(a,b,c){b^2-4*a*c}
