@@ -29,4 +29,7 @@ if (length(which.o > 0) && length(cmd) > which.o) {
 	output.file <- cmd[which.o+1]
 }
 
-write.table(sim, file=output.file, sep="\t", quote=FALSE, row.names=FALSE)
+write.table(sim[[1]], file=paste(date, output.file, ".table", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
+library(rlist)
+list.save(sim[[2]], file=paste(date, output.file, ".initialpop.rds", sep=""))
+list.save(sim[[3]], file=paste(date, output.file, ".finalpop.rds", sep=""))
