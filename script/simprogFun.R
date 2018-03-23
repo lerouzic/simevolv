@@ -1,4 +1,4 @@
-
+#library(stringr) #for str_pad function #its just a detail really
 #Use a  paramfile===============================================================================================================
 launchprogevol = function(myfile="param.txt") { #launch the program with a parameter file à mettre entre "" - ca fonctionne
 
@@ -23,7 +23,9 @@ launchprogevol = function(myfile="param.txt") { #launch the program with a param
                       steps=gv("DEV_TIMESTEPS", theparamsare),
                       measure=gv("DEV_CALCSTEPS", theparamsare),
                       diag=gv("INIT_CONDIAG", theparamsare),
-                      clon=gv("INIT_CLONAL", theparamsare))
+                      clon=gv("INIT_CLONAL", theparamsare),
+                      initall=gv("INIT_ALLELES", theparamsare),
+                      inittrans=gv("INIT_TRANSALLELES", theparamsare))
   return(runevo)
 } #end launchevol2
 
@@ -64,11 +66,13 @@ read.param = function(paramfile) { #from Estelle: turn un fichier genre table in
 #===================================================================================================================
 #===================================================================================================================
 
-runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1, steps, measure, diag, muteff, clon, ...){ ##N=individus gen=generations L=genes ...qui permettent d'acceder aux parametres des functions downstream
+runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1, steps, measure, diag, muteff, clon, initall, inittrans,...){ ##N=individus gen=generations L=genes ...qui permettent d'acceder aux parametres des functions downstream
 
   if (clon=="clonal"){    #~~mettre en init_clonal yesss ##hard
-        pop = development(populclonale(N, L,diag, ...), N, a, L, steps, measure,...)
-  }else{pop = development(populrandom(N, L, diag, ...), N, a, L, steps, measure,...)}
+        pop = development(populclonale(N, L,diag, initall, inittrans, ...), N, a, L, steps, measure,...)
+  }else{pop = development(populrandom(N, L, diag, initall, inittrans, ...), N, a, L, steps, measure,...)}
+
+  initpop=pop
 
   #create and name columns of the output dataframe
   output = data.frame(matrix(ncol = 1+L*6+2+L*L*2, nrow = 0))
@@ -101,6 +105,18 @@ runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1,
         output[nrow(output), paste("MeanAll", i, sep="")] = mean(sapply(1:N, function(j) pop[[j]]$ind[i]))
         output[nrow(output), paste("VarAll",  i, sep="")] =  var(sapply(1:N, function(j) pop[[j]]$ind[i]))
       }
+
+      #png(paste ("dupergraph",str_pad(gg,3,pad="0"),".png", sep=""), width=1500, height=1000)
+      #WBoxplot(pop=pop)
+      #dev.off()
+
+      #png(paste ("supergraph",str_pad(gg,3,pad="0"),".png", sep=""), width=1500, height=1000)
+      #WStripchart(pop=pop)
+      #dev.off()
+
+      #png(paste ("meanmatrices",str_pad(gg,3,pad="0"),".png", sep=""), width=700, height=500)
+      #WPlot(matrixFinale.Genotype(output))
+      #dev.off()
     } #end of sortie
 
     pop = development(newpopul(pop, N, L, mucis, mutrans, diag, muteff), N, a, L, steps, measure, ...)
@@ -114,7 +130,7 @@ runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1,
   # cat("\n")
   #cat(" SUCCESSFULLY COMPLETED, With a ")
   #return(pop)
-  return(output)
+  return(list(output,initpop,pop))
 }
 
 #POP================================================================================================================
@@ -135,47 +151,47 @@ runevolution = function(N=10, gen=10, L=3, mucis=0.5, mutrans=0.5, a=0.2, pas=1,
 #POP================================================================================================================
 #===================================================================================================================
 
-indiv = function(L=5, diag=1, ...){
+indiv = function(L=5, diag=1, initall, inittrans, ...){
   ind=list()                   #INIT_ALLELES
-  ind$mom = matrix(rnorm(L*L,0,0.1), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$mom =  #haplo mother #Commence avec des matrix vides pour checker si ca marche indeed
-  ind$dad = matrix(rnorm(L*L,0,0.1), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$dad =  #haplo father
+  ind$mom = matrix(rnorm(L*L, initall[1], initall[2]), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$mom =  #haplo mother #Commence avec des matrix vides pour checker si ca marche indeed
+  ind$dad = matrix(rnorm(L*L, initall[1], initall[2]), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$dad =  #haplo father
   if (diag==0){for (i in 1:L){ind$mom[i,i]=0 ; ind$dad[i,i]=0}}
-  trans=rep(1,L)
+  trans=rnorm(L, inittrans[1], inittrans[2]) #rep(inittrans,L) #Could we put that at 0 ?????????
   ind$mom = cbind(ind$mom,trans)
   ind$dad = cbind(ind$dad,trans)
   ind$ind = (ind$mom+ind$dad)/2
   return(ind)
 }
 
-indivhomoz = function(L=5, diag=1, ...){
+indivhomoz = function(L=5, diag=1, initall=c(0,0), inittrans=c(0,0), ...){
   ind=list()                   #INIT_ALLELES
-  ind$mom = matrix(rnorm(L*L,0,0.1), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$mom =  #haplo mother #Commence avec des matrix vides pour checker si ca marche indeed
+  ind$mom = matrix(rnorm(L*L, initall[1], initall[2]), nrow=L) #matrix(rep(0,square(L)), nrow=L) ind$mom =  #haplo mother #Commence avec des matrix vides pour checker si ca marche indeed
   ind$dad = ind$mom
   if (diag==0){for (i in 1:L){ind$mom[i,i]=0 ; ind$dad[i,i]=0}}
-  trans=rep(1,L)
+  trans=rnorm(L, inittrans[1], inittrans[2])
   ind$mom = cbind(ind$mom,trans)
   ind$dad = cbind(ind$dad,trans)
   ind$ind = (ind$mom+ind$dad)/2
   return(ind)
 }
 
-populrandom = function(N=10, L=5, diag=1, ...){ #ind, #genes
+populrandom = function(N=10, L=5, diag=1, initall, inittrans, ...){ #ind, #genes
   pop=list()
   #for (i in 1:N) {pop[[i]]=indiv(L, diag, ...)}
-  pop = lapply(1:N, function(i) pop[[i]]=indiv(L, diag, ...))
+  pop = lapply(1:N, function(i) pop[[i]]=indiv(L, diag, initall, inittrans, ...))
   return(pop)
 }
 
-populclonale = function(N=10, L=5, diag=1, ...){
+populclonale = function(N=10, L=5, diag=1, initall, inittrans, ...){
   pop = list()
-  Lelu = indivhomoz(L, diag,...) #car cest lui l'elu
+  Lelu = indivhomoz(L, diag, initall, inittrans, ...) #car cest lui l'elu
   #for (i in 1:N) {pop[[i]]=Lelu} #OPTIMISATION:apply
   pop = lapply(1:N, function(i) pop[[i]]=Lelu)
   return(pop)
 }
 
 populdevrandom = function(){
-  test=development(populrandom(N=10, L=5, diag=0))
+  test=development(populrandom(N=10, L=5, diag=0, initall=c(0,1), inittrans=c(0,1)))
   #for (i in 1:10){test[[i]]$fitness=runif(1)}
   return(test)
 }
@@ -315,8 +331,8 @@ transmutation = function(W, L=5, mutrans=0.001, diag=1, muteff){ #for the real t
 #Traitement des datas from dataframe#######################################################################################################
 
 #UN PEU PLUS VIF:
-bgcol=function(){bg='#e7ebf4'; return(bg)} #899caa
-mycolors=function(){mycolors=c('#b53122','#892daf','#2c85c2','#25bd66','#e09b2d','#dd5c25','#0b0b0a','#cd30cc','#29cb96') ; return(mycolors)}
+bgcol=function(){bg='white'; return(bg)} #899caa ##e7ebf4
+mycolors=function(){mycolors=c('#b53122','#892daf','#2c85c2','#25bd66','#e09b2d', '#45b39d', '#dd5c25','#6f6666','#cd30cc') ; return(mycolors)}
 varcol=function(){varcol='#dbdbed'; return(varcol)} #8092a6
 
 ##DOESNT HURT MY EYES:
@@ -356,9 +372,9 @@ graphmtrxvalues = function(output=test){ #GRAPH les valeurs de la matrice
   plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(min(tt)-0.1,max(tt)+0.1), main="Mean Matrix values (alleles) in population", xlab="Generations", ylab="Strength of interaction")
   mycolors=mycolors() ; newcolors=c();
   #colors par colonnes (par effet DU gene sur les autres):
-  for (j in 1:L){for (i in 1:L){newcolors[length(newcolors)+1]=mycolors[j]}} ; mtext("Effect OF the colored gene on others", 3, line=.3)
+  #for (j in 1:L){for (i in 1:L){newcolors[length(newcolors)+1]=mycolors[j]}} ; mtext("Effect OF the colored gene on others", 3, line=.3)
   #colors par lignes (par effet SUR gene des autres):
-  #for (j in 1:L){for (i in 1:L){newcolors[length(newcolors)+1]=mycolors[i]}} ; mtext("Effect ON the colored gene by others", 3, line=.3)
+  for (j in 1:L){for (i in 1:L){newcolors[length(newcolors)+1]=mycolors[i]}} ; mtext("Effect ON the colored gene by others", 3, line=.3)
   for (i in 1:(L*L)){ polygon(c(output$Gen, rev(output$Gen)), c(output[[paste("MeanAll", i, sep="")]]+output[[paste("VarAll", i, sep="")]], rev(output[[paste("MeanAll", i, sep="")]]-output[[paste("VarAll", i, sep="")]])), col=varcol(), border=NA)}
   for (i in 1:(L*L)){ lines(output$Gen, output[[paste("MeanAll", i, sep="")]], type = 'l', col=newcolors[i])}
   legend("topleft", lty=1, col=mycolors, legend=c(1:L), bty = "n", cex = 0.75, lwd=2)
@@ -368,11 +384,11 @@ graphtransvector = function(output=test){
   par(bg=bgcol())
   L=length(grep(x = colnames(output), pattern = "MPhen.*"))
   tt=output[,grep(x = colnames(output), pattern = "MTrans.*")]
-  plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(0,2), main="Trans values in pop", xlab="Generations", ylab="Strength of interaction / activation force") #ylim=c(min(tt)-0.1,max(tt)+0.1)
+  plot(NA, xlim=c(0,output$Gen[nrow(output)]) ,ylim=c(-2,2), main="Trans values in pop", xlab="Generations", ylab="Strength of interaction / activation force") #ylim=c(min(tt)-0.1,max(tt)+0.1)
   mycolors=mycolors() ; if (length(mycolors)<L) {for (i in (length(mycolors)+1):L){mycolors[i]=mycolors[1]}}
   for (i in 1:L){ polygon(c(output$Gen, rev(output$Gen)), c(output[[paste("MTrans", i, sep="")]]+output[[paste("VTrans", i, sep="")]], rev(output[[paste("MTrans", i, sep="")]]-output[[paste("VTrans", i, sep="")]])), col=varcol(), border=NA)}
   for (i in 1:L){ lines(output$Gen, output[[paste("MTrans", i, sep="")]], type = 'l', col=mycolors[i])}
-  legend("topleft", lty=1, col=mycolors, legend=c(1:L), bty = "n", cex = 0.75, lwd=2)
+  legend('topleft',  col=mycolors, legend=c(1:L), bty = "n", cex = 0.75, lwd=2)
 }
 
 graphall=function(output=test){
@@ -412,4 +428,139 @@ matrixFinale.Genotype = function(fichierdesortie=test){ #extraire la matrice moy
 
 dna=function(n=2500){ #just for fun
   paste(sample(c("A", "T", "G", "C"), n, replace=TRUE), collapse = '')
+}
+
+WBoxplot=function(pop, file){ #can be launched with either a file containing a pop, or directly a pop
+  library(rlist)
+  if (missing(file)){
+    test=pop
+    N=length(test) ; L=nrow(test[[1]]$ind)
+    title=paste("fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  }else{
+    test=list.load(file = file)
+    N=length(test) ; L=nrow(test[[1]]$ind)
+    title=paste(file, "- fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  }
+  dat=c()
+  for (j in 1:L){
+    for (i in 1:(L+1)){
+      val=c(); pval=c()
+      pval=sapply(1:N, function(k) val[length(val)+1]=test[[k]]$ind[j,i])
+      dat=cbind(dat,pval)
+    }
+  }
+  cols=c("red","blue","green","yellow","pink","purple")
+  cols=c(rep("#c0392b",L), "#42110b", rep("#9b59b6",L), "#2d0e39", rep("#2980b9",L), "#0c2839", rep("#27ae60",L),"#0a361c", rep("#f39c12",L), "#47310c", rep("#45b39d",L), "#043028", rep("#dd5c25",L), "#5b2007", rep("#6f6666",L), "#000000", rep("#c727c0",L), "#460a50")
+  #dev.off()
+  boxplot(dat[,c(1:(L*(L+1)))], ylim=c(-1.5,2.2),xaxt="n", medcol="white", whiskcol="white",staplecol="white",boxcol="white",outcol="white",outcex=0.5,outpch=1)
+  for (i in 0:(L-2)){abline(v = i*(L+1)+(L+1)+0.5, col="grey", lty=5)}
+  abline(h=1, col="#17202a", lty=3) ; abline(h=0, col="#2c3e50", lty=3)
+  boxplot(dat[,c(1:(L*(L+1)))], ylim=c(-1.5,2.2), add=TRUE, xaxt="n", main=title, medcol=cols, whiskcol=cols,staplecol=cols,boxcol=cols,outcol="grey",outcex=0.5,outpch=1)
+  #fitness dans la pop
+  a=paste("fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  #matrix moyenne in pop
+  b=round(Reduce('+', lapply(1:N, function(i) test[[i]]$ind))/N, 2)
+  return(list(a,b))
+}
+
+WStripchart=function(pop, file){
+  library(rlist)
+  if (missing(file)){
+    test=pop
+    N=length(test) ; L=nrow(test[[1]]$ind)
+    title=paste("fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  }else{
+    test=list.load(file = file)
+    N=length(test) ; L=nrow(test[[1]]$ind)
+    title=paste(file, "- fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  }
+  dat=c()
+  for (j in 1:L){
+    for (i in 1:(L+1)){
+      val=c(); pval=c()
+      pval=sapply(1:N, function(k) val[length(val)+1]=test[[k]]$ind[j,i])
+      dat=cbind(dat,pval)
+    }
+  }
+  cols=c("red","blue","green","yellow","pink","purple")
+  cols=c(rep("#c0392b",L), "#42110b", rep("#9b59b6",L), "#2d0e39", rep("#2980b9",L), "#0c2839", rep("#27ae60",L),"#0a361c", rep("#f39c12",L), "#47310c", rep("#45b39d",L), "#043028", rep("#dd5c25",L), "#5b2007", rep("#6f6666",L), "#000000", rep("#c727c0",L), "#460a50")
+  #dev.off()
+  stripchart(as.data.frame(dat), vertical = TRUE, col="white", ylim=c(-1.5,2.2),xaxt="n")
+  for (i in 0:(L-2)){abline(v = i*(L+1)+(L+1)+0.5, col="grey", lty=5)}
+  abline(h=1, col="#17202a", lty=3) ; abline(h=0, col="#2c3e50", lty=3)
+  stripchart(as.data.frame(dat), add=TRUE, vertical = TRUE, main="test", method = "jitter", pch=1,col=cols, ylim=c(-1.5,2.2))
+  #fitness dans la pop
+  a=paste("fitness of pop", mean(sapply(1:N, function(i) test[[i]]$fitness)))
+  #matrix moyenne in pop
+  b=round(Reduce('+', lapply(1:N, function(i) test[[i]]$ind))/N, 2)
+  return(list(a,b))
+}
+
+WPlot=function(matrx){
+L=nrow(matrx)
+cols=c(rep("#c0392b",L), "#42110b", rep("#9b59b6",L), "#2d0e39", rep("#2980b9",L), "#0c2839", rep("#27ae60",L),"#0a361c", rep("#f39c12",L), "#47310c", rep("#45b39d",L), "#043028", rep("#dd5c25",L), "#5b2007", rep("#6f6666",L), "#000000", rep("#c727c0",L), "#460a50")
+plot(as.vector(t(matrx)), col="white",ylim=c(-1.5,2.2), xaxt="n", ylab="", xlab="", main=deparse(substitute(matrx)))
+for (i in 0:(L-2)){abline(v = i*(L+1)+(L+1)+0.5, col="grey", lty=5)}
+abline(h=1, col="#17202a", lty=3) ; abline(h=0, col="#2c3e50", lty=3)
+points(as.vector(t(matrx)), col=cols, pch=19,ylim=c(-1.5,2.2), xaxt="n")
+}
+
+Quantifycistrans=function(test=test, param="paramtest.txt", ref="param"){ #input takes the list containing 1.dataframe with evo infos, 2.last pop
+  stopifnot(ref=="zero" || ref=="init" || ref=="param") #we can choose here, which reference we want to take to compute the  relevant mutations: from ZERO, from the initial individual (luca - last universal common ancester) or whats written in the param (first value).
+  #load parameters used for simulation to check mutations
+  theparamsare=read.param(param)
+  L=nrow(test[[2]][[1]]$ind)
+  theta = gv("FITNESS_OPTIMUM", theparamsare)  ; if (length(theta)<L){ for (i in (length(theta)+1):L){theta[length(theta)+1]=theta[1]}} # on verifie que theta a le bon nombre de parametres, sinon on lui rajoute le 1er parametre le nombre de fois qu'il faut
+  s1=gv("FITNESS_STRENGTH", theparamsare) ; if (length(s1)<L){ for (i in (length(s1)+1):L){s1[length(s1)+1]=s1[1]}}
+  s2=gv("FITNESS_STABSTR", theparamsare)  ; if (length(s2)<L){ for (i in (length(s2)+1):L){s2[length(s2)+1]=s2[1]}}
+  initall=gv("INIT_ALLELES", theparamsare)
+  inittrans=gv("INIT_TRANSALLELES", theparamsare)
+  #prepare data
+  if (ref=="zero"){
+    ref=matrix(rep(0, L*(L+1)), nrow=L, ncol=(L+1))
+  }else if (ref=="param"){
+    ref=cbind(matrix(rep(initall[1],L*L), nrow = L), c(rep(inittrans[1],L))) #matrix with initial values
+  }else if (ref=="init"){
+    ref=test[[2]][[1]]$ind #~a revoir, ce serait bien que ce soit une moyenne de la pop, ici cest le premier ind de initpop
+  }
+  mat=matrixFinale.Genotype(test[[1]]) #the mean matrix of the population
+  moyfit=addfitness(model.M2(mat), L=L, theta=theta, s1=s1, s2=s2) #ind moyen fitness
+  dev.off() ; WPlot(mat)
+  #result becomes the matrix containing the difference of fitness w/ or w/o the mutation
+  difffit=matrix(NA, nrow=L, ncol =(L+1))
+  for(i in 1:L){ for(j in 1:(L+1)){
+    mat2=mat
+    mat2[i,j]=ref[i,j]
+    moyfit2=addfitness(model.M2(mat2), L=L, theta=theta, s1=s1, s2=s2)
+    difffit[i,j]=moyfit$fitness-moyfit2$fitness}}
+  difffit[difffit < 0.01] = 0 #get rid of smaller effects
+  round(difffit,2)
+  #reconstruct consensus matrx for testing ie matrix with only relevant mutations determined from diffinit
+  relevant=ref
+  for(i in 1:L){ for(j in 1:(L+1)){ if(difffit[i,j]!=0){relevant[i,j]=mat[i,j] }}}
+  consfit=addfitness(model.M2(relevant), L=L, theta=theta, s1=s1, s2=s2)$fitness #fitness de l'indiv moyen
+  #exit the found results
+  cat(paste(sum(difffit!=0),"apparent relevant mutations:", sum(difffit[,1:L]!=0), "CIS and", sum(difffit[,(L+1)]!=0), "TRANS."))
+  relevant
+  cat(paste("\nFitness: of initial pop:", round(test[[2]][[1]]$fitness,4),
+            "\n          of ind of pop:", round(mean(sapply(1:length(test[[3]]), function(i) test[[2]][[i]]$fitness)),4),
+            "\n           of ind moyen:", round(moyfit$fitness,4),
+            "\n          from relevant:", round(consfit,4)))
+
+  output=list()
+  output$meanindmat=mat
+  output$difffit=difffit
+  output$relevant=relevant
+  output$CIS=sum(difffit[,1:L]!=0)
+  output$TRANS=sum(difffit[,(L+1)]!=0)
+  output$fit_MeanINdsPop_IndMoy_Relevant=c(round(mean(sapply(1:length(test[[3]]), function(i) test[[3]][[i]]$fitness)),4),
+                                           round(moyfit$fitness,4),
+                                           round(consfit,4))
+  return(output)
+}
+
+LoadPaquet=function(input){ #load the 3 files in one shot
+  output=list(read.table(paste(input,".table", sep=""), header=TRUE),
+              list.load(paste(input, ".initialpop.rds", sep="")),
+              list.load(paste(input, ".finalpop.rds", sep="")))
 }
