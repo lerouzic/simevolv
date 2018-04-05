@@ -190,6 +190,7 @@ class ParameterSet
 	    // input/output
 	    void read(const std::string&);
 	    void write(std::ostream&) const;
+        void erase(const std::string&);
 	
 	    // function
 	    const Parameter * getpar(const std::string&) const;

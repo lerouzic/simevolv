@@ -55,9 +55,11 @@ class Individual
 	    Individual & operator = (const Individual&);
 	    int operator == (const Individual&) const;
 	
-	    // instance/initialization
-	    void initialize();
+	    // instance/initialization        
 	    void update_fitness(const Population &);
+        void update_phenotype();
+        void update_epigenet(rate_type);
+	    // void initialize(); // Updates whatever possible (useless?)
 
 		// getters
 	    fitness_type get_fitness() const;

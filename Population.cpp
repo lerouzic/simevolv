@@ -107,17 +107,16 @@ void Population::initialize(const ParameterSet& param)
     int popsize = param.getpar(INIT_PSIZE)->GetInt();
     for (long int i = 0; i < popsize; i++)
     {
-        Individual indiv(param);
+        Individual indiv(param); // Initialize the genotype only
         pop.push_back(indiv);
     }
     // Parameters that may change during simulation
-	update_param(param);
+	// update_param(param); // no harm, but not necessary here. 
+    
+    
 	// Parameters that cannot change
     out_geno = param.getpar(OUT_GENO)->GetString(); 
     out_unstab = param.getpar(OUT_UNSTAB)->GetString();
-        
-    // Computes fitness etc. 
-    update();
 }
 
 /* Set up parameters. This may happen during initialization
@@ -131,15 +130,30 @@ void Population::update_param(const ParameterSet & param)
     nb_direpi_test = param.getpar(OUT_DIREPI_TESTS)->GetInt();
     
     // Individuals don't know how to update themselves
-    // Note: useless (duplicated code) when initializing for the first time
     rate_type new_epigenet = param.getpar(GENET_EPIGENET)->GetDouble();
-    for (size_t i = 0; i < pop.size(); i++) {
-        pop[i].epigenet = new_epigenet;
+    for (auto &indiv : pop)
+    {
+        indiv.update_epigenet(new_epigenet);
+    } 
+}
+
+
+void Population::update_phenotype(void)
+{
+    for (auto &indiv : pop)
+    {
+        indiv.update_phenotype();
+    }    
+}
+
+void Population::update_fitness(void)
+{
+    Fitness::update(*this);
+	// Initialization of the fitness function for this generation
+    for (auto &indiv : pop)
+    {
+        indiv.update_fitness(*this);
     }
-    
-    update(); // This is because other parameters (such as fitness function) might
-              // have changed. Not totally clean, as it is unclear what should happen
-              // if Population::update_param is called before Fitness::update_param. 
 }
 
 // functions
@@ -188,24 +202,10 @@ Population Population::reproduce(long int offspr_number /* = 0 */) const
             }
         }
     }
-    offspring.update();
     return(offspring);
 }
 
 
-/* Updates the status of the population. 
-   So far, the only variables that change are individual fitnesses.
-   For some fitness functions, the fitness can only be computed once the
-   population is fully known */
-void Population::update(void)
-{
-    Fitness::update(*this);
-	// Initialization of the fitness function for this generation
-    for (vector<Individual>::iterator indiv = pop.begin(); indiv != pop.end(); indiv++)
-    {
-        indiv->update_fitness(*this);
-    }
-}
 
 /* calculates and returns the phenotypic mean value for each trait */
 Phenotype Population::mean_phenotype() const

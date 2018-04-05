@@ -497,6 +497,18 @@ void ParameterSet::read(const string & file)
     }
 }
 
+void ParameterSet::erase(const string & tag)
+{
+	if (!exists(tag)) 
+	{
+		cerr << "Parameter " << tag << " is missing." << endl;
+		exit(EXIT_FAILURE); 
+	}
+    auto pp = parameters.find(tag);
+    delete pp->second;
+    parameters.erase(pp);    
+}
+
 const Parameter * ParameterSet::getpar(const string & tag) const
 {
 	if (!exists(tag)) 

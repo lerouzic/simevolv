@@ -109,17 +109,12 @@ int main(int argc, char *argv[])
 	
 	unsigned int global_generation = 0;
 	
-	// This is needed for the initial population
-	// (explaining the unfortunate code duplication later)
-	Fitness::initialize(param);
-	Environment::initialize(param);
-	
-    Population pop(param);
+    Population pop(param); // Generates the genotypes based on the rules defined in the parameter set
     
     if (vm.count("ipopulation")) {
         #ifdef SERIALIZATION_TEXT 
             ifstream popin(ipop_file.c_str(), ios::in);
-            popin >> pop;
+            popin >> pop; // Copies everything, but phenotypes and fitnesses will be updated. 
             pop.update_param(param); // warning: some rates are stored in the population class, they should be updated. 
             popin.close();
         #else
@@ -131,50 +126,61 @@ int main(int argc, char *argv[])
 	bool continue_simulation = false;
     
 	do { // while continue_simulation
-			            
-		// Partially duplicated code -- probably harmless, but not elegant
-		if (global_generation > 0) {
-			Fitness::initialize(param);
-			Environment::initialize(param);
-			Architecture::update_param(param);		
-			pop.update_param(param);
-		}
+
+        Fitness::initialize(param);
+        Environment::initialize(param);
+        Architecture::update_param(param);		
+
+        // The population needs to be up-to-date against the parameter file. 
+        pop.update_param(param);
 
 		unsigned int current_pargen = param.getpar(SIMUL_GENER)->GetInt();
 		unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
-		unsigned int maxgen;
-		if (param.exists(SIMUL_MAXGEN))
-			maxgen = param.getpar(SIMUL_MAXGEN)->GetInt();
-		else
-			maxgen = global_generation + current_pargen;
+		unsigned int maxgen = param.exists(SIMUL_MAXGEN) ? 
+            param.getpar(SIMUL_MAXGEN)->GetInt() : global_generation + current_pargen;
 		
-		// Inner loop: for each parameter file
-		for (unsigned int inner_generation = (global_generation == 0 ? 0 : 1); 
-            (inner_generation <= current_pargen) && (global_generation <= maxgen); 
+        // current_pargen: number of generations to run with the current parameter file
+        // intervgen     : number of generations between output events
+        // maxgen        : total number of generations before stopping the simulation.
+        //                 if not specified in the parameter file, runs to the end of the current parameter
+        
+        
+		// Two counts: 
+        //   - inner_generation corresponds to the inner loop (current parameter file)
+        //   - global generation corresponds to the outer loop 
+        //     (number of generations since the beginning of the simulation)
+        // The simulation stops if global_generation == maxgen (max number of generations reached)
+        // or if inner_generation == current_pargen (and no NEXTPAR file is provided). 
+		for (unsigned int inner_generation = 0; 
+            (inner_generation < current_pargen) && (global_generation < maxgen); 
 						inner_generation++, global_generation++)
 		{
-            // Step 1: Output if necessary
-			if ((global_generation == 0) || (global_generation == maxgen) || (global_generation % intervgen == 0))
+            // At the beginning of the loop, the population is only defined by its genotype.
+            pop.update_phenotype();
+            pop.update_fitness();
+            
+            // Step 1: Output if necessary. If inner_generation == 0, this is the initial population
+            // in the context of the new parameter file. 
+			if ((global_generation == 0) || (global_generation % intervgen == 0))
 			{
 				pop.write(*pt_output, global_generation);
 			}
         
-            // Step 2: Run a generation (except at the last generation)
-			if (global_generation < maxgen) {
-				// no need to compute a new population if the simulation is over
-				Population offsp = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
-				pop = offsp;
-			}
+            // Step 2: Run a generation (except at the last generation of the inner loop)
+            // note: pop = pop.reproduce(...) does not work
+            Population offspring = pop.reproduce(param.getpar(INIT_PSIZE)->GetInt());
+            pop = offspring;
+
 		} // end of inner loop
 		
-		continue_simulation = (param.exists(FILE_NEXTPAR) 
-			&& (global_generation <= maxgen));
-            
-
+        continue_simulation = (param.exists(FILE_NEXTPAR) && (global_generation <= maxgen)); 
+        
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
+            param.erase(FILE_NEXTPAR); // we do not want to keep this if FILE_NEXTPAR is missing in the file
 			param.read(next_parfile);
-            if ((param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
+            if (param.exists(FILE_NEXTPAR) 
+                && (param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
                 && (!param.exists(SIMUL_MAXGEN))) {
                 // Avoid infinite loop
                 continue_simulation = false;
@@ -182,6 +188,11 @@ int main(int argc, char *argv[])
         }
         
     } while (continue_simulation);
+    
+    // A last output is necessary at the end of the simulation
+    pop.update_phenotype();
+    pop.update_fitness();    
+    pop.write(*pt_output, global_generation);
     
     if (vm.count("parcheck")) 
     {

@@ -49,8 +49,11 @@ class Population
 	    Population& operator = (const Population&); 
 	
 		void update_param(const ParameterSet&);
-	    Population reproduce(long int offspr_number = 0) const;
+	    void update_fitness(); 
+        void update_phenotype();        
 	    
+	    Population reproduce(long int offspr_number = 0) const;        
+        
 	    Phenotype mean_phenotype() const; // Probably used by the Fitness class only
 	    long int size() const;
 
@@ -69,8 +72,7 @@ class Population
 	protected :
 		// internal functions
 	    void initialize(const ParameterSet &);
-	    void update(void); 
-	    
+
 	    // Stuff for selection
 	    std::vector<fitness_type> cumul_fitness() const;
 	    const Individual & pick_parent(const std::vector<fitness_type>&) const;

@@ -29,7 +29,6 @@ Individual::Individual()
     , phenotype()
     , fitness(0.0)
 {    
-    // initialize(); // This does not make sense. 
 }
 
 /* constructor using two haplotypes */
@@ -42,7 +41,6 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 	} else {
 		genotype = unique_ptr<Genotype>(new DiploGenotype(gam_father, gam_mother));
 	}
-    initialize();
 }
 
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, 
@@ -56,21 +54,18 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 	} else {
 		genotype = unique_ptr<Genotype>(new DiploGenotype(gam_father, gam_mother));
 	}	
-	initialize();
 }
 
 /* constructors using a genotype */
 Individual::Individual(const Genotype& gen)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
 {
-    initialize();
 }
 
 Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
     , epiinfo(epimother)
 {
-    initialize();
 }
 
 /* constructor using the parameters from ParameterSet */
@@ -83,7 +78,6 @@ Individual::Individual(const ParameterSet& param)
 	} else {
 		genotype = unique_ptr<Genotype>(new DiploGenotype(param));
 	}
-    initialize();
 }
 
 Individual::Individual(const Individual& copy)
@@ -120,31 +114,41 @@ Individual & Individual::operator = (const Individual& copy)
 // instance and initialization
 
 /* initialize the individual, with genotypic, phenotypic and environmental values */
-void Individual::initialize()
+//~ void Individual::initialize()
+//~ {
+    //~ update_phenotype();
+     
+    //~ // So far, the epigenetic factor does not evolve).
+    //~ // If epiinfo is not initialized (no mother = first generation)
+    //~ // its value has already been set from the parameter set. 
+    //~ // otherwise, we just copy the mother's factor. 
+    //~ if (epiinfo.is_defined())
+		//~ epigenet = epiinfo.get_epigenet();   
+    
+    //~ fitness = 0;
+
+//~ }
+
+
+void Individual::update_fitness(const Population & pop)
+{
+    fitness = Fitness::compute(phenotype, pop);
+}
+
+void Individual::update_phenotype()
 {
     if (genotype) {
         Architecture * archi = Architecture::Get();
         phenotype = archi -> phenotypic_value(*genotype, true, epiinfo);
     } else {
         cerr << "Trying to initialize an individual without genotype" << endl;
-    }
-    
-    fitness = 0;
-    
-    // So far, the epigenetic factor does not evolve).
-    // If epiinfo is not initialized (no mother = first generation)
-    // its value has already been set from the parameter set. 
-    // otherwise, we just copy the mother's factor. 
-    if (epiinfo.is_defined())
-		epigenet = epiinfo.get_epigenet();
+    }    
 }
 
-// functions
-void Individual::update_fitness(const Population & pop)
+void Individual::update_epigenet(rate_type newepi)
 {
-    fitness = Fitness::compute(phenotype, pop);
+    epigenet = newepi;
 }
-
 
 // getters
 fitness_type Individual::get_fitness() const
