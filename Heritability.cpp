@@ -55,6 +55,7 @@ Heritability::Heritability(unsigned int nb_pairs, const Population & pop)
 		const Individual & Father = pop.pick_parent(cumul_equal_fit);
 		const Individual & Mother = pop.pick_parent(cumul_equal_fit);
 		Individual Offspring = Individual::mate(Father, Mother);
+		Offspring.update_phenotype();
 		Offspring.update_fitness(pop);
 		
 		ParentOffspring result;
