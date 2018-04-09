@@ -423,8 +423,8 @@ void ParameterSet::initialize()
     parameters[TYPE_ARCHI] = new Parameter_string(AR_options);
     
     // Simulation parameters
-    parameters[SIMUL_GENER] = new Parameter_int(1, 1000*1000);
-    parameters[SIMUL_MAXGEN] = new Parameter_int(1, 1000*1000);
+    parameters[SIMUL_GENER] = new Parameter_int(0, 1000*1000);
+    parameters[SIMUL_MAXGEN] = new Parameter_int(0, 1000*1000);
     parameters[SIMUL_OUTPUT] = new Parameter_int(1, 10*1000);
    
 	// General genetic parameters
