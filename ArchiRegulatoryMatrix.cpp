@@ -155,7 +155,7 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 {
     // flags for optimization
     const bool run_recur = (recur != 0.0);
-    const bool run_plasticity = !std::all_of(plasticity_strength.begin(), plasticity_strength.end(), [](int i) 
+    const bool run_plasticity = !std::all_of(plasticity_strength.begin(), plasticity_strength.end(), [](double i) 
         { return i==0.; });
     const bool run_enviro = (Environment::dynam_disturb(sddynamtest) == 0.); // not elegant, but should do the job.
     
