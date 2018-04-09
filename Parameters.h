@@ -38,6 +38,7 @@ class Parameter
 	    //input/output
 	    virtual void read(std::istream &) {}
 	    virtual void write(std::ostream &) const {}
+        virtual void erase() {}
 	
 	    //functions
 	    virtual long int GetInt() const {assert(false && "function unavailable");}
@@ -64,6 +65,7 @@ class Parameter_int: public Parameter
 	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
+        void erase();
 	
 	    // functions
 	    long int Get() const;
@@ -88,6 +90,7 @@ class Parameter_double: public Parameter
 	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
+        void erase();
 	
 	    // functions
 	    float_type Get() const;
@@ -112,6 +115,7 @@ class Parameter_vector_double: public Parameter
 	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
+        void erase();
 	
 	    // functions
 	    std::vector<float_type> Get() const;
@@ -137,6 +141,7 @@ class Parameter_gaussian: public Parameter
 	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
+        void erase();
 	
 	    // functions
 	    void SetMean(float_type);
@@ -162,6 +167,7 @@ class Parameter_string: public Parameter
 	    // input/output
 	    void read(std::istream&);
 	    void write(std::ostream&) const;
+        void erase();
 	    
 	    // functions
 	    void Set(std::string);
