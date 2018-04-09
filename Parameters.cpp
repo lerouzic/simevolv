@@ -69,6 +69,12 @@ void Parameter_int::write(ostream & out) const
     }
 }
 
+void Parameter_int::erase() 
+{
+    initialized = false;
+    value = 0; // there is no default, but better to set it to some expected value
+}
+
 long int Parameter_int::Get() const
 {
     assert (is_initialized() && "Parameter not initialized");
@@ -123,6 +129,12 @@ void Parameter_double::write(ostream & out) const
     {
         out << "Real (between " << min << " and " << max << ")";
     }
+}
+
+void Parameter_double::erase()
+{
+    initialized = false;
+    value = 0.0; // no default, why not 0?
 }
 
 float_type Parameter_double::Get() const
@@ -185,6 +197,12 @@ void Parameter_vector_double::write(ostream & out) const
     {
         out << "Real1 (between " << min << " and " << max << ")\t" << "Real2\tReal3\t...";
     }
+}
+
+void Parameter_vector_double::erase()
+{
+    initialized = false;
+    value.clear();
 }
 
 vector<float_type> Parameter_vector_double::Get() const
@@ -263,6 +281,13 @@ void Parameter_gaussian::write(ostream & out) const
     out << "\t";
 }
 
+void Parameter_gaussian::erase()
+{
+    initialized = false;
+    mean = 0.0;
+    sd   = 0.0; // no default values, why not 0?
+}
+
 void Parameter_gaussian::SetMean(float_type m)
 {
     mean.Set(m);
@@ -333,6 +358,12 @@ void Parameter_string::write(ostream & out) const
 		}
 		out << endl;
     }
+}
+
+void Parameter_string::erase()
+{
+    initialized = false;
+    value = "";
 }
 
 void Parameter_string::Set(string v) 
@@ -505,8 +536,7 @@ void ParameterSet::erase(const string & tag)
 		exit(EXIT_FAILURE); 
 	}
     auto pp = parameters.find(tag);
-    delete pp->second;
-    parameters.erase(pp);    
+    pp->second->erase();  
 }
 
 const Parameter * ParameterSet::getpar(const string & tag) const
