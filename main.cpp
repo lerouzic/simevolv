@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 
 		} // end of inner loop
 		
-        continue_simulation = (param.exists(FILE_NEXTPAR) && (global_generation <= maxgen)); 
+        continue_simulation = (param.exists(FILE_NEXTPAR) && (global_generation < maxgen)); 
         
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
