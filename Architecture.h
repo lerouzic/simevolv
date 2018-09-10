@@ -41,6 +41,7 @@ class Architecture  	/* Pure virtual class */
 	    Architecture (const ParameterSet&); 
 	    
 	    virtual ~Architecture();
+        static void Terminate();
 	
 	    // instance / initialization
 	    static void initialize(const ParameterSet&); // from the parameter file

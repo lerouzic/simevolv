@@ -58,6 +58,13 @@ Architecture::Architecture(const ParameterSet& param)
 	// update_param_internal(param); // This should be called in derived classes only
 }
 
+void Architecture::Terminate()
+{
+    if (instance)
+        delete instance;
+    instance = NULL;
+}
+
 Architecture::~Architecture() 
 {
 }

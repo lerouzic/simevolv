@@ -113,6 +113,13 @@ Fitness::Fitness(const ParameterSet& param)
 	}
 }
 
+void Fitness::Terminate() 
+{
+    if (instance) 
+        delete instance;
+    instance = NULL;
+}
+
 /*  The destructor does something here, as it cleans all pointers towards fitness classes 
  * (Question: is this destructor called at all?) */
 Fitness::~Fitness()

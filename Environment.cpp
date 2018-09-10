@@ -48,6 +48,13 @@ Environment::Environment(const ParameterSet & param)
 		sd_dynam_test = param.getpar(OUT_CANAL_SDDYNAM)->GetDouble();
 }
 
+void Environment::Terminate() 
+{
+    if (instance)
+        delete instance;
+    instance = NULL;
+}
+
 // instance and initialization
 
 /* put the existence of the environmental values to non-existent */

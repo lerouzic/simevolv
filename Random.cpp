@@ -44,7 +44,14 @@ Random::~Random()
 {
     gsl_rng_free(random_generator);
     random_generator = NULL;
-    delete Random::instance;
+}
+
+void Random::Terminate()
+{
+    if (instance)
+        delete instance;
+    instance = NULL;
+        
 }
 
 

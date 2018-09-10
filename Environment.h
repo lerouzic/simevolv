@@ -27,6 +27,7 @@ class Environment
 	public:
 	    Environment(const ParameterSet&);
 		~Environment() { }
+        static void Terminate();
 		
 	    // initialization / instance
 	    // warning: dangerous structure, the instance is public! 
