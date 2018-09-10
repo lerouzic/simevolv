@@ -27,6 +27,8 @@
 template<typename T>
 UnivariateStat<T>::UnivariateStat(const std::vector<T> & vv)
 	: data(vv)
+    , N_finite(0)
+    , N_positive(0)
 	, sum_i(0.0)
 	, sum_i2(0.0)
 	, sum_log_i(0.0)
@@ -49,23 +51,22 @@ void UnivariateStat<T>::initialize()
 	{
 		if (std::isfinite(data[i])) 
 		{
+            N_finite++;
 			sum_i += data[i];
 			sum_i2 += data[i]*data[i];
 			
-			T log_data_i;
-			if(data[i] < EXPMINLOG)
-				log_data_i = MINLOG;
-			else
-				log_data_i = log(data[i]);
+            if (data[i] > 0) {
+                N_positive++;
+                T log_data_i;
+                if(data[i] < EXPMINLOG)
+                    log_data_i = MINLOG;
+                else
+                    log_data_i = log(data[i]);
 				
-			sum_log_i += log_data_i;
-			sum_log_i2 += log_data_i*log_data_i;
+                sum_log_i += log_data_i;
+                sum_log_i2 += log_data_i*log_data_i;
+            }
 		} 
-		else 
-		{
-			// cerr << "Warning: trying to compute statistics with non-finite numbers" << endl;
-			data.erase(data.begin()+i);
-		}
 	}
 }
 
@@ -74,24 +75,24 @@ void UnivariateStat<T>::initialize()
 
 template<typename T>
 T UnivariateStat<T>::mean() const {
-	return(sum_i / static_cast<T>(data.size()));
+	return(sum_i / static_cast<T>(N_finite));
 }
 
 template<typename T>
 T UnivariateStat<T>::var() const {
 	double mm = mean();
-	return(sum_i2/static_cast<T>(data.size()) - mm*mm);
+	return(sum_i2/static_cast<T>(N_finite) - mm*mm);
 }
 
 template<typename T>
 T UnivariateStat<T>::mean_log() const {
-	return(sum_log_i / static_cast<T>(data.size()));
+	return(sum_log_i / static_cast<T>(N_positive));
 }
 
 template<typename T>
 T UnivariateStat<T>::var_log() const {
 	T mm_log = mean_log();
-	return(sum_log_i2/static_cast<T>(data.size()) - mm_log*mm_log);
+	return(sum_log_i2/static_cast<T>(N_positive) - mm_log*mm_log);
 }
 
 

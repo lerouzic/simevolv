@@ -21,7 +21,7 @@
 const double MINLOG = -20.0;
 constexpr double EXPMINLOG = 2.061154e-9; // change both at the same time!
 
-/* Univariate Statistics: provides the mean and variance of a vector of double */
+/* Univariate Statistics: provides the mean and variance of a vector of double / floats / whatever compiles */
 template<typename T>
 class UnivariateStat
 {
@@ -42,6 +42,10 @@ class UnivariateStat
 		
 		// data and buffers
 		std::vector<T> data;
+        
+        std::size_t N_finite;
+        std::size_t N_positive;
+        
 		T sum_i;
 		T sum_i2;
 		T sum_log_i;
