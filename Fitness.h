@@ -38,7 +38,7 @@ class Fitness
 	// functions (no public constructor)
     public:
 		Fitness(const Fitness &) = delete;
-		~Fitness();
+        static void Terminate();
         // instance/initialization
         static void initialize(const ParameterSet&);
 
@@ -50,7 +50,8 @@ class Fitness
         		
     protected:
         // constructors/destructor
-        Fitness(const ParameterSet&);    
+        Fitness(const ParameterSet&);
+		~Fitness();
     
         static Fitness * instance;
         

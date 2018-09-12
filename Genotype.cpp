@@ -70,9 +70,9 @@ DiploGenotype::DiploGenotype(const ParameterSet & param)
 {
 }
 
-Genotype* DiploGenotype::clone() const 
+std::unique_ptr<Genotype> DiploGenotype::clone() const 
 {
-	return (new DiploGenotype(*this));
+	return (std::unique_ptr<Genotype>(new DiploGenotype(*this)));
 }
 
 /* determine if a mutation will occur in one of the haplotype 
@@ -128,9 +128,9 @@ HaploGenotype::HaploGenotype(const ParameterSet & param)
 {
 }
 
-Genotype* HaploGenotype::clone() const
+std::unique_ptr<Genotype> HaploGenotype::clone() const
 {
-	return (new HaploGenotype(*this));
+	return (std::unique_ptr<Genotype>(new HaploGenotype(*this)));
 }
 
 /* determine if a mutation will occur in one of the haplotype 

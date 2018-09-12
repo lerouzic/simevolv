@@ -29,17 +29,19 @@ class Random
 	    ~Random();
 	
 	    // initialization
-	    static Random * instance;
 	    static bool is_initialized();
 	    static void initialize();
 	    static void initialize(long int s);
-	
+        static void Terminate();
+    
 	    // functions
 	    static long int get_seed();
 	    static double randnum();
 	    static double randgauss();
 		
 	protected :
+	    static Random * instance;    
+    
 	    long int seed;
 	    gsl_rng * random_generator;
 };

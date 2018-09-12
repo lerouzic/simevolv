@@ -47,7 +47,9 @@ class Individual
 	    Individual(const Haplotype&, const Haplotype&, const unsigned int);
 	    Individual(const Haplotype&, const Haplotype&, const unsigned int, const EpigeneticInfo&);
         Individual(const Genotype&);
+        Individual(std::unique_ptr<Genotype>);        
         Individual(const Genotype&, const EpigeneticInfo&);
+        Individual(std::unique_ptr<Genotype>, const EpigeneticInfo&);
 
 	    virtual ~Individual();
 	

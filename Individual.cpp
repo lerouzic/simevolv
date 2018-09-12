@@ -28,12 +28,18 @@ Individual::Individual()
     : genotype()
     , phenotype()
     , fitness(0.0)
+    , epigenet(0.0)
+    , epiinfo()
 {    
 }
 
 /* constructor using two haplotypes */
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, const unsigned int ploid)
     : genotype()
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)
+    , epiinfo()    
 {
 	assert ((ploid == 1) || (ploid == 2));
 	if (ploid == 1) {
@@ -46,7 +52,10 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother, 
 		const unsigned int ploid, const EpigeneticInfo& epimother)
 	: genotype()
-	, epiinfo(epimother)
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)
+	, epiinfo(epimother)    
 {
 	assert ((ploid == 1) || (ploid == 2));
 	if (ploid == 1) {
@@ -57,13 +66,39 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 }
 
 /* constructors using a genotype */
+
 Individual::Individual(const Genotype& gen)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)    
+    , epiinfo()
+{
+}
+
+Individual::Individual(std::unique_ptr<Genotype> pgen)
+    : genotype(std::move(pgen))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)
+    , epiinfo()
 {
 }
 
 Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)    
+    , epiinfo(epimother)
+{
+}
+
+Individual::Individual(std::unique_ptr<Genotype> pgen, const EpigeneticInfo& epimother)
+    : genotype(std::move(pgen))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)
     , epiinfo(epimother)
 {
 }
@@ -71,7 +106,10 @@ Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
 /* constructor using the parameters from ParameterSet */
 Individual::Individual(const ParameterSet& param)
 	: genotype()
+    , phenotype()
+    , fitness(0.0) 
 	, epigenet(param.getpar(GENET_EPIGENET)-> GetDouble())
+    , epiinfo()
 {
 	if(param.getpar(GENET_PLOIDY)->GetInt() == 1) {
 		genotype = unique_ptr<Genotype>(new HaploGenotype(param));
@@ -101,7 +139,7 @@ Individual & Individual::operator = (const Individual& copy)
     if (this == &copy)
         return (*this);
 
-    genotype.reset(copy.genotype->clone());
+    genotype=copy.genotype->clone(); // resets the unique_ptr stored in genotype
     phenotype=copy.phenotype;
     fitness=copy.fitness;
     epigenet=copy.epigenet;
@@ -205,9 +243,9 @@ Haplotype Individual::produce_gamete() const
  * is not trivial yet. */
 Individual Individual::clone() const
 {
-    Genotype* clonegen = genotype->clone();
+    auto clonegen = genotype->clone();
     clonegen->draw_mutation();
-    Individual myclone = Individual(*clonegen, epiinfo);
+    Individual myclone = Individual(std::move(clonegen), epiinfo);
     return(myclone);
 }
 

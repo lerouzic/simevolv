@@ -215,5 +215,13 @@ int main(int argc, char *argv[])
     }
     
 	file_out.close();	// This probably does not harm if the file is not open
+    
+    // Terminate singletons. Not really necessary, but avoids false-positive memory leak reports
+    Architecture::Terminate();
+    Random::Terminate();
+    Fitness::Terminate();
+    Environment::Terminate();
+    
+    
 	return(EXIT_SUCCESS);
 }
