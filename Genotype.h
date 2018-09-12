@@ -22,6 +22,7 @@
 #include "Phenotype.h"
 
 #include <iostream>
+#include <memory>
 
 #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
@@ -42,7 +43,7 @@ class Genotype
 
 	public:
 		virtual ~Genotype() {}
-		virtual Genotype* clone() const = 0;
+		virtual std::unique_ptr<Genotype> clone() const = 0;
 	
 	    unsigned int nb_loc() const;
 	    unsigned int all_size() const;
@@ -68,7 +69,7 @@ class DiploGenotype : public Genotype {
 		DiploGenotype(const DiploGenotype &);
 		DiploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		DiploGenotype(const ParameterSet &);
-		Genotype* clone() const;
+		std::unique_ptr<Genotype> clone() const;
 
 		unsigned int ploidy() const {return 2;}
 	    void draw_mutation();
@@ -98,7 +99,7 @@ class HaploGenotype : public Genotype {
 		HaploGenotype(const HaploGenotype &);
 		HaploGenotype(const Haplotype & gam_father, const Haplotype & gam_mother);
 		HaploGenotype(const ParameterSet &);
-		Genotype* clone() const;
+		std::unique_ptr<Genotype> clone() const;
 		
 		unsigned int ploidy() const {return 1;}
 	    void draw_mutation();

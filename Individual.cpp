@@ -66,8 +66,18 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 }
 
 /* constructors using a genotype */
+
 Individual::Individual(const Genotype& gen)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)    
+    , epiinfo()
+{
+}
+
+Individual::Individual(std::unique_ptr<Genotype> pgen)
+    : genotype(std::move(pgen))
     , phenotype()
     , fitness(0.0)
     , epigenet(0.0)
@@ -80,6 +90,15 @@ Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
     , phenotype()
     , fitness(0.0)
     , epigenet(0.0)    
+    , epiinfo(epimother)
+{
+}
+
+Individual::Individual(std::unique_ptr<Genotype> pgen, const EpigeneticInfo& epimother)
+    : genotype(std::move(pgen))
+    , phenotype()
+    , fitness(0.0)
+    , epigenet(0.0)
     , epiinfo(epimother)
 {
 }
@@ -120,7 +139,7 @@ Individual & Individual::operator = (const Individual& copy)
     if (this == &copy)
         return (*this);
 
-    genotype.reset(copy.genotype->clone());
+    genotype=copy.genotype->clone(); // resets the unique_ptr stored in genotype
     phenotype=copy.phenotype;
     fitness=copy.fitness;
     epigenet=copy.epigenet;
@@ -224,9 +243,9 @@ Haplotype Individual::produce_gamete() const
  * is not trivial yet. */
 Individual Individual::clone() const
 {
-    Genotype* clonegen = genotype->clone();
+    auto clonegen = genotype->clone();
     clonegen->draw_mutation();
-    Individual myclone = Individual(*clonegen, epiinfo);
+    Individual myclone = Individual(std::move(clonegen), epiinfo);
     return(myclone);
 }
 
