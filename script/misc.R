@@ -44,6 +44,19 @@ lighten <- function(color, factor=0.5){
 }
 
 
+# Makes a color transparent
+alphize <- function(color, alpha=120){
+	col <- col2rgb(color)
+	col <- rbind(col, alpha, paste0("alphized_", color), 255)
+		# rgb arguments, in the order, are : r, g, b, alpha, NAMES, maxColorValue
+	col <- do.call(rgb, as.list(col))
+return(col)
+}
+alphize <- Vectorize(alphize, USE.NAMES=FALSE)
+	# Vectorized function. It will not use all combinations of arguments, but a 1:1 correspondance
+
+
+
 # redefine prcomp plots for customization
 myplot.prcomp <- function(pca, PC1=1, PC2=2, pcol="gray", lcol="red", ...) {
     # Axes are oriented such as trait 1 has positive PCs 
