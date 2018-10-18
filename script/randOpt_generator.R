@@ -144,7 +144,9 @@ invisible(lapply(1:nREP, function(rrr) {
 	# Writing
 		OPTIMA <- round(OPTIMA, digits=DIGITS)
 		OPTIMA <- as.numeric(OPTIMA)
-		if( anyNA(OPTIMA) || length(which(OPTIMA>1))>1 || length(which(OPTIMA<0))>1 ) { stop("At least one optimum is either \"NA\" or out of the 0-1 range. Check \"-distrib\" or \"-corr\"") }
+			OPTIMA[which(OPTIMA>1)] <- 1
+			OPTIMA[which(OPTIMA<0)] <- 0
+		if( anyNA(OPTIMA) | length(which(OPTIMA>1))>0 | length(which(OPTIMA<0))>0 ) { stop("At least one optimum is either \"NA\" or out of the 0-1 range. Check \"-distrib\" or \"-corr\"") }
 	OPTIMA <- paste(OPTIMA, collapse=" ")
 	# copy the param file
 	cmd <- paste0("cp ",G1PARAM," ",paste(PAATH, eval(parse(text= gsub("\\bggg\\b","1",namePTRN) )), sep="/"))
@@ -178,7 +180,9 @@ invisible(lapply(1:nREP, function(rrr) {
 	OPTIMA <- round(OPTIMA, digits=DIGITS)
 		#some assertions:
 	OPTIMA <- as.numeric(OPTIMA)
-	if( anyNA(OPTIMA) || length(which(OPTIMA>1))>1 || length(which(OPTIMA<0))>1 ) { stop("At least one optimum is either \"NA\" or out of the 0-1 range. Check \"-distrib\" or \"-corr\"") }
+			OPTIMA[which(OPTIMA>1)] <- 1
+			OPTIMA[which(OPTIMA<0)] <- 0
+	if( anyNA(OPTIMA) | length(which(OPTIMA>1))>0 | length(which(OPTIMA<0))>0 ) { stop("At least one optimum is either \"NA\" or out of the 0-1 range. Check \"-distrib\" or \"-corr\"") }
 
 	ANS <- c("FITNESS_OPTIMUM", paste(OPTIMA, collapse=" "))
 	#Last generation : no FILE_NEXTPAR
