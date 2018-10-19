@@ -12,6 +12,15 @@
 
 
 
+## Outputs for "-W"
+	#~ => mathematical mistake !!
+
+
+#~	sigma.M2 <- function(x, a) {
+#~		1. / (1. + exp((-x/(a*(a-1)))+log(1/a-1)))
+#~	}
+
+## Correct function
 sigma.M2 <- function(x, a) {
 	1. / (1. + ((1./a)-1)*exp(-x/(a*(1.-a))))
 }
@@ -22,7 +31,7 @@ sigma.M2 <- function(x, a) {
 model.plasti <- function(W, plastrate=c(0), plastsignal=c(0), a=0.2, S0=rep(a, nrow(W)), steps=24, measure=4, full=FALSE) {
 	measure=measure-1	# so that "measure" and "steps" both 'start counting' at 1
 		# note that S0 = sto[,1], hence the modification
-	stopifnot(length(plastrate)==length(plastsignal))
+	stopifnot(sum(plastrate>0)==length(plastsignal))
 	stopifnot(length(S0)==nrow(W))
 	stopifnot( (length(which(plastrate>1)) | length(which(plastrate<0)) | length(which(plastsignal<0)) | length(which(plastsignal>1)) )==0) #rmq... on peut juste ne pas inputter de la merde
 	plastic=which(plastrate!=0)
@@ -108,6 +117,8 @@ if(index=="fit") {
 
 	#ansVEC <- colMeans(sapply(1:N_env, function(ee) { abs(Pheno$mean[ee,] - OPTIMA[ee,]) } ))
 	ansVEC <- sapply(1:N_env, function(ee) { abs(Pheno$mean[ee,(Ssel!=0)] - OPTIMA[ee,(Ssel!=0)]) } )
+
+		if(is.vector(ansVEC) && !is.matrix(ansVEC) ) { ansVEC <- t(as.matrix(ansVEC)) }
 	colnames(ansVEC) <- signalEnv
 	ansVEC <- colMeans(ansVEC)
 		# returns a vector of distance to optimum in every "N_env" condition
@@ -123,4 +134,44 @@ if(outputPheno){
 return(ans)
 }
 
+
+
+#~ Used to develop a character as a labile character.
+	#~(i.e, starting the development in a next environment from the last value of the previous environment)
+
+labile.plasti <- function(W, signalEnv, outputPheno=TRUE, plastrate=c(1, rep(0,19)), a=0.2, firstSzero=delayedAssign("firstSzero", rep(a, N_loc)), ...) {
+	# in the ellipse are the arguments of "model.plasti"
+	stopifnot(exists("model.plasti"))
+	stopifnot(ncol(W)==nrow(W))
+	N_loc <- ncol(W)
+stopifnot(length(plastrate)==N_loc)
+
+	eval(firstSzero)
+	Szero <- firstSzero
+
+	ans <- list(c(), c(), c(), c())
+	names(ans) <- c("envs", "means", "vars", "devs")
+
+	randEnv <- signalEnv[sample(order(signalEnv))]
+for(EE in 1:length(signalEnv)) {
+	res <- model.plasti(W=W, plastrate=plastrate, plastsignal=randEnv[EE], S0=Szero, a=a, full=outputPheno, ...)
+	Szero <- res$mean
+
+	if(outputPheno) {
+		naames <- c()
+		for(nnn in 0:(ncol(res$full)-1)) { naames <- append(naames, paste0("step", nnn, "_env", randEnv[EE])) }
+			colnames(res$full) <- naames
+			ans$devs <- cbind(ans$devs, res$full)
+	
+		ans$means <- cbind(ans$means, res$mean)
+			colnames(ans$means)[ncol(ans$means)] <- paste0("env",randEnv[EE])
+		ans$vars <-  cbind(ans$vars, res$var)
+			colnames(ans$vars)[ncol(ans$vars)] <- paste0("env",randEnv[EE])
+
+		ans$envs <- append(ans$envs, randEnv[EE])
+	}
+}
+if(!outputPheno) { ans <- list(res$mean, res$var) ; names(ans) <- c("lastMeans", "lastVars") } #else { names(ans$envs) <- ans$envs }
+return(ans)
+}
 
