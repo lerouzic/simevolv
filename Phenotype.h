@@ -54,8 +54,10 @@ class Phenotype
         
         static Phenotype sum  (const std::vector<Phenotype> &);
         static Phenotype sumsq(const std::vector<Phenotype> &);
+        static Phenotype sumprodi(const std::vector<Phenotype> &, std::size_t);
         static Phenotype mean (const std::vector<Phenotype> &);        
         static Phenotype var  (const std::vector<Phenotype> &);
+        static Phenotype vcov (const std::vector<Phenotype> &, std::size_t);
 
     // Necessary for compatibility with old code, should probably be avoided   
         bool is_defined() const;

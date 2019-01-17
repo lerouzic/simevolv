@@ -133,6 +133,24 @@ Phenotype Phenotype::sumsq(const vector<Phenotype>& vp)
     return result;    
 }
 
+Phenotype Phenotype::sumprodi(const vector<Phenotype>& vp, size_t i)
+{
+    auto first = vp.begin();
+    assert(first->is_defined());
+
+    auto result = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone()); // because *first is const
+    result->multiply_by_index(i);
+
+    for (++first; first != vp.end(); ++first) // don't add again the first element!
+    {
+        assert(first->is_defined());
+        auto tmp = std::unique_ptr<PhenoBase>(first->pheno_ptr->clone());
+        tmp->multiply_by_index(i);
+        result->add(*tmp);
+     }
+    return result;
+}
+
 Phenotype Phenotype::mean(const vector<Phenotype>& vp)
 {
     auto result = Phenotype::sum(vp).pheno_ptr;
@@ -148,6 +166,18 @@ Phenotype Phenotype::var(const vector<Phenotype>& vp)
     result->divide(vp.size());
     result->remove(*mm);
     return result;
+}
+
+Phenotype Phenotype::vcov(const vector<Phenotype>& vp, size_t i)
+{
+    // i is the index of the phenotypic item (trait) against which (co)variances should be calculated. 
+    auto mm = Phenotype::mean(vp).pheno_ptr;
+    mm->multiply_by_index(i); // each element in mm is multiplied by mm[i]
+
+    auto result = Phenotype::sumprodi(vp, i).pheno_ptr;
+    result->divide(vp.size());
+    result->remove(*mm);
+    return(result);
 }
 
 bool Phenotype::is_defined() const

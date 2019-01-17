@@ -130,6 +130,12 @@ void PhenoScalar::square()
     pheno *= pheno;
 }
 
+void PhenoScalar::multiply_by_index(size_t i)
+{
+    assert(i < dimensionality());
+    pheno *= pheno; // this is the same as squaring the phenotype
+}
+
 size_t PhenoScalar::dimensionality() const
 {
     return 1;
@@ -248,6 +254,16 @@ void PhenoVector::square()
     for (unsigned int i = 0; i < pheno.size(); i++) {
         pheno[i] *= pheno[i];
     }    
+}
+
+void PhenoVector::multiply_by_index(size_t i)
+{
+    assert(i < dimensionality());
+    //~ for (auto &p : pheno)
+        //~ p *= pheno[i];
+    for (unsigned int j = 0; j < pheno.size(); j++) {
+        pheno[j] *= pheno[i];
+    }
 }
 
 size_t PhenoVector::dimensionality() const
@@ -382,6 +398,16 @@ void PhenoTranscriptome::square()
     for (unsigned int i = 0; i < stability.size(); i++) {
         stability[i] *= stability[i];
     }      
+}
+
+void PhenoTranscriptome::multiply_by_index(size_t i)
+{
+    for (unsigned int j = 0; j < expression.size(); j++) {
+        expression[j] *= expression[i];
+    }
+    for (unsigned int j = 0; j < stability.size(); j++) {
+        stability[j] *= stability[i];
+    }
 }
 
 size_t PhenoTranscriptome::dimensionality() const

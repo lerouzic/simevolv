@@ -36,6 +36,7 @@ class PhenoBase    // This is the base class, it is just and interface (virtual 
         virtual void remove(const PhenoBase &) = 0;
         virtual void divide(unsigned int)      = 0;
         virtual void square()                  = 0;
+        virtual void multiply_by_index(std::size_t) = 0;
         
         virtual std::size_t dimensionality() const = 0;
         virtual pheno_type operator[] (std::size_t) const  = 0;
@@ -70,6 +71,7 @@ class PhenoScalar: public PhenoBase {
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
+    void multiply_by_index(std::size_t);
     
     std::size_t dimensionality() const;
     pheno_type  operator[](std::size_t) const;
@@ -114,6 +116,7 @@ class PhenoVector: public PhenoBase {
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
+    void multiply_by_index(std::size_t);
     
     std::size_t dimensionality() const;
     pheno_type  operator[](std::size_t) const;
@@ -159,6 +162,7 @@ class PhenoTranscriptome: public PhenoBase {
     void remove(const PhenoBase&);
     void divide(unsigned int);
     void square();
+    void multiply_by_index(std::size_t);
     
     std::size_t dimensionality() const;
     pheno_type  operator[](std::size_t) const;
