@@ -261,8 +261,9 @@ void PhenoVector::multiply_by_index(size_t i)
     assert(i < dimensionality());
     //~ for (auto &p : pheno)
         //~ p *= pheno[i];
+    pheno_type pi = pheno[i];
     for (unsigned int j = 0; j < pheno.size(); j++) {
-        pheno[j] *= pheno[i];
+        pheno[j] *= pi;
     }
 }
 
@@ -402,11 +403,13 @@ void PhenoTranscriptome::square()
 
 void PhenoTranscriptome::multiply_by_index(size_t i)
 {
+	pheno_type expi = expression[i];
     for (unsigned int j = 0; j < expression.size(); j++) {
-        expression[j] *= expression[i];
+        expression[j] *= expi;
     }
+    pheno_type stabi = stability[i];
     for (unsigned int j = 0; j < stability.size(); j++) {
-        stability[j] *= stability[i];
+        stability[j] *= stabi;
     }
 }
 
