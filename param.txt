@@ -17,7 +17,7 @@ INIT_CLONAL            	clonal
 ENVIRO_SDINIT           0
 ENVIRO_SDDYNAM		0
 ENVIRO_SDFINAL		0 
-FITNESS_TYPE            gaussian
+FITNESS_TYPE            multivar_gaussian
 FITNESS_STRENGTH        10
 FITNESS_OPTIMUM         0.5
 FITNESS_CORRELATION		0
