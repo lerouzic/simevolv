@@ -454,6 +454,7 @@ void ParameterSet::initialize()
     parameters[FITNESS_TYPE] = new Parameter_string(FT_options);
     parameters[FITNESS_STRENGTH] = new Parameter_vector_double(-1000.*1000., 1000.*1000.);
     parameters[FITNESS_OPTIMUM] = new Parameter_vector_double(-999.9, 999.9);
+    parameters[FITNESS_CORRELATION] = new Parameter_vector_double(-1.0, 1.0);
     parameters[FITNESS_FLUCT] = new Parameter_string(FF_options);
     parameters[FITNESS_OPTIMUM2] = new Parameter_vector_double(-999.9, 999.9);
     parameters[FITNESS_STRENGTH2] = new Parameter_vector_double(-999.9, 999.9);

@@ -45,6 +45,7 @@ const std::string ENVIRO_PLASTICITY = "ENVIRO_PLASTICITY";
 const std::string FITNESS_TYPE = "FITNESS_TYPE";			/* Selection types */
 const std::string FITNESS_STRENGTH = "FITNESS_STRENGTH";
 const std::string FITNESS_OPTIMUM = "FITNESS_OPTIMUM";
+const std::string FITNESS_CORRELATION = "FITNESS_CORRELATION";
 const std::string FITNESS_FLUCT = "FITNESS_FLUCT";			/* Fluctuation types */
 const std::string FITNESS_STRENGTH2 = "FITNESS_STRENGTH2";
 const std::string FITNESS_OPTIMUM2 = "FITNESS_OPTIMUM2";
@@ -105,12 +106,13 @@ const std::string FT_nosel = "no_selection";
 const std::string FT_linear = "linear";
 const std::string FT_expo = "exponential";
 const std::string FT_gauss = "gaussian";
+const std::string FT_multigauss = "multivar_gaussian";
 const std::string FT_quad = "quadratic";
 const std::string FT_truncup = "trunc_up";
 const std::string FT_truncdown = "trunc_down";
 const std::string FT_concave = "concave";
 const std::string FT_convex = "convex";
-const std::vector<std::string> FT_options = boost::assign::list_of (FT_nosel)(FT_linear)(FT_expo)(FT_gauss)(FT_quad)(FT_truncup)(FT_truncdown)(FT_concave)(FT_convex);
+const std::vector<std::string> FT_options = boost::assign::list_of (FT_nosel)(FT_linear)(FT_expo)(FT_gauss)(FT_multigauss)(FT_quad)(FT_truncup)(FT_truncdown)(FT_concave)(FT_convex);
 
 // Fluctuation types
 const std::string FF_nofluct = "no_fluctuation";

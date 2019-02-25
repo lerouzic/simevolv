@@ -24,6 +24,8 @@
 #include <cmath>
 #include <algorithm>
 #include <string>
+#include <gsl/gsl_permutation.h> // for matrix inversion
+#include <gsl/gsl_linalg.h>
 
 using namespace std;
 
@@ -57,6 +59,10 @@ Fitness::Fitness(const ParameterSet& param)
 	{
 		fitphen = new Fitness_Phenotype_Gaussian(param);
 	} 
+	else if (type == FT_multigauss)
+	{
+		fitphen = new Fitness_Phenotype_MultivarGaussian(param);
+	}
 	else if (type == FT_quad) 
 	{
 		fitphen = new Fitness_Phenotype_Quadratic(param);
@@ -613,12 +619,83 @@ fitness_type Fitness_Phenotype_Gaussian::get_fitness_trait(unsigned int trait, c
 	if (optimum.size() < phenotype.dimensionality())
 	{
 		optimum = expand_vec(optimum, phenotype.dimensionality());
-        
 	}
 	
 	pheno_type departure = phenotype[trait] - optimum[trait];
 	fitness_type fit = exp(- strength[trait]*departure*departure);
 	return(fit);
+}
+
+
+Fitness_Phenotype_MultivarGaussian::Fitness_Phenotype_MultivarGaussian(const ParameterSet & param)
+	: Fitness_Phenotype_Stabilizing(param)
+	, cor(param.getpar(FITNESS_CORRELATION)->GetVectorDouble())
+	, invsigma(nullptr)
+{
+}
+
+Fitness_Phenotype_MultivarGaussian::~Fitness_Phenotype_MultivarGaussian() 
+{
+	gsl_matrix_free(invsigma);
+	invsigma = nullptr;
+}
+
+
+fitness_type Fitness_Phenotype_MultivarGaussian::get_fitness(const Phenotype& phenotype, const Population& population) {
+	assert(phenotype.is_defined());
+	
+	size_t n_traits = phenotype.dimensionality();
+	
+	// Check if all vectors have been properly extended (first call only).
+	if (strength.size() < n_traits) strength = expand_vec(strength, n_traits);
+	if (optimum.size() < n_traits) optimum = expand_vec(optimum, n_traits);
+	if (cor.size() < ((n_traits^2) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
+	
+	// Using gsl_matrix, as gsl is already a dependency of the program. This algorithm thus uses C-style code.
+	
+	if (invsigma == nullptr) { // This should be run only once (or each time something changes in the selection)
+		compute_invsigma(n_traits);
+	}
+	
+	fitness_type fit = 0.0;
+	
+	for (size_t i = 0; i < n_traits; i++) {
+		for (size_t j = 0; j < n_traits; j++) {
+			pheno_type diff1 = phenotype[i] - optimum[i];
+			pheno_type diff2 = phenotype[j] - optimum[j];
+			fit += diff1 * diff2 * gsl_matrix_get(invsigma, i, j);
+		}
+	}
+	return(exp(-fit/2.0));
+}
+
+void Fitness_Phenotype_MultivarGaussian::compute_invsigma(const size_t n_traits) {
+	if (strength.size() < n_traits) strength = expand_vec(strength, n_traits);
+	if (cor.size() < ((n_traits^2) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
+	
+	// The first step is to reconstruct a variance-covariance matrix from selection strengths and correlations
+	gsl_matrix *mat = gsl_matrix_alloc(n_traits, n_traits);
+	
+	for (size_t i = 0; i < n_traits; i++) {
+		gsl_matrix_set(mat, i, i, 1./2./abs(strength[i]));
+		if (i < n_traits - 1) {
+			for (size_t j = i+1; j < n_traits; j++) {
+				size_t cor_index = i*n_traits - i*(i+1)/2 + j - 1; // index of element i, j in a upper triangular matrix
+				fitness_type cov = cor[cor_index]*sqrt(1./2./abs(strength[i]))*sqrt(1./2./abs(strength[j]));
+				gsl_matrix_set(mat, i, j, cov);
+				gsl_matrix_set(mat, j, i, cov);
+			}
+		}
+	}
+	
+	// We then need to invert this matrix
+	gsl_permutation *p = gsl_permutation_alloc(n_traits);
+	int s;
+	gsl_linalg_LU_decomp(mat, p, &s); // Hoping that the way we build the matrix ensures positive definite propreties. Otherwise, crash. 
+	invsigma = gsl_matrix_alloc(n_traits, n_traits);
+	gsl_linalg_LU_invert(mat, p, invsigma);
+	gsl_permutation_free(p);
+	gsl_matrix_free(mat);
 }
 
 Fitness_Phenotype_Quadratic::Fitness_Phenotype_Quadratic(const ParameterSet & param) 

@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <vector>
+#include <gsl/gsl_matrix.h>
 
 
 class Population;
@@ -206,7 +207,7 @@ class Fitness_Phenotype
 		Fitness_Phenotype(const ParameterSet & param) { }
 		virtual ~Fitness_Phenotype() = 0;
 	
-		fitness_type get_fitness(const Phenotype&, const Population &);
+		virtual fitness_type get_fitness(const Phenotype&, const Population &);
 		virtual fitness_type get_fitness_trait(unsigned int trait, const Phenotype&, const Population&) = 0;
 		virtual void update(const Population &) { }
 		virtual void fluctuate(Fitness_Fluct *, unsigned int) { }
@@ -274,6 +275,21 @@ class Fitness_Phenotype_Gaussian: public Fitness_Phenotype_Stabilizing
 	public:
 		Fitness_Phenotype_Gaussian(const ParameterSet &);
 		fitness_type get_fitness_trait(unsigned int, const Phenotype&, const Population&);
+};
+
+class Fitness_Phenotype_MultivarGaussian: public Fitness_Phenotype_Stabilizing
+{
+	public:
+		Fitness_Phenotype_MultivarGaussian(const ParameterSet &);
+		~Fitness_Phenotype_MultivarGaussian();
+		fitness_type get_fitness(const Phenotype&, const Population &);
+		fitness_type get_fitness_trait(unsigned int, const Phenotype&, const Population&) { return (0.0); } // should not be called. 
+		
+	protected:
+		void compute_invsigma(const size_t);
+		
+		FitnessStrength cor;      // vector of size (n^2-n)/2 containing correlation components. 
+		gsl_matrix * invsigma;    // inverse of the variance-covariance matrix, should be stored. 
 };
 
 class Fitness_Phenotype_Quadratic: public Fitness_Phenotype_Stabilizing
