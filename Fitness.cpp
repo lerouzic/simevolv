@@ -26,7 +26,6 @@
 #include <string>
 #include <gsl/gsl_permutation.h> // for matrix inversion
 #include <gsl/gsl_linalg.h>
-#include <limits>        // to deal with 0 selection when inverting matrices
 
 using namespace std;
 
@@ -675,7 +674,7 @@ void Fitness_Phenotype_MultivarGaussian::compute_invsigma(const size_t n_traits)
 	if (cor.size() < ((n_traits^2) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
 	
 	// when inverting the selection matrix, zero strengths -> inf variances and the matrix is not positive definite. 
-	for (auto &i : strength) if (i == 0.0) i = numeric_limits<fitness_type>::min();
+	for (auto &i : strength) if (i == 0.0) i = 1e-20; // numeric_limits<fitness_type>::min();
 	
 	// The first step is to reconstruct a variance-covariance matrix from selection strengths and correlations
 	gsl_matrix *mat = gsl_matrix_alloc(n_traits, n_traits);
