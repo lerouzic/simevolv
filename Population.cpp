@@ -351,10 +351,26 @@ void Population::write(ostream & out, int generation) const
 		{
 			outformat(out, i+1, "MPhen");
 		}
-		for (unsigned int i = 0; i < dim_phen; i++) 
+		
+		//Variance already calculated with the covariance
+		
+			for (unsigned int i = 0; i < dim_phen; i++) 
 		{
 			outformat(out, i+1, "VPhen");
 		}
+		
+		for (unsigned int i = 0; i < dim_phen; i++)
+		{
+			for (unsigned int j = 0; j < dim_phen; j++)
+			{
+				outformat(out, i+1, j+1, "CovPhen");
+			}
+		}
+		
+	
+		
+		
+		
 		if (out_unstab == OU_yes) 
 		{
 			for (unsigned int i = 0; i < dim_phen; i++) 
@@ -421,6 +437,9 @@ void Population::write(ostream & out, int generation) const
 				outformat(out, i+1, "VarAll");
 			}
 		}
+		
+		
+		
 		out << endl; 
    	}
 		
@@ -457,7 +476,11 @@ void Population::write(ostream & out, int generation) const
 
 	Phenotype vv = Phenotype::var(phen);
 
-    outformat(out, vv);
+    outformat(out, vv); // Variance already calculated with the covariance
+    
+    for (unsigned int i = 0; i < dim_phen; i++)
+		outformat(out, Phenotype::vcov(phen, i));
+    
 
 	if ((out_unstab == OU_yes) || (out_unstab == OU_log))
     // Warning: log or natural scales are not decided here any longer

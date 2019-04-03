@@ -18,6 +18,8 @@
 #include <iomanip>
 #include <vector>
 
+class Phenotype;
+
 
 void outformat(std::ostream &, const double, unsigned int width=13, unsigned int precision=5, const std::string & sep="");
 void outformat(std::ostream &, const int, unsigned int width=13, const std::string & sep="");
@@ -26,5 +28,13 @@ void outformat(std::ostream &, const std::vector<double> &, unsigned int width=1
 
 void outformat(std::ostream &, const std::string &, unsigned int width=13, const std::string & sep="");
 void outformat(std::ostream &, unsigned int, const std::string &, unsigned int width=13, const std::string & sep="");
+
+void outformat(std::ostream &, unsigned int, unsigned int, const std::string &, unsigned int width=13, const std::string & sep="");
+
+
+void outformat(std::ostream &, const Phenotype &,
+                      unsigned int width=13, unsigned int precision=5, std::string sep="");
+void outformat2(std::ostream &, const Phenotype &,
+                      unsigned int width=13, unsigned int precision=5, std::string sep="");
 
 #endif // OUTPUTFORMAT_H_INCLUDED

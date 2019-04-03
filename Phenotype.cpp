@@ -22,19 +22,6 @@ class PhenoBase;
 
 using namespace std;
 
-void outformat(ostream & out, const Phenotype & pheno,
-                      unsigned int width, unsigned int precision, string sep)
-{
-    assert(pheno.is_defined());
-    pheno.pheno_ptr->outformat(out, width, precision, sep);
-}
-
-void outformat2(ostream & out, const Phenotype & pheno,
-                      unsigned int width, unsigned int precision, string sep)
-{
-    assert(pheno.is_defined());
-    pheno.pheno_ptr->outformat2(out, width, precision, sep);
-}
 
 /////////////////////// Phenotype /////////////////////////////
 Phenotype::Phenotype()

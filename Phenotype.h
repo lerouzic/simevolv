@@ -87,9 +87,6 @@ class Phenotype
         #endif
 };
 
-void outformat(std::ostream &, const Phenotype &,
-                      unsigned int width=13, unsigned int precision=5, std::string sep="");
-void outformat2(std::ostream &, const Phenotype &,
-                      unsigned int width=13, unsigned int precision=5, std::string sep="");
+
 
 #endif // PHENOTYPE_H_INCLUDED
