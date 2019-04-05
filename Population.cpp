@@ -417,6 +417,13 @@ void Population::write(ostream & out, int generation) const
 				outformat(out, i+1, "HerPhen");
 			}
 			outformat(out, "HerFit");
+			for (unsigned int i = 0; i < dim_phen; i++) 
+			{
+				for (unsigned int j = 0; j < dim_phen; j++)
+				{
+					outformat(out, i+1, j+1, "POCov");
+				}
+			}
 		}
 		if (nb_direpi_test > 0) 
 		{
@@ -518,6 +525,8 @@ void Population::write(ostream & out, int generation) const
 		Heritability herit_test(nb_herit_test, *this);
 		outformat(out, herit_test.h2());
 		outformat(out, herit_test.fit_h2());
+		for (unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, herit_test.covOffPar(i));
 	}
 	if (nb_direpi_test > 0) 
 	{

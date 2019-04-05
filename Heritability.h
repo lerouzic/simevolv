@@ -31,6 +31,7 @@ class Heritability
 		// functions
 		Phenotype h2() const;	// Narrow-sense heritability (VA/VP)
 		fitness_type fit_h2() const;	// Narrow-sense heritability in fitness
+		Phenotype covOffPar(size_t trait) const; 	// Covariance between all offspring traits and a mid-parent trait
 		
 	protected:
 		// internal structure for parent - offspring pairs (no need to make this visible from outside)

@@ -121,3 +121,32 @@ fitness_type Heritability::fit_h2() const
 	MultivariateStat<fitness_type> stat(data);
 	return(stat.regression_slope(1,0));
 }
+
+Phenotype Heritability::covOffPar(size_t trait) const
+{
+	// Computes the covariance between each offspring phenotype
+	// and the mid-parent phenotype for trait trait
+	
+	vector<pheno_type> result;
+	
+	vector<pheno_type> midpar_trait; // mid-parent value for trait
+	for (unsigned int i = 0; i < parentoffspring.size(); i++)
+	{
+		midpar_trait.push_back(0.5*parentoffspring[i].father_phen[trait] + 0.5*parentoffspring[i].mother_phen[trait]);
+	}
+	
+	for (unsigned int offtrait = 0; offtrait < parentoffspring[0].father_phen.dimensionality(); offtrait++) {
+		vector<pheno_type> offspring_t;
+		for (unsigned int i = 0; i < parentoffspring.size(); i++) 
+		{
+			offspring_t.push_back(parentoffspring[i].offspring_phen[offtrait]);
+		}
+		vector<vector<pheno_type> > data;
+		data.push_back(midpar_trait);
+		data.push_back(offspring_t);
+		MultivariateStat<pheno_type> stat(data);
+		result.push_back(stat.cov(0, 1));
+	}
+	
+	return(Phenotype(result));
+}
