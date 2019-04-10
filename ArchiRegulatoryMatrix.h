@@ -40,7 +40,6 @@ class ArchiRegulatoryMatrix : public Architecture
 		virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo&, bool sdinittest = false, bool sddynamtest = false) const;
 	
 	protected :
-		unsigned int sall;
 		std::vector<pheno_type> So;
 		rate_type recur;
 		std::vector<std::vector<allele_type>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1

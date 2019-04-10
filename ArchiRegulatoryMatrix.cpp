@@ -86,13 +86,12 @@ std::vector<T> naive_prod(const std::vector<T> & s, const std::vector<std::vecto
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiRegulatoryMatrix::ArchiRegulatoryMatrix(const ParameterSet& param) 
     : Architecture(param)
-    , sall(nb_loc())
     , recur(param.getpar(INIT_RECURRENCE)-> GetDouble())
     , timesteps(param.getpar(DEV_TIMESTEPS)->GetInt())
     , calcsteps(param.getpar(DEV_CALCSTEPS) -> GetInt())    
 {
 	// update_param_internal(param); // This should be called in derived classes only
-    
+	sall = nb_loc();
 	init_connectivity_matrix(param); // creates connectivity_matrix
 }
 
