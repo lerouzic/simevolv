@@ -36,184 +36,163 @@ BOOST_CLASS_EXPORT(ArchiMultilinear)
 using namespace std;
 
 
+
+void Epsilon2::set(size_t i, size_t j, allele_type v)
+{
+	if (i > j)
+		swap(i, j);
+	assert(i != j);
+	if (fixed_dim) {
+		assert(j < dim);
+	} else {
+		if (j >= dim) dim = j+1;
+	}
+	
+	size_t D1index = i * (dim - 1) + j; // suboptimal
+	if (value.size() <= D1index)
+		value.resize(D1index+1, 0.0);
+	value[D1index] = v;
+}
+
+allele_type Epsilon2::get(size_t i, size_t j) const
+{
+	if (i > j)
+		swap(i, j);
+	assert (j < dim);
+	size_t D1index = i * (dim - 1) + j;
+	return(value.at(D1index));
+}
+
+
+void Epsilon3::set(size_t i, size_t j, size_t k, allele_type v)
+{
+	if (i > j)
+		swap(i, j);
+	if (i > k)
+		swap(i, k);
+	if (j > k)
+		swap(j, k);
+
+	assert(i < j);
+	assert(j < k);
+	
+	if (fixed_dim) {
+		assert(k < dim);
+	} else {
+		if (k >= dim) dim = k+1;
+	}
+	
+	size_t D1index = i * (dim - 1) * (dim - 1) + j * (dim - 1) + k; // suboptimal
+	if (value.size() <= D1index)
+		value.resize(D1index+1, 0.0);
+	value[D1index] = v;
+}
+
+allele_type Epsilon3::get(size_t i, size_t j, size_t k) const
+{
+	if (i > j)
+		swap(i, j);
+	if (i > k)
+		swap(i, k);
+	if (j > k)
+		swap(j, k);
+
+	assert(i < j);
+	assert(j < k);
+	assert(k < dim);
+	
+	size_t D1index = i * (dim - 1) * (dim - 1) + j * (dim - 1) + k;
+	return(value.at(D1index));
+}
+
+
+
 // constructors and destuctor
 
 /* constructor using the paramater given in Architecture and the parameters files */
 ArchiMultilinear::ArchiMultilinear(const ParameterSet& param)
     : Architecture(param)
-    , epsilon2(vector<vector<allele_type>>(0))
-    , epsilon3(vector<vector<vector<allele_type>>>(0))
+    , nphen(param.getpar(GENET_NBPHEN) -> GetInt())    
+    , epsilon2(vector<Epsilon2>())
+//    , epsilon3(vector<Epsilon3>())
 {
+	sall = nb_phen();
 	update_param_internal(param); 
 
-    
-    // building epsilon matrices
-    for (unsigned int loc1 = 0; loc1 < nloc; loc1++)
-    {
-        if (nloc > 1)
-        {
-            for (unsigned int loc2 = loc1+1; loc2 < nloc; loc2++)
-            {
-                set_epsilon2(loc1, loc2, param.getpar(GENET_EPSILON2)->GetDouble());
-                if (nloc > 2)
-                {
-                    for (unsigned int loc3 = loc2+1; loc3 < nloc; loc3++)
-                    {
-                        set_epsilon3(loc1, loc2, loc3, param.getpar(GENET_EPSILON3)->GetDouble());
-                    }
-                }
-            }
-        }
-    }
-    flag_epistasis2 = !param.getpar(GENET_EPSILON2)->is_nil();
-    flag_epistasis3 = !param.getpar(GENET_EPSILON3)->is_nil();
+	assert(nphen > 0);
+
+	for (unsigned int a = 0; a < nphen; a++) {
+		for (unsigned int b = 0; b < nphen; b++) {
+			for (unsigned int c = 0; c < nphen; c++) {
+				// 2-order epistasis
+				Epsilon2 eps(nloc);
+				if (nloc > 1) { // otherwise, no epistasis possible
+					for (unsigned int i = 0; i < nloc-1; i++) {
+						for (unsigned int j = i+1; j < nloc; j++) {
+							if ((a == b) && (b == c)) {
+								eps.set(i, j, param.getpar(GENET_EPSILON2e)->GetDouble());
+							} else {
+								eps.set(i, j, param.getpar(GENET_EPSILON2p)->GetDouble());
+							}
+						}
+					}
+				}
+				epsilon2.push_back(eps);
+			}
+		}
+	}
 }
 
-ArchiMultilinear::~ArchiMultilinear()
-{
-}
+// methods
 
-// functions
-
-/* return the value for 2nd-order epistasis */
-allele_type ArchiMultilinear::get_epsilon2(unsigned int loc1, unsigned int loc2) const
-{
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    assert (loc1 != loc2);
-    assert (loc2 < nloc);
-    // assert(int(epsilon2.size()) >= loc1+1);
-    // assert(int(epsilon2[loc1].size()) >= loc2-loc1);
-    return(epsilon2[loc1][loc2-loc1-1]);
-}
-
-/* return the value for 3rd-order epistasis */
-allele_type ArchiMultilinear::get_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3) const
-{
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    if (loc2 > loc3)
-    {
-        swap(loc2, loc3);
-    }
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    assert(loc1 != loc2);
-    assert(loc2 != loc3);
-    assert(loc3 < nloc);
-    //assert(int(epsilon3.size()) >= loc1+1);
-    //assert(int(epsilon3[loc1].size()) >= loc2-loc1);
-    //assert(int(epsilon3[loc1][loc2-loc1-1].size()) >= loc3-loc2);
-    return(epsilon3[loc1][loc2-loc1-1][loc3-loc2-1]);
-}
-
-/* sets the value of 2nd-order epistasis */
-void ArchiMultilinear::set_epsilon2(unsigned int loc1, unsigned int loc2, allele_type value)
-{
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    assert (loc1 != loc2);
-    assert (loc2 < nb_loc());
-
-    while(epsilon2.size() < (loc1+1))
-    {
-        vector<allele_type> v(0);
-        epsilon2.push_back(v);
-    }
-
-    while(epsilon2[loc1].size() < (loc2-loc1))
-    {
-        epsilon2[loc1].push_back(0);
-    }
-
-    epsilon2[loc1][loc2-loc1-1] = value;
-}
-
-/* sets the value of 3rd-order epistasis */
-void ArchiMultilinear::set_epsilon3(unsigned int loc1, unsigned int loc2, unsigned int loc3, allele_type value)
-{
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    if (loc2 > loc3)
-    {
-        swap(loc2, loc3);
-    }
-    if (loc1 > loc2)
-    {
-        swap(loc1, loc2);
-    }
-    assert(loc1 != loc2);
-    assert(loc2 != loc3);
-    assert(loc3 < nb_loc());
-
-    while(epsilon3.size() < nb_loc()-2)
-    {
-        vector<vector<allele_type> > v(0);
-        epsilon3.push_back(v);
-    }
-
-    while(epsilon3[loc1].size() < (nb_loc()-loc1-2))
-    {
-        vector<allele_type> v(0);
-        epsilon3[loc1].push_back(v);
-    }
-
-    while(epsilon3[loc1][loc2-loc1-1].size() < (nb_loc()-loc2-1))
-    {
-        epsilon3[loc1][loc2-loc1-1].push_back(0);
-    }
-
-    epsilon3[loc1][loc2-loc1-1][loc3-loc2-1] = value;
-}
 
 /* calculate the phenotypic function depending on the genotype 
 	here : sum of the genotypic values, correlation with epistasis values */
 Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 {
 	// Epigenetics not implemented!
-    vector<pheno_type> sumloc(nloc);
-    pheno_type phenotype = 0.0;
-
-    for (unsigned int loc = 0 ; loc < nloc ; loc++)
-    {	
-		vector<pheno_type> tmp_sum = genotype.combine_at_loc(loc, &Allele::combine_add);
-
-        sumloc[loc] = 0.0;
-        for (unsigned int all = 0; all < sall; all++)
-			sumloc[loc] += tmp_sum[all];
-    }
-
-    for (unsigned int loc1 = 0; loc1 < nloc; loc1++)
-    {
-        phenotype += sumloc[loc1];
-        for (unsigned int loc2 = loc1+1; loc2 < nloc; loc2++)
-        {
-            if(is_epistasis2())
-            {
-                phenotype += get_epsilon2(loc1, loc2) * sumloc[loc1] * sumloc[loc2];
-            }
-
-            for (unsigned int loc3 = loc2+1; loc3 < nloc; loc3++)
-            {
-                if(is_epistasis3())
-                {
-                    phenotype += get_epsilon3(loc1, loc2, loc3) * sumloc[loc1] * sumloc[loc2] * sumloc[loc3];
-                }
-            }
-        }
-    }
-    if (envir) 
-		phenotype += Environment::final_disturb();
-    return Phenotype(PhenoScalar(phenotype));
+	
+	// Step 1: build a vector of genotypes (for each locus)
+	vector<PhenoVector> sumv(nloc);
+	for (size_t loc = 0; loc < nloc; loc++)
+		sumv[loc] = genotype.combine_at_loc(loc, &Allele::combine_add);
+	// sumv[locus][trait]
+	
+	// Step2: compute the phenotype
+	// This algorithm features all second-order terms for the multivariate characters multilinear model
+	// from Hansen & Wagner 2001. 
+	PhenoVector phen(nphen);
+	
+	for (size_t p = 0; p < nphen; p++) {
+		pheno_type tmpsum = 0.0;
+		
+		// additive part
+		for (size_t loc = 0; loc < nloc; loc++)
+			tmpsum += sumv[loc][p];
+			
+		// bilinear epistasis
+		for (size_t loc1 = 0; loc1 < nloc-1; loc1++)
+		{
+			if (nloc > 1)
+			for (size_t loc2 = loc1+1; loc2 < nloc; loc2++)
+			{
+				for (size_t trait1 = 0; trait1 < nphen; trait1++)
+				{
+					for (size_t trait2 = 0; trait2 < nphen; trait2++)
+					{ // there is probably a way to change the loop order in order to call get_epsilon only once per trait combination
+						const Epsilon2 & eps = get_epsilon2(p, trait1, trait2); 
+						tmpsum += sumv[loc1][trait1] * sumv[loc2][trait2] * eps.get(loc1, loc2);
+					}
+				}
+			}
+		}
+		phen[p] = tmpsum;
+	}
+	return Phenotype(phen);
 }
 
+const Epsilon2 & ArchiMultilinear::get_epsilon2 (size_t t1, size_t t2, size_t t3) const
+{
+	size_t index = nphen*nphen*t1 + nphen*t2 + t3;
+	return(epsilon2.at(index));
+}

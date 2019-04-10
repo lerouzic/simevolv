@@ -20,55 +20,98 @@
 
 #include <iostream>
 
+class Epsilon2
+{ 
+	public:
+		Epsilon2() : dim(0), fixed_dim(false) { }
+		Epsilon2(std::size_t d) : dim(d), fixed_dim(true) { }
+		Epsilon2(const Epsilon2& c) : dim(c.dim), fixed_dim(c.fixed_dim), value(c.value) { }
+		~Epsilon2() { }
+		
+		void set(std::size_t, std::size_t, allele_type);
+		allele_type get(std::size_t, std::size_t) const;
+		bool is_init() const;
+		
+	protected:
+		std::size_t dim;
+		bool fixed_dim;
+		std::vector<allele_type> value;
+		
+	private:
+        #ifdef SERIALIZATION_TEXT
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int version) {
+			ar & value;
+			ar & dim;
+			ar & fixed_dim;
+		}
+        #endif
+};
+
+class Epsilon3
+{ 
+	public:
+		Epsilon3() : dim(0), fixed_dim(false) { }
+		Epsilon3(std::size_t d) : dim(d), fixed_dim(true) { }
+		Epsilon3(const Epsilon3& c) : dim(c.dim), fixed_dim(c.fixed_dim), value(c.value) { }
+		~Epsilon3() { }
+		
+		void set(std::size_t, std::size_t, std::size_t, allele_type);
+		allele_type get(std::size_t, std::size_t, std::size_t) const;
+		bool is_init() const;
+		
+	protected:
+		std::size_t dim;
+		bool fixed_dim;
+		std::vector<allele_type> value;
+		
+	private:
+        #ifdef SERIALIZATION_TEXT
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int version) {
+			ar & value;
+			ar & dim;
+			ar & fixed_dim;
+		}
+        #endif
+};
+
 class ArchiMultilinear : public Architecture
 {	
 	public :
 	    //constructors/destructor
 	    ArchiMultilinear(const Architecture&) = delete;
 	    ArchiMultilinear(const ParameterSet&);
-	    virtual ~ArchiMultilinear();
+	    virtual ~ArchiMultilinear() { }
 	
 	    // getters
-	    virtual allele_type get_epsilon2(unsigned int, unsigned int) const;
-	    virtual allele_type get_epsilon3(unsigned int, unsigned int, unsigned int) const;
-	    
-	    // setters
-	    virtual void set_epsilon2(unsigned int, unsigned int, allele_type);
-	    virtual void set_epsilon3(unsigned int, unsigned int, unsigned int, allele_type);
+	    const Epsilon2& get_epsilon2(std::size_t, std::size_t, std::size_t) const;
+	    //Epsilon3& get_epsilon3(std::size_t, std::size_t, std::size_t, std::size_t) const;
+	
+	    virtual unsigned int nb_phen() const { return nphen; }
 	
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &, bool sdinittest = false, bool sddynamtest = false) const;
 	
 	protected :
-	    std::vector<std::vector<allele_type>> epsilon2;
-	    std::vector<std::vector<std::vector<allele_type>>> epsilon3;
-	    bool flag_epistasis2;
-	    bool flag_epistasis3;
-	    
-		// flags to speed up calculations
-	    virtual bool is_epistasis() const {return((is_epistasis2()) || (is_epistasis3()));}
-	    virtual bool is_epistasis2() const {return(flag_epistasis2);}
-	    virtual bool is_epistasis3() const {return(flag_epistasis3);}	
+	    unsigned int nphen;
+	    std::vector<Epsilon2> epsilon2;
+	    //std::vector<Epsilon3> epsilon3;
 	    
 	protected:
-		ArchiMultilinear() {}
+		ArchiMultilinear() { }; // Necessary for serialization
 		
 	private:
         #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive &, const unsigned int);	        
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+			ar & boost::serialization::base_object<Architecture>(*this);
+			ar & nphen;
+			ar & epsilon2;
+			//ar & epsilon3;
+		}
         #endif
 };
-
-#ifdef SERIALIZATION_TEXT
-template<class Archive>
-void ArchiMultilinear::serialize(Archive & ar, const unsigned int version)
-{
-	ar & boost::serialization::base_object<Architecture>(*this);	
-	ar & flag_epistasis2;
-	ar & flag_epistasis3;
-	ar & epsilon2;
-	ar & epsilon3;
-}
-#endif
 
 #endif // ARCHIMULTILINEAR_H_INCLUDED

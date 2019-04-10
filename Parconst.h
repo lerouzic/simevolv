@@ -26,6 +26,7 @@ const std::string SIMUL_GENER = "SIMUL_GENER";
 const std::string SIMUL_OUTPUT = "SIMUL_OUTPUT";
 const std::string SIMUL_MAXGEN = "SIMUL_MAXGEN";
 const std::string GENET_NBLOC = "GENET_NBLOC";
+const std::string GENET_NBPHEN = "GENET_NBPHEN";
 const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
 const std::string GENET_PLOIDY = "GENET_PLOIDY";
@@ -62,8 +63,9 @@ const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
 const std::string OUT_DIREPI_TESTS= "OUT_DIREPI_TESTS";
 
 // MULTILINEAR ARCHITECTURE
-const std::string GENET_EPSILON2 = "GENET_EPSILON2";
-const std::string GENET_EPSILON3 = "GENET_EPSILON3";
+const std::string GENET_EPSILON2e = "GENET_EPSILON2e";
+const std::string GENET_EPSILON2p = "GENET_EPSILON2p";
+//const std::string GENET_EPSILON3 = "GENET_EPSILON3";
 
 // BOOLEAN ARCHITECTURE
 const std::string MATRIX_DENS = "MATRIX_DENS";

@@ -33,8 +33,7 @@ OUT_HERIT_TESTS        	0
 OUT_DIREPI_TESTS        0
 OUT_UNSTAB				yes
 OUT_GENO				yes
-GENET_EPSILON2          1.0      1.0
-GENET_EPSILON3          0        0
+GENET_EPSILON2e          1.0      1.0
 INIT_CONNECT            0.4
 INIT_CONDIAG            1
 TYPE_SO         		basal

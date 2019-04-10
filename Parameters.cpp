@@ -429,6 +429,7 @@ void ParameterSet::initialize()
    
 	// General genetic parameters
     parameters[GENET_NBLOC] = new Parameter_int(1, 100);
+    parameters[GENET_NBPHEN] = new Parameter_int(1, 100);
     parameters[GENET_PLOIDY] = new Parameter_int(1, 2);
     parameters[GENET_MUTTYPE] = new Parameter_string(MT_options);
     parameters[GENET_MUTRATES] = new Parameter_vector_double(0.0, 1.0);
@@ -471,8 +472,9 @@ void ParameterSet::initialize()
     parameters[OUT_DIREPI_TESTS] = new Parameter_int(0, 1000*1000);
         
     // Multilinear architecture
-    parameters[GENET_EPSILON2] = new Parameter_gaussian(-999.9, 999.9, 999.9);
-    parameters[GENET_EPSILON3] = new Parameter_gaussian(-999.9, 999.9, 999.9);
+    parameters[GENET_EPSILON2e] = new Parameter_gaussian(-999.9, 999.9, 999.9);
+    parameters[GENET_EPSILON2p] = new Parameter_gaussian(-999.9, 999.9, 999.9);
+    //parameters[GENET_EPSILON3] = new Parameter_gaussian(-999.9, 999.9, 999.9);
     
     //Boolean architecture
     parameters[MATRIX_DENS] = new Parameter_double(0.0, 1.0);
