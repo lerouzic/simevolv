@@ -470,6 +470,8 @@ void ParameterSet::initialize()
     parameters[OUT_CANAL_SDDYNAM] = new Parameter_double(0.0, 999.9);    
     parameters[OUT_HERIT_TESTS] = new Parameter_int(0, 1000*1000);
     parameters[OUT_DIREPI_TESTS] = new Parameter_int(0, 1000*1000);
+    
+    parameters[PHENO_SCALING] = new Parameter_string(ST_options);
         
     // Multilinear architecture
     parameters[GENET_EPSILON2e] = new Parameter_gaussian(-999.9, 999.9, 999.9);

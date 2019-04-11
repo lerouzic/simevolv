@@ -49,12 +49,15 @@ Architecture::Architecture(const ParameterSet& param)
     : gmap (param)                                    // This cannot change when the parameter file changes
     , nloc (param.getpar(GENET_NBLOC) -> GetInt())    // The same, this cannot change even if the parameter file changes
     , sall (1) // by default, change for the architecture that needed a vector as allele
+    , transfo("none") // Transformation option (defaults to none)
     , mutrate (vector<rate_type> (0))
     , mutsd (vector<allele_type> (0))
     , mutsd_test (vector<allele_type> (0))
     , plasticity_strength (vector<pheno_type> (0))
     , plasticity_signal (vector<pheno_type> (0))
 {
+	if (param.exists(PHENO_SCALING)) // if the option is not defined, the "none" default should be used. 
+		transfo = param.getpar(PHENO_SCALING) -> GetString();
 	// update_param_internal(param); // This should be called in derived classes only
 }
 

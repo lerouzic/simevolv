@@ -61,6 +61,7 @@ const std::string OUT_CANAL_SDINIT = "OUT_CANAL_SDINIT";
 const std::string OUT_CANAL_SDDYNAM = "OUT_CANAL_SDDYNAM";
 const std::string OUT_HERIT_TESTS = "OUT_HERIT_TESTS";
 const std::string OUT_DIREPI_TESTS= "OUT_DIREPI_TESTS";
+const std::string PHENO_SCALING = "PHENO_SCALING";
 
 // MULTILINEAR ARCHITECTURE
 const std::string GENET_EPSILON2e = "GENET_EPSILON2e";
@@ -164,6 +165,13 @@ const std::string TA_norm = "normal";
 const std::string TA_zero = "zero";
 const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero);
 
+// Scaling transformations for the phenotype
+const std::string ST_none = "none";
+const std::string ST_log  = "log";
+const std::string ST_logit= "logit";
+const std::string ST_m1101= "m1101";
+const std::string ST_invlogit="invlogit";
+const std::vector<std::string> ST_options = boost::assign::list_of (ST_none)(ST_log)(ST_logit)(ST_m1101)(ST_invlogit);
 
 
 #endif // PARCONST_H_INCLUDED

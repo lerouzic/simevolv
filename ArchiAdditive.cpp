@@ -71,6 +71,8 @@ Phenotype ArchiAdditive::phenotypic_value (const Genotype& genotype, bool envir,
 		if (envir)
 			phenotype[all] += Environment::final_disturb();
 
-    return phenotype;
+	Phenotype ans(phenotype);
+	ans.scale_transform(transfo);
+    return ans;
 }
 

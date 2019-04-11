@@ -44,6 +44,11 @@ class PhenoBase    // This is the base class, it is just and interface (virtual 
         virtual pheno_type get_pheno(std::size_t) const;
         virtual pheno_type get_pheno2(std::size_t) const;      
         
+        virtual void log_transform()      = 0;
+        virtual void logit_transform()    = 0;
+        virtual void m1101_transform()    = 0;
+        virtual void invlogit_transform() = 0;
+        
         virtual void outformat(std::ostream&, unsigned int, unsigned int, std::string) const = 0;
         virtual void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;
         
@@ -76,6 +81,11 @@ class PhenoScalar: public PhenoBase {
     std::size_t dimensionality() const;
     pheno_type  operator[](std::size_t) const;
     pheno_type& operator[](std::size_t);
+    
+    void log_transform();
+    void logit_transform();
+    void m1101_transform();
+    void invlogit_transform();
     
     void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;    
           
@@ -122,6 +132,11 @@ class PhenoVector: public PhenoBase {
     pheno_type  operator[](std::size_t) const;
     pheno_type& operator[](std::size_t);
     
+    void log_transform();
+    void logit_transform();
+    void m1101_transform();
+    void invlogit_transform();
+    
     void outformat(std::ostream&, unsigned int, unsigned int, std::string) const;      
         
   protected:
@@ -167,7 +182,12 @@ class PhenoTranscriptome: public PhenoBase {
     std::size_t dimensionality() const;
     pheno_type  operator[](std::size_t) const;
     pheno_type& operator[](std::size_t); 
-    pheno_type  get_pheno2(std::size_t) const;  
+    pheno_type  get_pheno2(std::size_t) const;
+    
+    void log_transform();
+    void logit_transform();
+    void m1101_transform();
+    void invlogit_transform();
     
     void outformat (std::ostream&, unsigned int, unsigned int, std::string) const; 
     void outformat2(std::ostream&, unsigned int, unsigned int, std::string) const;             

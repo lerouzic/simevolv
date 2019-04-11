@@ -224,7 +224,9 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		Sf_mean[i] += Environment::final_disturb();
 	this->haircut_v(Sf_mean);
 	
-	return Phenotype(PhenoTranscriptome(Sf_mean, Sf_var));
+	Phenotype ans(PhenoTranscriptome(Sf_mean, Sf_var));
+	ans.scale_transform(transfo);
+	return ans;
 }
 
 

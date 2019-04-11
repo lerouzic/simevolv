@@ -16,6 +16,7 @@
 #include "OutputFormat.h"
 
 #include <cassert> // for assert
+#include <cmath>
 
 #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/export.hpp>
@@ -151,10 +152,28 @@ pheno_type& PhenoScalar::operator[] (size_t pos)
     return pheno;
 }
 
+void PhenoScalar::log_transform() {
+	pheno = log(pheno);
+}
+
+void PhenoScalar::logit_transform() {
+	pheno = log(pheno/(1.-pheno));
+}
+
+void PhenoScalar::m1101_transform() {
+	pheno = (pheno + 1.)/2.;
+}
+
+void PhenoScalar::invlogit_transform() {
+	pheno = 1./(1.+exp(-pheno));
+}
+
 void PhenoScalar::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const
 {
     ::outformat(out, pheno, width, precision, sep);
 }
+
+
 
 ////////////////////// PhenoVector /////////////////////////////
 
@@ -279,6 +298,26 @@ pheno_type PhenoVector::operator[] (size_t pos) const
 pheno_type& PhenoVector::operator[] (size_t pos)
 {
     return pheno[pos];
+}
+
+void PhenoVector::log_transform() {
+	for (auto & i : pheno)
+		i = log(i);
+}
+
+void PhenoVector::logit_transform() {
+	for (auto & i : pheno)
+		i = log(i/(1.-i));
+}
+
+void PhenoVector::m1101_transform() {
+	for (auto & i : pheno)
+		i = (i + 1.)/2.;
+}
+
+void PhenoVector::invlogit_transform() {
+	for (auto & i : pheno)
+		i = 1./(1.+exp(-i));
 }
 
 void PhenoVector::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const
@@ -431,6 +470,26 @@ pheno_type& PhenoTranscriptome::operator[] (size_t pos)
 pheno_type PhenoTranscriptome::get_pheno2(size_t pos) const
 {
     return stability[pos];
+}
+
+void PhenoTranscriptome::log_transform() {
+	for (auto & i : expression)
+		i = log(i);
+}
+
+void PhenoTranscriptome::logit_transform() {
+	for (auto & i : expression)
+		i = log(i/(1.-i));
+}
+
+void PhenoTranscriptome::m1101_transform() {
+	for (auto & i : expression)
+		i = (i + 1.)/2.;
+}
+
+void PhenoTranscriptome::invlogit_transform() {
+	for (auto & i : expression)
+		i = 1./(1.+exp(-i));
 }
 
 void PhenoTranscriptome::outformat(ostream& out, unsigned int width, unsigned int precision, string sep) const

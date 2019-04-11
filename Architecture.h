@@ -73,6 +73,7 @@ class Architecture  	/* Pure virtual class */
 	    GeneticMap gmap;
 	    unsigned int nloc; // number of loci
 	    unsigned int sall; // size of alleles
+	    std::string transfo; // transformation of the phenotype (none, log, logit...)
 	    std::vector<rate_type> mutrate;
 	    std::vector<allele_type> mutsd;
 	    std::vector<allele_type> mutsd_test;
@@ -90,6 +91,7 @@ class Architecture  	/* Pure virtual class */
         {
             ar & gmap;
             ar & nloc;
+            ar & transfo;
             ar & sall; 
             ar & mutrate;
             ar & mutsd;

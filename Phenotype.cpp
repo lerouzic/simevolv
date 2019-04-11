@@ -14,6 +14,7 @@
 
 
 #include "Phenotype.h"
+#include "Parconst.h"
 #include "OutputFormat.h"
 
 #include <cassert> // for assert
@@ -201,4 +202,22 @@ pheno_type Phenotype::get_pheno2(size_t pos) const
 {
     assert(is_defined());
     return pheno_ptr->get_pheno2(pos);
+}
+
+void Phenotype::scale_transform(const string & option)
+{
+	if (option == ST_none) {
+		// nothing to do
+	} else if (option == ST_log) { // log transformation
+		pheno_ptr->log_transform();
+	} else if (option == ST_logit) { // logit(p) = log(p/(1-p))
+		pheno_ptr->logit_transform();
+	} else if (option == ST_m1101) { // from [-1; 1] to [0; 1]
+		pheno_ptr->m1101_transform();
+	} else if (option == ST_invlogit) { // invlogit(x) = 1/(1+exp(-x))
+		pheno_ptr->invlogit_transform();
+	} else {
+		cerr << "Scale transformation error: option " << option << " unknown." << endl;
+		exit(EXIT_FAILURE);
+	}
 }

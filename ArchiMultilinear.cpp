@@ -188,7 +188,9 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
 		}
 		phen[p] = tmpsum;
 	}
-	return Phenotype(phen);
+	Phenotype ans(phen);
+	ans.scale_transform(transfo);
+	return ans;
 }
 
 const Epsilon2 & ArchiMultilinear::get_epsilon2 (size_t t1, size_t t2, size_t t3) const

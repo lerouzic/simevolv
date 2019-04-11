@@ -65,11 +65,14 @@ class Phenotype
         pheno_type operator[] (std::size_t) const;
         pheno_type &operator[] (std::size_t);
         virtual pheno_type get_pheno(std::size_t) const;
-        virtual pheno_type get_pheno2(std::size_t) const;  
+        virtual pheno_type get_pheno2(std::size_t) const;
+        
+        void scale_transform(const std::string &);
         
     protected:
         Phenotype(std::unique_ptr<const PhenoBase>); // these ones should not be available to the outside world
         Phenotype(std::unique_ptr<PhenoBase>);       // 
+        
 
         std::unique_ptr<PhenoBase> pheno_ptr;
         
