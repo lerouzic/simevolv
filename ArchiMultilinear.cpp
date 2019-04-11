@@ -170,17 +170,17 @@ Phenotype ArchiMultilinear::phenotypic_value (const Genotype& genotype, bool env
 		for (size_t loc = 0; loc < nloc; loc++)
 			tmpsum += sumv[loc][p];
 			
-		// bilinear epistasis
-		for (size_t loc1 = 0; loc1 < nloc-1; loc1++)
-		{
-			if (nloc > 1)
-			for (size_t loc2 = loc1+1; loc2 < nloc; loc2++)
+		for (size_t trait1 = 0; trait1 < nphen; trait1++)
 			{
-				for (size_t trait1 = 0; trait1 < nphen; trait1++)
+			for (size_t trait2 = 0; trait2 < nphen; trait2++)
+				{ 
+				const Epsilon2 & eps = get_epsilon2(p, trait1, trait2); 
+				// bilinear epistasis
+				for (size_t loc1 = 0; loc1 < nloc-1; loc1++)
 				{
-					for (size_t trait2 = 0; trait2 < nphen; trait2++)
-					{ // there is probably a way to change the loop order in order to call get_epsilon only once per trait combination
-						const Epsilon2 & eps = get_epsilon2(p, trait1, trait2); 
+					if (nloc > 1)
+					for (size_t loc2 = loc1+1; loc2 < nloc; loc2++)
+					{
 						tmpsum += sumv[loc1][trait1] * sumv[loc2][trait2] * eps.get(loc1, loc2);
 					}
 				}
