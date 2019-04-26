@@ -149,6 +149,18 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
     return(a);
 }
 
+std::shared_ptr<Allele> ArchiRegulatoryMatrix::allele_mutation(const std::shared_ptr<Allele> templ, unsigned int loc /* = 0 */, bool test /* = false */) const
+{
+	// The default type of mutation is not acceptable here. Only one (random) cis-reg slot in the allele mutates
+	if (test) {
+		return(templ->make_mutant_random_site(mutmodels_test[loc]));
+	} else {
+		return(templ->make_mutant_random_site(mutmodels[loc]));
+	}
+}
+
+
+
 Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
 	// the envir parameter is useless. 
 {

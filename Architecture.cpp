@@ -51,8 +51,8 @@ Architecture::Architecture(const ParameterSet& param)
     , sall (1) // by default, change for the architecture that needed a vector as allele
     , transfo("none") // Transformation option (defaults to none)
     , mutrate (vector<rate_type> (0))
-    , mutsd (vector<allele_type> (0))
-    , mutsd_test (vector<allele_type> (0))
+    , mutmodels (vector<MutationModel> ())
+    , mutmodels_test (vector<MutationModel> ())
     , plasticity_strength (vector<pheno_type> (0))
     , plasticity_signal (vector<pheno_type> (0))
 {
@@ -225,20 +225,6 @@ rate_type Architecture::mutation_rate(unsigned int locus) const
     return(mutrate[locus]);
 }
 
-/* return the mutation effect at a given locus */
-allele_type Architecture::mutation_sd(unsigned int locus) const
-{
-    assert(locus < nloc);
-    return(mutsd[locus]);
-}
-
-/* return the mutation effect for canalization tests at a given locus */
-allele_type Architecture::mutation_sd_test(unsigned int locus) const
-{
-    assert(locus < nloc);
-    return(mutsd_test[locus]);
-}
-
 /* return the recombination rate at a given locus */
 rate_type Architecture::recombination_rate(unsigned int locus) const
 {
@@ -277,15 +263,15 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
     return(a);
 }
 
-/* force to make a mutation at one position of the allele : replace the value at the mutated site by a new value */
-shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
+/* Replace the value at the mutated site by a new value */
+shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */, bool test /* = false */) const 
 {
-    return(templ->make_mutant(mutation_sd(loc)));
-}
-
-shared_ptr<Allele> Architecture::allele_mutation_test(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
-{
-    return(templ->make_mutant(mutation_sd_test(loc)));
+	// The default type of mutation is questionable. Arbitrarily, a Fisher model like mutation (all dimensions of the allele are mutated independently)
+	if (test) {
+		return(templ->make_mutant_all_sites(mutmodels_test[loc]));
+	} else {
+		return(templ->make_mutant_all_sites(mutmodels[loc]));
+	}
 }
 
 /* Updates parameters when the parameter set changes. 
@@ -293,8 +279,8 @@ shared_ptr<Allele> Architecture::allele_mutation_test(const shared_ptr<Allele> t
 void Architecture::update_param_internal(const ParameterSet& param)
 {
 	mutrate.clear();
-	mutsd.clear();
-	mutsd_test.clear();
+	mutmodels.clear();
+	mutmodels_test.clear();
 	plasticity_strength.clear();
     plasticity_signal.clear();
     
@@ -304,8 +290,9 @@ void Architecture::update_param_internal(const ParameterSet& param)
 			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i));
 		else 
 			mutrate.push_back(param.getpar(GENET_MUTRATES)->GetDouble(i)/static_cast<rate_type>(nloc));
-        mutsd.push_back(param.getpar(GENET_MUTSD)->GetDouble(i));
-        mutsd_test.push_back(param.getpar(OUT_CANAL_MUTSD)->GetDouble(i));        
+			
+        mutmodels.emplace_back(param, i); 				// regular mutation model for locus i
+        mutmodels_test.emplace_back(param, i, true); 	// test mutation model for locus i
     }
     
     if (param.exists(ENVIRO_PLASTICITY)) {

@@ -222,14 +222,3 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
     assert(type==SC_vector||type==SC_dec||type==SC_combi||type==SC_int);
     // return -1;
 }
-
-//calculates the mutations. Defined in Allele.cpp
-shared_ptr<Allele> ArchiBoolean::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const
-{
-    return(templ->make_boolean_mutant());
-}
-
-shared_ptr<Allele> ArchiBoolean::allele_mutation_test(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const
-{
-    return(templ->make_boolean_mutant());
-}
