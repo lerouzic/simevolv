@@ -17,9 +17,12 @@
 #include "types.h"
 #include "Parameters.h"
 
+#include <memory>
+
 #ifdef SERIALIZATION_TEXT
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 #endif
 
 
@@ -34,7 +37,7 @@ class MutType
 		virtual ~MutType() { }
 		
 		virtual allele_type mutate(allele_type oldv) const = 0;
-		virtual MutType * clone() const = 0;
+		virtual std::unique_ptr<MutType> clone() const = 0;
 		
 	private:
 		#ifdef SERIALIZATION_TEXT
@@ -51,7 +54,7 @@ class MutBoolean: public MutType
 		~MutBoolean() { }
 	
 		allele_type mutate(allele_type oldv) const;
-		virtual MutType * clone() const;
+		virtual std::unique_ptr<MutType> clone() const;
 		
 	private:
 		#ifdef SERIALIZATION_TEXT
@@ -71,7 +74,7 @@ class MutGaussianCumul: public MutType
 		~MutGaussianCumul() { }
 		
 		allele_type mutate(allele_type oldv) const;
-		virtual MutType * clone() const;
+		virtual std::unique_ptr<MutType> clone() const;
 		
 	protected:
 		allele_type mutsd;
@@ -97,7 +100,7 @@ class MutGaussianStationary: public MutType
 		~MutGaussianStationary() { }
 		
 		allele_type mutate(allele_type oldv) const;
-		virtual MutType * clone() const;
+		virtual std::unique_ptr<MutType> clone() const;
 	
 	protected:
 		allele_type mutsd;
@@ -132,7 +135,7 @@ class MutationModel
 		allele_type mutate(allele_type oldv) const; 
 		
 	protected:
-		MutType * mut;
+		std::unique_ptr<MutType> mut;
 		
 	private:
 		#ifdef SERIALIZATION_TEXT

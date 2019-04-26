@@ -46,14 +46,14 @@ MutationModel::MutationModel(const ParameterSet & param, unsigned int locus /* =
 	// to the right MutType class
 	
 	if (param.getpar(TYPE_ARCHI)->GetString() == AR_Boolean) {
-		mut = new MutBoolean();
+		mut = std::unique_ptr<MutType>(new MutBoolean());
 	} else {
 		auto psd = test ? param.getpar(OUT_CANAL_MUTSD) : param.getpar(GENET_MUTSD);
 
 		if (param.getpar(GENET_MUTMEM)->GetString() == MM_cumul) {
-			mut = new MutGaussianCumul(psd->GetDouble(locus));
+			mut = std::unique_ptr<MutType> (new MutGaussianCumul(psd->GetDouble(locus)));
 		} else if (param.getpar(GENET_MUTMEM)->GetString() == MM_stationary) {
-			mut = new MutGaussianStationary(psd->GetDouble(locus));
+			mut = std::unique_ptr<MutType> (new MutGaussianStationary(psd->GetDouble(locus)));
 		} else {
 			std::cerr << "Impossible to initialize mutations" << std::endl;
 			exit(EXIT_FAILURE);
@@ -64,19 +64,11 @@ MutationModel::MutationModel(const ParameterSet & param, unsigned int locus /* =
 
 MutationModel::~MutationModel()
 {
-	if (mut) {
-		delete mut;
-		mut = nullptr;
-	}
 }
 
 MutationModel & MutationModel::operator= (const MutationModel & mm)
 {
-	if (mut) 
-		delete mut;
-	mut = nullptr;
-	if (mm.mut)
-		mut = mm.mut->clone();
+	mut = mm.mut->clone();
 	return *this;
 }
 
@@ -104,9 +96,9 @@ allele_type MutBoolean::mutate(allele_type oldv) const
 	return 1. - oldv;
 }
 
-MutType * MutBoolean::clone() const
+std::unique_ptr<MutType> MutBoolean::clone() const
 {
-	return new MutBoolean(*this);
+	return std::unique_ptr<MutType> (new MutBoolean(*this));
 }
 
 
@@ -127,9 +119,9 @@ allele_type MutGaussianCumul::mutate(allele_type oldv) const
 	return oldv + mutsd * Random::randgauss();
 }
 
-MutType * MutGaussianCumul::clone() const
+std::unique_ptr<MutType> MutGaussianCumul::clone() const
 {
-	return new MutGaussianCumul(*this);
+	return std::unique_ptr<MutType> (new MutGaussianCumul(*this));
 }
 
 
@@ -150,8 +142,8 @@ allele_type MutGaussianStationary::mutate(allele_type oldv) const
 	return mutsd * Random::randgauss();
 }
 
-MutType * MutGaussianStationary::clone() const
+std::unique_ptr<MutType> MutGaussianStationary::clone() const
 {
-	return new MutGaussianStationary(*this);
+	return std::unique_ptr<MutType> (new MutGaussianStationary(*this));
 }
 
