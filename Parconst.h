@@ -47,10 +47,6 @@ const std::string FITNESS_TYPE = "FITNESS_TYPE";			/* Selection types */
 const std::string FITNESS_STRENGTH = "FITNESS_STRENGTH";
 const std::string FITNESS_OPTIMUM = "FITNESS_OPTIMUM";
 const std::string FITNESS_CORRELATION = "FITNESS_CORRELATION";
-const std::string FITNESS_FLUCT = "FITNESS_FLUCT";			/* Fluctuation types */
-const std::string FITNESS_STRENGTH2 = "FITNESS_STRENGTH2";
-const std::string FITNESS_OPTIMUM2 = "FITNESS_OPTIMUM2";
-const std::string FITNESS_PERIOD = "FITNESS_PERIOD";
 const std::string FITNESS_STAB = "FITNESS_STAB";            /* Type of stability selection */
 const std::string FITNESS_STABSTR = "FITNESS_STABSTR";      /* Strenght of selection on stability */
 const std::string OUT_GENO = "OUT_GENO";					/* Output for the genotype */
@@ -116,15 +112,6 @@ const std::string FT_truncdown = "trunc_down";
 const std::string FT_concave = "concave";
 const std::string FT_convex = "convex";
 const std::vector<std::string> FT_options = boost::assign::list_of (FT_nosel)(FT_linear)(FT_expo)(FT_gauss)(FT_multigauss)(FT_quad)(FT_truncup)(FT_truncdown)(FT_concave)(FT_convex);
-
-// Fluctuation types
-const std::string FF_nofluct = "no_fluctuation";
-const std::string FF_smooth = "smooth";
-const std::string FF_pflips = "periodic_flips";
-const std::string FF_sflips = "stochastic_flips";
-const std::string FF_brown = "brownian";
-const std::string FF_white = "white_noise";
-const std::vector<std::string> FF_options = boost::assign::list_of (FF_nofluct)(FF_smooth)(FF_pflips)(FF_sflips)(FF_brown)(FF_white);
 
 // Strenght of selection on stability
 const std::string FS_nostab = "no_stabsel";
