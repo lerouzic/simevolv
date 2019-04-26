@@ -104,13 +104,8 @@ void Haplotype::make_mutation(bool test /* = false */)
 void Haplotype::make_mutation(unsigned int loc, bool test /* = false */)
 {
 	Architecture * archi = Architecture::Get();
-	if (test) {
-		shared_ptr<Allele> a = archi->allele_mutation_test(haplotype[loc], loc);
-		haplotype[loc] = a;		
-	} else {
-		shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc);
-		haplotype[loc] = a;
-	}
+	shared_ptr<Allele> a = archi->allele_mutation(haplotype[loc], loc, test);
+	haplotype[loc] = a;
 }
 
 

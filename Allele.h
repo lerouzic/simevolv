@@ -17,6 +17,7 @@
 
 #include "types.h"
 #include "Parameters.h"
+#include "Mutation.h"
 
 #include <vector>
 #include <memory>
@@ -55,8 +56,9 @@ class Allele
 		static std::vector<allele_type> combine_mean(const Allele &, const Allele &);
         static std::vector<allele_type> combine_OR(const Allele &, const Allele &);
 		
-		virtual std::shared_ptr<Allele> make_mutant(allele_type mutsd) const;
-        virtual std::shared_ptr<Allele> make_boolean_mutant() const;
+		virtual std::shared_ptr<Allele> make_mutant_at_site(size_t site, const MutationModel&) const;
+		virtual std::shared_ptr<Allele> make_mutant_random_site(const MutationModel&) const;
+		virtual std::shared_ptr<Allele> make_mutant_all_sites(const MutationModel&) const;
         std::vector<allele_type> get_raw() const;
 	
 	protected :
@@ -88,10 +90,12 @@ class Allele_zero: public Allele
     Allele_zero() { }
 	Allele_zero(const std::vector<allele_type>);
 	Allele_zero(const Allele_zero &);
-	virtual ~Allele_zero() { }
+	~Allele_zero() { }
 	
-	virtual std::shared_ptr<Allele> make_mutant(allele_type mutsd) const;
-    
+	std::shared_ptr<Allele> make_mutant_at_site(size_t site, const MutationModel&) const;
+	std::shared_ptr<Allele> make_mutant_random_site(const MutationModel&) const;
+	std::shared_ptr<Allele> make_mutant_all_sites(const MutationModel&) const;    
+	
 	private:
         #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;

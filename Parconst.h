@@ -28,6 +28,7 @@ const std::string SIMUL_MAXGEN = "SIMUL_MAXGEN";
 const std::string GENET_NBLOC = "GENET_NBLOC";
 const std::string GENET_NBPHEN = "GENET_NBPHEN";
 const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
+const std::string GENET_MUTMEM  = "GENET_MUTMEM";		/* Memory of mutational effects: "cumul" or "stationary" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
 const std::string GENET_PLOIDY = "GENET_PLOIDY";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
@@ -98,6 +99,11 @@ const std::vector<std::string> SC_options = boost::assign::list_of (SC_int)(SC_v
 const std::string MT_individual = "individual";
 const std::string MT_locus = "locus";
 const std::vector<std::string> MT_options = boost::assign::list_of (MT_individual)(MT_locus);
+
+// Mutation memory
+const std::string MM_cumul = "cumul";
+const std::string MM_stationary = "stationary";
+const std::vector<std::string> MM_options = boost::assign::list_of (MM_cumul)(MM_stationary);
 
 // Initial clonal status
 const std::string CL_clonal = "clonal";

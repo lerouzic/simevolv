@@ -22,6 +22,7 @@
 #include "Genotype.h"
 #include "Phenotype.h"
 #include "EpigeneticInfo.h"
+#include "Mutation.h"
 
 #include <iostream>
 #include <string>
@@ -57,15 +58,12 @@ class Architecture  	/* Pure virtual class */
         virtual unsigned int nb_phen() const;
 	    unsigned int all_size() const;
 	    rate_type mutation_rate(unsigned int) const;
-	    allele_type mutation_sd(unsigned int) const;
-	    allele_type mutation_sd_test(unsigned int) const;
 	    rate_type recombination_rate(unsigned int) const;
 	    		
 		// to be defined by inherited classes 
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo&, bool sdinittest = false, bool sddynamtest = false) const = 0; // no default
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
-	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
-	    virtual std::shared_ptr<Allele> allele_mutation_test(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
+	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0, bool test = false) const;
 	
 	protected :
 	    static Architecture* instance;
@@ -75,8 +73,8 @@ class Architecture  	/* Pure virtual class */
 	    unsigned int sall; // size of alleles
 	    std::string transfo; // transformation of the phenotype (none, log, logit...)
 	    std::vector<rate_type> mutrate;
-	    std::vector<allele_type> mutsd;
-	    std::vector<allele_type> mutsd_test;
+	    std::vector<MutationModel> mutmodels;
+	    std::vector<MutationModel> mutmodels_test;
         
         std::vector<pheno_type> plasticity_strength;
         std::vector<pheno_type> plasticity_signal;
@@ -94,8 +92,8 @@ class Architecture  	/* Pure virtual class */
             ar & transfo;
             ar & sall; 
             ar & mutrate;
-            ar & mutsd;
-            ar & mutsd_test;
+            ar & mutmodels;
+            ar & mutmodels_test;
             ar & plasticity_strength;
             ar & plasticity_signal;
         }

@@ -44,8 +44,7 @@ class ArchiBoolean : public Architecture
     
     virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &, bool sdinittest = false, bool sddynamtest = false) const;
     virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
-    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
-    virtual std::shared_ptr<Allele> allele_mutation_test(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
+    // virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0, bool test = false) const; // Is default OK?
     
     protected :
     std::vector<std::vector<float_type>> bucket_matrix;
