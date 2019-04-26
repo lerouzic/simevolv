@@ -36,7 +36,6 @@ Fitness * Fitness::instance = NULL;
 Fitness::Fitness(const ParameterSet& param)
 {
 	string type = param.getpar(FITNESS_TYPE)->GetString();
-	string fluct_type = param.getpar(FITNESS_FLUCT)->GetString();
 	string stab_type = param.getpar(FITNESS_STAB)->GetString();
 		
 	if (type == FT_nosel) 
@@ -75,35 +74,7 @@ Fitness::Fitness(const ParameterSet& param)
 	{
 		assert("Fitness type unknown or not implemented");
 	}
-	
-	if (fluct_type == FF_nofluct) 
-	{
-		fitfluct = new Fitness_Fluct_Nofluct(param);
-	} 
-	else if (fluct_type == FF_smooth) 
-	{
-		fitfluct = new Fitness_Fluct_Smooth(param);
-	} 
-	else if (fluct_type == FF_pflips) 
-	{
-		fitfluct = new Fitness_Fluct_Flips(param);
-	} 
-	else if (fluct_type == FF_sflips) 
-	{
-		fitfluct = new Fitness_Fluct_Sflips(param);
-	} 
-	else if (fluct_type == FF_brown) 
-	{
-		fitfluct = new Fitness_Fluct_Brownian(param);
-	} 
-	else if (fluct_type == FF_white) 
-	{
-		fitfluct = new Fitness_Fluct_Whitenoise(param);
-	} 
-	else 
-	{
-		assert("Fluctuation type unknown or not implemented");
-	}
+
 	
 	if (stab_type == FS_nostab) 
 	{
@@ -131,7 +102,6 @@ void Fitness::Terminate()
 Fitness::~Fitness()
 {
 	delete fitphen;
-	delete fitfluct;
 	delete fitstab;
 }
 
@@ -157,14 +127,6 @@ void Fitness::update(const Population & population)
 	Fitness::instance->fitphen->update(population);
 }
 
-/* This function is called every generation and updates the selection function
-   when it is expected to change with time (e.g., fluctuating selection).
-   The generation number is used to trigger periodic changes */
-void Fitness::fluctuate(unsigned int generation_number)
-{
-	Fitness::instance->fitphen->fluctuate(Fitness::instance->fitfluct, generation_number);
-}
-
 /* Computes the fitness associated with a given phenotype. A reference to the current population
    has to be provided, because some fitness functions requires a "population value".
    Fitness is the product of two components: a fitness score from the phenotypic values, 
@@ -180,277 +142,6 @@ FitnessOptimum Fitness::current_optimum()
 {
 	return(Fitness::instance->fitphen->get_optimum());
 }
-
-
-/******************************** Fitness Fluct ******************************/
-
-Fitness_Fluct::~Fitness_Fluct()
-{ // virtual pure
-}
-
-
-//////// Fitness_Fluct_Nofluct
-
-Fitness_Fluct_Nofluct::Fitness_Fluct_Nofluct(const ParameterSet & param)
-	: Fitness_Fluct(param)
-{
-}
-
-FitnessStrength Fitness_Fluct_Nofluct::get_new_strength(const FitnessStrength & old_strength, unsigned int generation) 
-{ 
-	return(old_strength); 
-}
-
-FitnessOptimum Fitness_Fluct_Nofluct::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation) 
-{ 
-	return(old_optimum); 
-} 
-
-
-//////// Fitness_Fluct_States
-
-Fitness_Fluct_States::~Fitness_Fluct_States()
-{ // The program does not compile without the empty virtual pure destructor
-}
-
-Fitness_Fluct_States::Fitness_Fluct_States(const ParameterSet & param)
-	: Fitness_Fluct(param)
-	, strength_state1(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
-	, strength_state2(param.getpar(FITNESS_STRENGTH2)->GetVectorDouble())
-	, optimum_state1(param.getpar(FITNESS_OPTIMUM)->GetVectorDouble())
-	, optimum_state2(param.getpar(FITNESS_OPTIMUM2)->GetVectorDouble())
-	, period(param.getpar(FITNESS_PERIOD)->GetInt())
-{
-}
-
-Fitness_Fluct_Flips::Fitness_Fluct_Flips(const ParameterSet & param)
-	: Fitness_Fluct_States(param)
-{
-}
-
-FitnessStrength Fitness_Fluct_Flips::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
-{ // old_strength is used only to compare vector lengths
-	if (old_strength.size() > strength_state1.size()) 
-	{
-		strength_state1 = expand_vec(strength_state1, old_strength.size());
-		strength_state2 = expand_vec(strength_state2, old_strength.size());
-	}
-	if (int(generation / float(period/2)) % 2 == 0)
-	{
-        return(strength_state1);
-    } 
-    else 
-    {
-        return(strength_state2);
-    }
-}
-
-FitnessOptimum Fitness_Fluct_Flips::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
-{ // old_optimum is used only to compare vector lengths
-	if (old_optimum.size() > optimum_state1.size()) 
-	{
-		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
-	}
-	if (int(generation / float(period/2)) % 2 == 0)
-	{
-        return(optimum_state1);
-    } 
-    else 
-    {
-        return(optimum_state2);
-    }
-}
-
-Fitness_Fluct_Sflips::Fitness_Fluct_Sflips(const ParameterSet & param)
-	: Fitness_Fluct_States(param)
-{	
-}
-
-FitnessStrength Fitness_Fluct_Sflips::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
-{ // old_strength is used only to compare vector lengths
-	if (old_strength.size() > strength_state1.size()) 
-	{
-		strength_state1 = expand_vec(strength_state1, old_strength.size());
-		strength_state2 = expand_vec(strength_state2, old_strength.size());
-	}
-
-	if (Random::randnum() < (1.0 / float(period) / 2.0))
-	{
-        return(strength_state1);
-    } 
-    else 
-    {
-        return(strength_state2);
-    }
-}
-
-FitnessOptimum Fitness_Fluct_Sflips::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
-{ // old_optimum is used only to compare vector lengths
-	if (old_optimum.size() > optimum_state1.size()) 
-	{
-		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
-	}
-	
-	if (Random::randnum() < (1.0 / float(period) / 2.0))
-	{
-        return(optimum_state1);
-    } 
-    else 
-    {
-        return(optimum_state2);
-    }
-}
-
-Fitness_Fluct_Smooth::Fitness_Fluct_Smooth(const ParameterSet & param)
-	: Fitness_Fluct_States(param)
-{
-}
-
-FitnessStrength Fitness_Fluct_Smooth::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
-{
-	if (old_strength.size() > strength_state1.size()) 
-	{
-		strength_state1 = expand_vec(strength_state1, old_strength.size());
-		strength_state2 = expand_vec(strength_state2, old_strength.size());
-	}
-	FitnessStrength new_strength;
-	for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
-	{
-		new_strength.push_back(strength_state2[tt]+(strength_state1[tt]-strength_state2[tt])*(1.0+cos(2.0*generation*M_PI/float(period)))/2.0);
-	}
-	return(new_strength);
-}
-
-FitnessOptimum Fitness_Fluct_Smooth::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
-{
-	if (old_optimum.size() > optimum_state1.size()) 
-	{
-		optimum_state1 = expand_vec(optimum_state1, old_optimum.size());
-		optimum_state2 = expand_vec(optimum_state2, old_optimum.size());
-	}
-	FitnessOptimum new_optimum;
-	for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
-	{
-		new_optimum.push_back(optimum_state2[tt]+(optimum_state1[tt]-optimum_state2[tt])*(1.0+cos(2.0*generation*M_PI/float(period)))/2.0);
-	}
-	return(new_optimum);
-}
-
-
-//////// Fitness_Fluct_Noise
-
-Fitness_Fluct_Noise::Fitness_Fluct_Noise(const ParameterSet & param)
-	: Fitness_Fluct(param)
-	, strength_sd(param.getpar(FITNESS_STRENGTH2)->GetVectorDouble())
-	, optimum_sd(param.getpar(FITNESS_OPTIMUM2)->GetVectorDouble())
-	, period(param.getpar(FITNESS_PERIOD)->GetInt())
-{	
-}
-
-Fitness_Fluct_Noise::~Fitness_Fluct_Noise()
-{
-}
-
-Fitness_Fluct_Whitenoise::Fitness_Fluct_Whitenoise(const ParameterSet & param)
-	: Fitness_Fluct_Noise(param)
-	, strength_ref(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
-	, optimum_ref(param.getpar(FITNESS_OPTIMUM)->GetVectorDouble())
-{
-}
-
-FitnessStrength Fitness_Fluct_Whitenoise::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
-{
-	if (old_strength.size() > strength_ref.size()) 
-	{
-		strength_ref = expand_vec(strength_ref, old_strength.size());
-		strength_sd = expand_vec(strength_sd, old_strength.size());
-	}
-	if (generation % period == 0) 
-	{
-		FitnessStrength new_strength;
-		for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
-		{
-			new_strength.push_back(strength_ref[tt] + strength_sd[tt]*Random::randgauss());
-		}
-		return(new_strength);
-	} 
-	else 
-	{
-		return(old_strength);
-	}
-}
-
-FitnessOptimum Fitness_Fluct_Whitenoise::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
-{
-	if (old_optimum.size() > optimum_ref.size()) 
-	{
-		optimum_ref = expand_vec(optimum_ref, old_optimum.size());
-		optimum_sd = expand_vec(optimum_sd, old_optimum.size());
-	}
-	if (generation % period == 0) 
-	{
-		FitnessOptimum new_optimum;
-		for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
-		{
-			new_optimum.push_back(optimum_ref[tt] + optimum_sd[tt]*Random::randgauss());
-		}
-		return(new_optimum);
-	} 
-	else 
-	{
-		return(old_optimum);
-	}
-}
-
-Fitness_Fluct_Brownian::Fitness_Fluct_Brownian(const ParameterSet & param)
-	: Fitness_Fluct_Noise(param)
-{	
-}
-
-FitnessStrength Fitness_Fluct_Brownian::get_new_strength(const FitnessStrength & old_strength, unsigned int generation)
-{
-	if (old_strength.size() > strength_sd.size()) 
-	{
-		strength_sd = expand_vec(strength_sd, old_strength.size());
-	}
-	if (generation % period == 0) 
-	{
-		FitnessStrength new_strength;
-		for (unsigned int tt = 0; tt < old_strength.size(); tt++) 
-		{
-			new_strength.push_back(old_strength[tt] + strength_sd[tt]*Random::randgauss());
-		}
-		return(new_strength);
-	} 
-	else 
-	{
-		return(old_strength);
-	}
-}
-
-FitnessOptimum Fitness_Fluct_Brownian::get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation)
-{
-	if (old_optimum.size() > optimum_sd.size()) 
-	{
-		optimum_sd = expand_vec(optimum_sd, old_optimum.size());
-	}
-	if (generation % period == 0) 
-	{
-		FitnessOptimum new_optimum;
-		for (unsigned int tt = 0; tt < old_optimum.size(); tt++) 
-		{
-			new_optimum.push_back(old_optimum[tt] + optimum_sd[tt]*Random::randgauss());
-		}
-		return(new_optimum);
-	} 
-	else 
-	{
-		return(old_optimum);
-	}
-}
-
 
 
 /******************************** Fitness_Phenotype ***************************/
@@ -504,11 +195,6 @@ void Fitness_Phenotype_Directional::update(const Population & population)
 {
 	popmean = population.mean_phenotype();
 	popmem = &population;
-}
-
-void Fitness_Phenotype_Directional::fluctuate(Fitness_Fluct * fitfluct, unsigned int generation)
-{
-	strength = fitfluct->get_new_strength(strength, generation);
 }
 
 Fitness_Phenotype_Linear::Fitness_Phenotype_Linear(const ParameterSet & param)
@@ -593,12 +279,6 @@ Fitness_Phenotype_Stabilizing::Fitness_Phenotype_Stabilizing(const ParameterSet 
 	, strength(param.getpar(FITNESS_STRENGTH)->GetVectorDouble())
 	, optimum(param.getpar(FITNESS_OPTIMUM)->GetVectorDouble())
 {
-}
-
-void Fitness_Phenotype_Stabilizing::fluctuate(Fitness_Fluct * fitfluct, unsigned int generation)
-{
-	strength = fitfluct->get_new_strength(strength, generation);
-	optimum = fitfluct->get_new_optimum(optimum, generation);
 }
 
 Fitness_Phenotype_Gaussian::Fitness_Phenotype_Gaussian(const ParameterSet & param)

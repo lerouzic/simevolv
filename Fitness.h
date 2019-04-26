@@ -26,7 +26,6 @@
 
 class Population;
 // These classes are implemented afterwards for readability
-class Fitness_Fluct;
 class Fitness_Phenotype;
 class Fitness_Stability;
 
@@ -44,7 +43,6 @@ class Fitness
         static void initialize(const ParameterSet&);
 
         // fonctions
-        static void fluctuate(unsigned int);
         static void update(const Population &);
         static fitness_type compute(const Phenotype&, const Population&);
         static FitnessOptimum current_optimum();
@@ -56,7 +54,6 @@ class Fitness
     
         static Fitness * instance;
         
-        Fitness_Fluct * fitfluct;
         Fitness_Phenotype * fitphen;
         Fitness_Stability * fitstab;
 };
@@ -84,108 +81,6 @@ std::vector<T> expand_vec(const std::vector<T>& templ, unsigned int maxsize) {
 	return(answer);    
 }
 
-/*************************** Fitness_Fluct ********************************/
-/**                         Inheritance scheme [(A): abstract class]
-    Fitness_Fluct (A)
-        -> Fitness_Fluct_Nofluct
-        -> Fitness_Fluct_States (A)
-             -> Fitness_Fluct_Flips
-             -> Fitness_Fluct_Sflips
-             -> Fitness_Fluct_Smooth
-        -> Fitness_Fluct_Noise (A)
-             -> Fitness_Fluct_Whitenoise
-             -> Fitness_Fluct_Brownian 
-**/
-
-class Fitness_Fluct
-{ // Abstract class (interface)
-	public:
-		Fitness_Fluct(const ParameterSet & param) { }
-		virtual ~Fitness_Fluct() = 0;
-		
-		virtual FitnessStrength get_new_strength(const FitnessStrength & old_strength, unsigned int generation) = 0;
-		virtual FitnessOptimum get_new_optimum(const FitnessOptimum & old_optimum, unsigned int generation) = 0;
-};
-
-class Fitness_Fluct_Nofluct: public Fitness_Fluct
-{
-	public:
-		Fitness_Fluct_Nofluct(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);		
-};
-
-class Fitness_Fluct_States: public Fitness_Fluct
-{ // Abstract class
-	public:
-		Fitness_Fluct_States(const ParameterSet &);
-		virtual ~Fitness_Fluct_States() = 0;  
-		
-	protected:
-		FitnessStrength strength_state1;
-		FitnessStrength strength_state2;
-		FitnessOptimum optimum_state1;
-		FitnessOptimum optimum_state2;
-		unsigned int period;		
-};
-
-class Fitness_Fluct_Flips: public Fitness_Fluct_States
-{
-	public:
-		Fitness_Fluct_Flips(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);
-};
-
-class Fitness_Fluct_Sflips: public Fitness_Fluct_States
-{
-	public: 
-		Fitness_Fluct_Sflips(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);		
-};
-
-class Fitness_Fluct_Smooth: public Fitness_Fluct_States
-{
-	public:
-		Fitness_Fluct_Smooth(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);	
-};
-
-class Fitness_Fluct_Noise: public Fitness_Fluct
-{ // Abstract class
-	public:
-		Fitness_Fluct_Noise(const ParameterSet &);
-		virtual ~Fitness_Fluct_Noise() = 0;	
-			
-	protected:
-		FitnessStrength strength_sd;
-		FitnessOptimum optimum_sd;
-		unsigned int period;
-};
-
-class Fitness_Fluct_Whitenoise: public Fitness_Fluct_Noise
-{
-	public:
-		Fitness_Fluct_Whitenoise(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);		
-	protected:
-		FitnessStrength strength_ref;
-		FitnessOptimum optimum_ref;
-};
-
-class Fitness_Fluct_Brownian: public Fitness_Fluct_Noise
-{
-	public:
-		Fitness_Fluct_Brownian(const ParameterSet &);
-		FitnessStrength get_new_strength(const FitnessStrength &, unsigned int);
-		FitnessOptimum get_new_optimum(const FitnessOptimum &, unsigned int);
-};
-
-
-
 /*************************** Fitness_Phenotype ****************************/
 /**                         Inheritance Scheme [(A): Abstract class]:
    Fitness_Phenotype (A)
@@ -210,7 +105,6 @@ class Fitness_Phenotype
 		virtual fitness_type get_fitness(const Phenotype&, const Population &);
 		virtual fitness_type get_fitness_trait(unsigned int trait, const Phenotype&, const Population&) = 0;
 		virtual void update(const Population &) { }
-		virtual void fluctuate(Fitness_Fluct *, unsigned int) { }
 		virtual FitnessOptimum get_optimum() const;
 };
 
@@ -228,7 +122,6 @@ class Fitness_Phenotype_Directional: public Fitness_Phenotype
 		virtual ~Fitness_Phenotype_Directional() = 0;
 		virtual fitness_type get_fitness_trait(unsigned int trait, const Phenotype&, const Population &) = 0;
 		void update(const Population &);
-		void fluctuate(Fitness_Fluct *, unsigned int);
 	protected:
 		FitnessStrength strength;
 		Phenotype popmean;
@@ -262,7 +155,6 @@ class Fitness_Phenotype_Stabilizing: public Fitness_Phenotype
 		Fitness_Phenotype_Stabilizing(const ParameterSet &);
 		virtual ~Fitness_Phenotype_Stabilizing() { }
 		virtual fitness_type get_fitness_trait(unsigned int, const Phenotype&, const Population&) = 0;
-		void fluctuate(Fitness_Fluct *, unsigned int);
 		FitnessOptimum get_optimum() const { return(optimum);}
 				
 	protected:
