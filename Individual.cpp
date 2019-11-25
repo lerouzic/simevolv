@@ -54,7 +54,7 @@ Individual::Individual(const Haplotype& gam_father, const Haplotype& gam_mother,
 	: genotype()
     , phenotype()
     , fitness(0.0)
-    , epigenet(0.0)
+    , epigenet(epimother.get_epigenet())
 	, epiinfo(epimother)    
 {
 	assert ((ploid == 1) || (ploid == 2));
@@ -89,7 +89,7 @@ Individual::Individual(const Genotype& gen, const EpigeneticInfo& epimother)
     : genotype(std::unique_ptr<Genotype>(gen.clone()))
     , phenotype()
     , fitness(0.0)
-    , epigenet(0.0)    
+    , epigenet(epimother.get_epigenet())    
     , epiinfo(epimother)
 {
 }
@@ -98,7 +98,7 @@ Individual::Individual(std::unique_ptr<Genotype> pgen, const EpigeneticInfo& epi
     : genotype(std::move(pgen))
     , phenotype()
     , fitness(0.0)
-    , epigenet(0.0)
+    , epigenet(epimother.get_epigenet())
     , epiinfo(epimother)
 {
 }
