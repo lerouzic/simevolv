@@ -188,6 +188,7 @@ class ParameterSet
 	    // constructors/destructor
 	    ParameterSet();
 	    ParameterSet(const std::string& file);
+	    ParameterSet(std::istream * is);
 	    ~ParameterSet();
 	
 	    // initialization
@@ -195,6 +196,7 @@ class ParameterSet
 	
 	    // input/output
 	    void read(const std::string&);
+	    void read (std::istream*);
 	    void write(std::ostream&) const;
         void erase(const std::string&);
 	

@@ -20,12 +20,14 @@
 #include "Environment.h"
 #include "Population.h"
 #include "Random.h"
+#include "Iotar.h"
 
 #include <boost/program_options.hpp>
 
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -34,6 +36,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	string input_file;
+	string tar_input_file;
 	string iarchi_file;
     string oarchi_file;
     string ipop_file;
@@ -47,6 +50,7 @@ int main(int argc, char *argv[])
     desc.add_options()
       ("help,h", "Print help messages")
       ("parameter,p", po::value<string>(&input_file), "Parameter file")
+      ("parameterZ,z", po::value<string>(&tar_input_file), "Parameter files (tar)")
       ("iarchitecture,a", po::value<string>(&iarchi_file), "Input architecture file")
       ("oarchitecture,b", po::value<string>(&oarchi_file), "Output architecture file")
       ("ipopulation,P", po::value<string>(&ipop_file), "Input population file")
@@ -84,7 +88,7 @@ int main(int argc, char *argv[])
 		return(EXIT_SUCCESS);
 	}
 
-	if (!vm.count("parameter")) 
+	if (!vm.count("parameter"))
 	{
 		cerr << "A parameter file must be provided" << endl;
 		cerr << desc << endl;
@@ -97,8 +101,22 @@ int main(int argc, char *argv[])
 	} else {
 		Random::initialize();
 	}
-
-	ParameterSet param(input_file);
+	
+	map<string, istream*> mapstream; // Only useful when a tar file is provided
+	if (vm.count("parameterZ"))
+		mapstream = ifstream_from_tar(tar_input_file);
+				
+	cerr << my_basename(input_file) << endl;
+	istream* ifile = NULL;
+	if (mapstream.find(my_basename(input_file)) == mapstream.end()) {
+		ifile = new ifstream(input_file.c_str());
+	}
+	else {
+		ifile = mapstream.at(my_basename(input_file));
+	}
+	
+	ParameterSet param(ifile);
+	delete(ifile);
 
 	if (vm.count("iarchitecture")) 
 	{
@@ -178,7 +196,16 @@ int main(int argc, char *argv[])
 		if (continue_simulation) {
 			next_parfile = param.getpar(FILE_NEXTPAR)->GetString();
             param.erase(FILE_NEXTPAR); // we do not want to keep this if FILE_NEXTPAR is missing in the file
-			param.read(next_parfile);
+            
+            if (mapstream.find(my_basename(next_parfile)) == mapstream.end()) {
+				ifile = new ifstream(next_parfile.c_str());
+			}
+			else 
+			{
+				ifile = mapstream.at(my_basename(next_parfile));
+			}
+			param.read(ifile);
+			delete(ifile);
             if (param.exists(FILE_NEXTPAR) 
                 && (param.getpar(FILE_NEXTPAR)->GetString() == next_parfile) 
                 && (!param.exists(SIMUL_MAXGEN))) {

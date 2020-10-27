@@ -408,6 +408,12 @@ ParameterSet::ParameterSet(const string & file)
     read(file);
 }
 
+ParameterSet::ParameterSet(istream * is)
+{	
+	initialize();
+	read(is);
+}
+
 ParameterSet::~ParameterSet()
 {
     for (auto it = parameters.begin();
@@ -508,15 +514,18 @@ void ParameterSet::write(ostream & out) const
 
 void ParameterSet::read(const string & file)
 {
-    ifstream paramfile(file.c_str());
-    if (!paramfile) 
+    ifstream paramstream(file.c_str());
+    if (!paramstream) 
     {
-		cerr << "Problem opening the parameter file" << endl;
+		cerr << "Problem opening the parameter file " << file << endl;
 		exit(EXIT_FAILURE);
 	}
+	read(&paramstream);
+}
 
+void ParameterSet::read(istream * paramstream) {
     string line;
-    while(!getline(paramfile, line).eof())
+    while(!getline(*paramstream, line).eof())
     {
         istringstream l(line);
         string name;
