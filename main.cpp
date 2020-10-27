@@ -106,10 +106,13 @@ int main(int argc, char *argv[])
 	if (vm.count("parameterZ"))
 		mapstream = ifstream_from_tar(tar_input_file);
 				
-	cerr << my_basename(input_file) << endl;
 	istream* ifile = NULL;
 	if (mapstream.find(my_basename(input_file)) == mapstream.end()) {
 		ifile = new ifstream(input_file.c_str());
+		if (!*ifile) {
+			cerr << "Impossible to open file " << input_file << endl;
+			return(EXIT_FAILURE);
+		}
 	}
 	else {
 		ifile = mapstream.at(my_basename(input_file));
@@ -199,6 +202,10 @@ int main(int argc, char *argv[])
             
             if (mapstream.find(my_basename(next_parfile)) == mapstream.end()) {
 				ifile = new ifstream(next_parfile.c_str());
+				if (!*ifile) {
+					cerr << "Impossible to open file " << next_parfile << endl;
+					return(EXIT_FAILURE);
+				}
 			}
 			else 
 			{
