@@ -40,7 +40,7 @@ map<string, istream*> ifstream_from_tar(string tarfile) {
 	}
 	while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
 		long int entry_size = archive_entry_size(entry);
-		char *fileContents = (char*)malloc(entry_size);
+		char *fileContents = (char*)malloc(entry_size+1);
 		fileContents[entry_size] = '\0'; // if not, istringstream reads beyond!!!
 		archive_read_data(a, fileContents, entry_size);
 		
@@ -53,6 +53,7 @@ map<string, istream*> ifstream_from_tar(string tarfile) {
 		//~ cerr << "**************************" << endl;
 		//~ archive_entry_clear(entry);
 		//~ archive_read_data_skip(a);
+		free(fileContents); // because stringstream copies its own internal buffer
 	}
 	r = archive_read_free(a);
 	if (r != ARCHIVE_OK) {
