@@ -220,5 +220,5 @@ Phenotype ArchiBoolean::phenotypic_value (const Genotype& genotype, bool envir, 
     }
 
     assert(type==SC_vector||type==SC_dec||type==SC_combi||type==SC_int);
-    // return -1;
+    return Phenotype(); // should never happen
 }

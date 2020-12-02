@@ -51,16 +51,18 @@ Mutantcollection & Mutantcollection::operator=(const Mutantcollection & tmpl)
 Phenotype Mutantcollection::mean_phen() const
 {
     vector<Phenotype> pheno_tmp;
-    for (const auto & i : collection)
-        pheno_tmp.push_back(i.phen);
+	for (const auto & i : collection) {
+		pheno_tmp.push_back(i.phen);
+	}
 	return Phenotype::mean(pheno_tmp);
 }
 
 Phenotype Mutantcollection::var_phen() const
 {
     vector<Phenotype> pheno_tmp;
-    for (const auto & i : collection)
-        pheno_tmp.push_back(i.phen);
+	for (const auto & i : collection) {
+		pheno_tmp.push_back(i.phen);
+	}
 	return Phenotype::var(pheno_tmp);
 }
 

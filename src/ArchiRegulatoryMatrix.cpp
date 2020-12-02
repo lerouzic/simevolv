@@ -194,8 +194,9 @@ Phenotype ArchiRegulatoryMatrix::phenotypic_value (const Genotype& genotype, boo
 		}      		
 		St[i] += Environment::init_disturb(sdinittest);
 	}
-    if (run_plasticity) 
-        this->plasticity_v(St);
+	if (run_plasticity) {
+		this->plasticity_v(St);
+	}
 	this->haircut_v(St);
 
 	
