@@ -12,8 +12,8 @@ AR = ar
 LD = g++
 WINDRES = windres
 
-INC = 
-CFLAGS = -Wall -std=c++11 -MMD -MP -DSERIALIZATION_TEXT
+INC = -I src
+CFLAGS = -Wall -std=c++11 -MMD -MP -DSERIALIZATION_TEXT 
 RESINC = 
 LIBDIR = -L/usr/lib
 LIB = 
@@ -60,86 +60,83 @@ debug: before_debug out_debug after_debug
 out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
 
-$(OBJDIR_DEBUG)/main.o: main.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
+$(OBJDIR_DEBUG)/main.o: src/main.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/main.cpp -o $(OBJDIR_DEBUG)/main.o
 
-$(OBJDIR_DEBUG)/Random.o: Random.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Random.cpp -o $(OBJDIR_DEBUG)/Random.o
+$(OBJDIR_DEBUG)/Random.o: src/Random.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Random.cpp -o $(OBJDIR_DEBUG)/Random.o
 
-$(OBJDIR_DEBUG)/Population.o: Population.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Population.cpp -o $(OBJDIR_DEBUG)/Population.o
+$(OBJDIR_DEBUG)/Population.o: src/Population.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Population.cpp -o $(OBJDIR_DEBUG)/Population.o
 
-$(OBJDIR_DEBUG)/Parameters.o: Parameters.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Parameters.cpp -o $(OBJDIR_DEBUG)/Parameters.o
+$(OBJDIR_DEBUG)/Parameters.o: src/Parameters.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Parameters.cpp -o $(OBJDIR_DEBUG)/Parameters.o
 
-$(OBJDIR_DEBUG)/OutputFormat.o: OutputFormat.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c OutputFormat.cpp -o $(OBJDIR_DEBUG)/OutputFormat.o
+$(OBJDIR_DEBUG)/OutputFormat.o: src/OutputFormat.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/OutputFormat.cpp -o $(OBJDIR_DEBUG)/OutputFormat.o
 
-$(OBJDIR_DEBUG)/Individual.o: Individual.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Individual.cpp -o $(OBJDIR_DEBUG)/Individual.o
+$(OBJDIR_DEBUG)/Individual.o: src/Individual.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Individual.cpp -o $(OBJDIR_DEBUG)/Individual.o
 
-$(OBJDIR_DEBUG)/Haplotype.o: Haplotype.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Haplotype.cpp -o $(OBJDIR_DEBUG)/Haplotype.o
+$(OBJDIR_DEBUG)/Haplotype.o: src/Haplotype.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Haplotype.cpp -o $(OBJDIR_DEBUG)/Haplotype.o
 
-$(OBJDIR_DEBUG)/Allele.o: Allele.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Allele.cpp -o $(OBJDIR_DEBUG)/Allele.o
+$(OBJDIR_DEBUG)/Allele.o: src/Allele.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Allele.cpp -o $(OBJDIR_DEBUG)/Allele.o
 
-$(OBJDIR_DEBUG)/Mutation.o: Mutation.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Mutation.cpp -o $(OBJDIR_DEBUG)/Mutation.o
+$(OBJDIR_DEBUG)/Mutation.o: src/Mutation.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Mutation.cpp -o $(OBJDIR_DEBUG)/Mutation.o
 
-$(OBJDIR_DEBUG)/Genotype.o: Genotype.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Genotype.cpp -o $(OBJDIR_DEBUG)/Genotype.o
+$(OBJDIR_DEBUG)/Genotype.o: src/Genotype.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Genotype.cpp -o $(OBJDIR_DEBUG)/Genotype.o
 	
-$(OBJDIR_DEBUG)/Phenotype.o: Phenotype.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Phenotype.cpp -o $(OBJDIR_DEBUG)/Phenotype.o
+$(OBJDIR_DEBUG)/Phenotype.o: src/Phenotype.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Phenotype.cpp -o $(OBJDIR_DEBUG)/Phenotype.o
 
-$(OBJDIR_DEBUG)/PhenoBase.o: PhenoBase.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c PhenoBase.cpp -o $(OBJDIR_DEBUG)/PhenoBase.o
+$(OBJDIR_DEBUG)/PhenoBase.o: src/PhenoBase.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/PhenoBase.cpp -o $(OBJDIR_DEBUG)/PhenoBase.o
 
-$(OBJDIR_DEBUG)/GeneticMap.o: GeneticMap.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c GeneticMap.cpp -o $(OBJDIR_DEBUG)/GeneticMap.o
+$(OBJDIR_DEBUG)/GeneticMap.o: src/GeneticMap.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/GeneticMap.cpp -o $(OBJDIR_DEBUG)/GeneticMap.o
 
-$(OBJDIR_DEBUG)/Fitness.o: Fitness.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Fitness.cpp -o $(OBJDIR_DEBUG)/Fitness.o
+$(OBJDIR_DEBUG)/Fitness.o: src/Fitness.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Fitness.cpp -o $(OBJDIR_DEBUG)/Fitness.o
 
-$(OBJDIR_DEBUG)/Environment.o: Environment.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Environment.cpp -o $(OBJDIR_DEBUG)/Environment.o
+$(OBJDIR_DEBUG)/Environment.o: src/Environment.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Environment.cpp -o $(OBJDIR_DEBUG)/Environment.o
 
-$(OBJDIR_DEBUG)/Mutantcollection.o: Mutantcollection.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Mutantcollection.cpp -o $(OBJDIR_DEBUG)/Mutantcollection.o
+$(OBJDIR_DEBUG)/Mutantcollection.o: src/Mutantcollection.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Mutantcollection.cpp -o $(OBJDIR_DEBUG)/Mutantcollection.o
 
-$(OBJDIR_DEBUG)/Canalization.o: Canalization.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Canalization.cpp -o $(OBJDIR_DEBUG)/Canalization.o
+$(OBJDIR_DEBUG)/Canalization.o: src/Canalization.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Canalization.cpp -o $(OBJDIR_DEBUG)/Canalization.o
 
-$(OBJDIR_DEBUG)/Heritability.o: Heritability.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Heritability.cpp -o $(OBJDIR_DEBUG)/Heritability.o
+$(OBJDIR_DEBUG)/Heritability.o: src/Heritability.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Heritability.cpp -o $(OBJDIR_DEBUG)/Heritability.o
 
-$(OBJDIR_DEBUG)/Direpistasis.o: Direpistasis.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Direpistasis.cpp -o $(OBJDIR_DEBUG)/Direpistasis.o
+$(OBJDIR_DEBUG)/Direpistasis.o: src/Direpistasis.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Direpistasis.cpp -o $(OBJDIR_DEBUG)/Direpistasis.o
 
-#$(OBJDIR_DEBUG)/Statistics.o: Statistics.cpp
-#	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Statistics.cpp -o $(OBJDIR_DEBUG)/Statistics.o
+$(OBJDIR_DEBUG)/Architecture.o: src/Architecture.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Architecture.cpp -o $(OBJDIR_DEBUG)/Architecture.o
 
-$(OBJDIR_DEBUG)/Architecture.o: Architecture.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Architecture.cpp -o $(OBJDIR_DEBUG)/Architecture.o
+$(OBJDIR_DEBUG)/ArchiMultilinear.o: src/ArchiMultilinear.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ArchiMultilinear.cpp -o $(OBJDIR_DEBUG)/ArchiMultilinear.o
 
-$(OBJDIR_DEBUG)/ArchiMultilinear.o: ArchiMultilinear.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiMultilinear.cpp -o $(OBJDIR_DEBUG)/ArchiMultilinear.o
+$(OBJDIR_DEBUG)/ArchiAdditive.o: src/ArchiAdditive.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ArchiAdditive.cpp -o $(OBJDIR_DEBUG)/ArchiAdditive.o
 
-$(OBJDIR_DEBUG)/ArchiAdditive.o: ArchiAdditive.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiAdditive.cpp -o $(OBJDIR_DEBUG)/ArchiAdditive.o
+$(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o: src/ArchiRegulatoryMatrix.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ArchiRegulatoryMatrix.cpp -o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o
 
-$(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_DEBUG)/ArchiRegulatoryMatrix.o
+$(OBJDIR_DEBUG)/ArchiBoolean.o: src/ArchiBoolean.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/ArchiBoolean.cpp -o $(OBJDIR_DEBUG)/ArchiBoolean.o
 
-$(OBJDIR_DEBUG)/ArchiBoolean.o: ArchiBoolean.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c ArchiBoolean.cpp -o $(OBJDIR_DEBUG)/ArchiBoolean.o
+$(OBJDIR_DEBUG)/EpigeneticInfo.o: src/EpigeneticInfo.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/EpigeneticInfo.cpp -o $(OBJDIR_DEBUG)/EpigeneticInfo.o
 
-$(OBJDIR_DEBUG)/EpigeneticInfo.o: EpigeneticInfo.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c EpigeneticInfo.cpp -o $(OBJDIR_DEBUG)/EpigeneticInfo.o
-
-$(OBJDIR_DEBUG)/Iotar.o: Iotar.cpp
-	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c Iotar.cpp -o $(OBJDIR_DEBUG)/Iotar.o
+$(OBJDIR_DEBUG)/Iotar.o: src/Iotar.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c src/Iotar.cpp -o $(OBJDIR_DEBUG)/Iotar.o
 	
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
@@ -158,86 +155,83 @@ release: before_release out_release after_release
 out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
-$(OBJDIR_RELEASE)/main.o: main.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)/main.o
+$(OBJDIR_RELEASE)/main.o: src/main.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/main.cpp -o $(OBJDIR_RELEASE)/main.o
 
-$(OBJDIR_RELEASE)/Random.o: Random.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Random.cpp -o $(OBJDIR_RELEASE)/Random.o
+$(OBJDIR_RELEASE)/Random.o: src/Random.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Random.cpp -o $(OBJDIR_RELEASE)/Random.o
 
-$(OBJDIR_RELEASE)/Population.o: Population.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Population.cpp -o $(OBJDIR_RELEASE)/Population.o
+$(OBJDIR_RELEASE)/Population.o: src/Population.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Population.cpp -o $(OBJDIR_RELEASE)/Population.o
 
-$(OBJDIR_RELEASE)/Parameters.o: Parameters.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Parameters.cpp -o $(OBJDIR_RELEASE)/Parameters.o
+$(OBJDIR_RELEASE)/Parameters.o: src/Parameters.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Parameters.cpp -o $(OBJDIR_RELEASE)/Parameters.o
 
-$(OBJDIR_RELEASE)/OutputFormat.o: OutputFormat.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c OutputFormat.cpp -o $(OBJDIR_RELEASE)/OutputFormat.o
+$(OBJDIR_RELEASE)/OutputFormat.o: src/OutputFormat.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/OutputFormat.cpp -o $(OBJDIR_RELEASE)/OutputFormat.o
 
-$(OBJDIR_RELEASE)/Individual.o: Individual.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Individual.cpp -o $(OBJDIR_RELEASE)/Individual.o
+$(OBJDIR_RELEASE)/Individual.o: src/Individual.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Individual.cpp -o $(OBJDIR_RELEASE)/Individual.o
 
-$(OBJDIR_RELEASE)/Haplotype.o: Haplotype.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Haplotype.cpp -o $(OBJDIR_RELEASE)/Haplotype.o
+$(OBJDIR_RELEASE)/Haplotype.o: src/Haplotype.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Haplotype.cpp -o $(OBJDIR_RELEASE)/Haplotype.o
 
-$(OBJDIR_RELEASE)/Allele.o: Allele.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Allele.cpp -o $(OBJDIR_RELEASE)/Allele.o
+$(OBJDIR_RELEASE)/Allele.o: src/Allele.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Allele.cpp -o $(OBJDIR_RELEASE)/Allele.o
 	
-$(OBJDIR_RELEASE)/Mutation.o: Mutation.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Mutation.cpp -o $(OBJDIR_RELEASE)/Mutation.o
+$(OBJDIR_RELEASE)/Mutation.o: src/Mutation.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Mutation.cpp -o $(OBJDIR_RELEASE)/Mutation.o
 
-$(OBJDIR_RELEASE)/Genotype.o: Genotype.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Genotype.cpp -o $(OBJDIR_RELEASE)/Genotype.o
+$(OBJDIR_RELEASE)/Genotype.o: src/Genotype.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Genotype.cpp -o $(OBJDIR_RELEASE)/Genotype.o
 
-$(OBJDIR_RELEASE)/Phenotype.o: Phenotype.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Phenotype.cpp -o $(OBJDIR_RELEASE)/Phenotype.o
+$(OBJDIR_RELEASE)/Phenotype.o: src/Phenotype.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Phenotype.cpp -o $(OBJDIR_RELEASE)/Phenotype.o
 	
-$(OBJDIR_RELEASE)/PhenoBase.o: PhenoBase.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c PhenoBase.cpp -o $(OBJDIR_RELEASE)/PhenoBase.o
+$(OBJDIR_RELEASE)/PhenoBase.o: src/PhenoBase.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/PhenoBase.cpp -o $(OBJDIR_RELEASE)/PhenoBase.o
 	
-$(OBJDIR_RELEASE)/GeneticMap.o: GeneticMap.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c GeneticMap.cpp -o $(OBJDIR_RELEASE)/GeneticMap.o
+$(OBJDIR_RELEASE)/GeneticMap.o: src/GeneticMap.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/GeneticMap.cpp -o $(OBJDIR_RELEASE)/GeneticMap.o
 
-$(OBJDIR_RELEASE)/Fitness.o: Fitness.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Fitness.cpp -o $(OBJDIR_RELEASE)/Fitness.o
+$(OBJDIR_RELEASE)/Fitness.o: src/Fitness.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Fitness.cpp -o $(OBJDIR_RELEASE)/Fitness.o
 
-$(OBJDIR_RELEASE)/Environment.o: Environment.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Environment.cpp -o $(OBJDIR_RELEASE)/Environment.o
+$(OBJDIR_RELEASE)/Environment.o: src/Environment.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Environment.cpp -o $(OBJDIR_RELEASE)/Environment.o
 	
-$(OBJDIR_RELEASE)/Mutantcollection.o: Mutantcollection.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Mutantcollection.cpp -o $(OBJDIR_RELEASE)/Mutantcollection.o	
+$(OBJDIR_RELEASE)/Mutantcollection.o: src/Mutantcollection.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Mutantcollection.cpp -o $(OBJDIR_RELEASE)/Mutantcollection.o	
 	
-$(OBJDIR_RELEASE)/Canalization.o: Canalization.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Canalization.cpp -o $(OBJDIR_RELEASE)/Canalization.o
+$(OBJDIR_RELEASE)/Canalization.o: src/Canalization.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Canalization.cpp -o $(OBJDIR_RELEASE)/Canalization.o
 
-$(OBJDIR_RELEASE)/Heritability.o: Heritability.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Heritability.cpp -o $(OBJDIR_RELEASE)/Heritability.o
+$(OBJDIR_RELEASE)/Heritability.o: src/Heritability.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Heritability.cpp -o $(OBJDIR_RELEASE)/Heritability.o
 
-$(OBJDIR_RELEASE)/Direpistasis.o: Direpistasis.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Direpistasis.cpp -o $(OBJDIR_RELEASE)/Direpistasis.o
+$(OBJDIR_RELEASE)/Direpistasis.o: src/Direpistasis.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Direpistasis.cpp -o $(OBJDIR_RELEASE)/Direpistasis.o
 
-#$(OBJDIR_RELEASE)/Statistics.o: Statistics.cpp
-#	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Statistics.cpp -o $(OBJDIR_RELEASE)/Statistics.o
+$(OBJDIR_RELEASE)/Architecture.o: src/Architecture.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Architecture.cpp -o $(OBJDIR_RELEASE)/Architecture.o
 
-$(OBJDIR_RELEASE)/Architecture.o: Architecture.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Architecture.cpp -o $(OBJDIR_RELEASE)/Architecture.o
+$(OBJDIR_RELEASE)/ArchiMultilinear.o: src/ArchiMultilinear.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ArchiMultilinear.cpp -o $(OBJDIR_RELEASE)/ArchiMultilinear.o
 
-$(OBJDIR_RELEASE)/ArchiMultilinear.o: ArchiMultilinear.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiMultilinear.cpp -o $(OBJDIR_RELEASE)/ArchiMultilinear.o
+$(OBJDIR_RELEASE)/ArchiAdditive.o: src/ArchiAdditive.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ArchiAdditive.cpp -o $(OBJDIR_RELEASE)/ArchiAdditive.o
 
-$(OBJDIR_RELEASE)/ArchiAdditive.o: ArchiAdditive.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiAdditive.cpp -o $(OBJDIR_RELEASE)/ArchiAdditive.o
+$(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o: src/ArchiRegulatoryMatrix.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ArchiRegulatoryMatrix.cpp -o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o
 
-$(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o: ArchiRegulatoryMatrix.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiRegulatoryMatrix.cpp -o $(OBJDIR_RELEASE)/ArchiRegulatoryMatrix.o
+$(OBJDIR_RELEASE)/ArchiBoolean.o: src/ArchiBoolean.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/ArchiBoolean.cpp -o $(OBJDIR_RELEASE)/ArchiBoolean.o
 
-$(OBJDIR_RELEASE)/ArchiBoolean.o: ArchiBoolean.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c ArchiBoolean.cpp -o $(OBJDIR_RELEASE)/ArchiBoolean.o
+$(OBJDIR_RELEASE)/EpigeneticInfo.o: src/EpigeneticInfo.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/EpigeneticInfo.cpp -o $(OBJDIR_RELEASE)/EpigeneticInfo.o
 
-$(OBJDIR_RELEASE)/EpigeneticInfo.o: EpigeneticInfo.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c EpigeneticInfo.cpp -o $(OBJDIR_RELEASE)/EpigeneticInfo.o
-
-$(OBJDIR_RELEASE)/Iotar.o: Iotar.cpp
-	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c Iotar.cpp -o $(OBJDIR_RELEASE)/Iotar.o
+$(OBJDIR_RELEASE)/Iotar.o: src/Iotar.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c src/Iotar.cpp -o $(OBJDIR_RELEASE)/Iotar.o
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
