@@ -396,18 +396,36 @@ void Population::write(ostream & out, int generation) const
 				outformat(out, i+1, "MGenCan");
 			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VGenCan");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "MGenCov");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "VGenCov");
 			outformat(out, "GenCanFit");
 			
 			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "MInitCan");
 			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VInitCan");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "MInitCov");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "VInitCov");
 			outformat(out, "InitCanFit");
 						
 			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "MDynamCan");
 			for (unsigned int i = 0; i < dim_phen; i++) 
 				outformat(out, i+1, "VDynamCan");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "MDynamCov");
+			for (unsigned int i = 0; i < dim_phen; i++)
+				for (unsigned int j = 0; j < dim_phen; j++)
+					outformat(out, i+1, j+1, "VDynamCov");
 			outformat(out, "DynamCanFit");
 		}
 		if (nb_herit_test > 0)
@@ -507,16 +525,28 @@ void Population::write(ostream & out, int generation) const
 		GeneticCanalization can_test(nb_canal_test, *this);
 		outformat(out, can_test.meanpop_canphen());
 		outformat(out, can_test.varpop_canphen());
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, can_test.meanpop_vcov(i));
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, can_test.varpop_vcov(i));
 		outformat(out, can_test.meanpop_canlogfit());
 		
 		DisturbCanalization disturb_test(nb_canal_test, *this);
 		outformat(out, disturb_test.meanpop_canphen());
 		outformat(out, disturb_test.varpop_canphen());
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, disturb_test.meanpop_vcov(i));
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, disturb_test.varpop_vcov(i));
 		outformat(out, disturb_test.meanpop_canlogfit());	
 
 		EnviroCanalization enviro_test(nb_canal_test, *this);
 		outformat(out, enviro_test.meanpop_canphen());
 		outformat(out, enviro_test.varpop_canphen());
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, enviro_test.meanpop_vcov(i));
+		for(unsigned int i = 0; i < dim_phen; i++)
+			outformat(out, enviro_test.varpop_vcov(i));
 		outformat(out, enviro_test.meanpop_canlogfit());	
 	} 
 	if (nb_herit_test > 0) 

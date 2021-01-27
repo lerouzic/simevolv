@@ -38,6 +38,7 @@ class MiniCanIndiv
 		~MiniCanIndiv() {}
 		Phenotype canpheno;
 		fitness_type canfitness;
+		std::vector<Phenotype> vcov;
 };	
 	
 class Canalization // virtual pure
@@ -48,10 +49,15 @@ class Canalization // virtual pure
 	
 		// get the canalization scores
 		Phenotype meanpop_canphen() const;
-		Phenotype varpop_canphen() const;		
+		Phenotype varpop_canphen() const;
+		
+		Phenotype meanpop_vcov(unsigned int) const;
+		Phenotype varpop_vcov (unsigned int) const;
+		std::vector<Phenotype> meanpop_vcov() const;
+		std::vector<Phenotype> varpop_vcov()  const;
 		
 		fitness_type meanpop_canlogfit() const;
-		fitness_type varpop_canlogfit() const;
+		fitness_type varpop_canlogfit()  const;
 		std::vector<fitness_type> canlogfit() const;
 		
 	protected:		

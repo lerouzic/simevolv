@@ -64,6 +64,11 @@ MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual
 	
 	canpheno = rawvarphen;
 	canfitness = rawvarfit;
+	
+	for (unsigned int i = 0; i < rawmeanphen.dimensionality(); i++) {
+		vcov.push_back(Phenotype::vcov(phenos, i));
+	}
+	
 }
 
 
@@ -89,6 +94,42 @@ Phenotype Canalization::varpop_canphen() const
 	for (auto minican : popcan)
 		phenpop.push_back(minican.canpheno);
 	return(Phenotype::var(phenpop));
+}
+
+Phenotype Canalization::meanpop_vcov(unsigned int i) const
+{
+	vector<Phenotype> tmp_vcov_i;
+	for (auto minican : popcan)
+		tmp_vcov_i.push_back(minican.vcov[i]);
+	return(Phenotype::mean(tmp_vcov_i));
+}
+
+vector<Phenotype> Canalization::meanpop_vcov() const
+{
+	vector<Phenotype> mean_vcov;
+	const size_t dim_phen = popcan[0].vcov.size(); // Clearly not elegant
+	for (unsigned int i = 0; i < dim_phen; i++) {
+		mean_vcov.push_back(this->meanpop_vcov(i));
+	}
+	return(mean_vcov);
+}
+
+Phenotype Canalization::varpop_vcov(unsigned int i) const
+{
+	vector<Phenotype> tmp_vcov_i;
+	for (auto minican : popcan)
+		tmp_vcov_i.push_back(minican.vcov[i]);
+	return(Phenotype::var(tmp_vcov_i));
+}
+
+vector<Phenotype> Canalization::varpop_vcov() const
+{
+	vector<Phenotype> var_vcov;
+	const size_t dim_phen = popcan[0].vcov.size(); // Clearly not elegant
+	for (unsigned int i = 0; i < dim_phen; i++) {
+		var_vcov.push_back(this->varpop_vcov(i));
+	}
+	return(var_vcov);
 }
 
 fitness_type Canalization::meanpop_canlogfit() const
