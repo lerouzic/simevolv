@@ -329,7 +329,7 @@ fitness_type Fitness_Phenotype_MultivarGaussian::get_fitness(const Phenotype& ph
 	// Check if all vectors have been properly extended (first call only).
 	if (strength.size() < n_traits) strength = expand_vec(strength, n_traits);
 	if (optimum.size() < n_traits) optimum = expand_vec(optimum, n_traits);
-	if (cor.size() < ((n_traits^2) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
+	if (cor.size() < ((n_traits*n_traits) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
 	
 	// Using gsl_matrix, as gsl is already a dependency of the program. This algorithm thus uses C-style code.
 	
@@ -363,7 +363,7 @@ void Fitness_Phenotype_MultivarGaussian::compute_invsigma(const size_t n_traits)
 		gsl_matrix_set(mat, i, i, 1./2./abs(strength[i]));
 		if (i < n_traits - 1) {
 			for (size_t j = i+1; j < n_traits; j++) {
-				size_t cor_index = i*n_traits - i*(i+1)/2 + j - 1; // index of element i, j in a upper triangular matrix
+				size_t cor_index = i+j*(j-1)/2; // index of element i, j in a upper triangular matrix
 				fitness_type cov = cor[cor_index]*sqrt(1./2./abs(strength[i]))*sqrt(1./2./abs(strength[j]));
 				gsl_matrix_set(mat, i, j, cov);
 				gsl_matrix_set(mat, j, i, cov);
