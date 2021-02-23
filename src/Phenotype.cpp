@@ -151,8 +151,11 @@ Phenotype Phenotype::var(const vector<Phenotype>& vp)
     auto mm     = Phenotype::mean(vp).pheno_ptr;
     mm->square();
     auto result = Phenotype::sumsq(vp).pheno_ptr;
-    result->divide(vp.size()-1);
+    result->divide(vp.size());
     result->remove(*mm);
+    // Compute the sample variance (multiply by (n-1)/n)
+    result->multiply(vp.size()-1);
+    result->divide(vp.size());
     return result;
 }
 
@@ -163,8 +166,11 @@ Phenotype Phenotype::vcov(const vector<Phenotype>& vp, size_t i)
     mm->multiply_by_index(i); // each element in mm is multiplied by mm[i]
 
     auto result = Phenotype::sumprodi(vp, i).pheno_ptr;
-    result->divide(vp.size()-1);
+    result->divide(vp.size());
     result->remove(*mm);
+    // Computes the sample covariance
+    result->multiply(vp.size()-1);
+    result->divide(vp.size());
     return(result);
 }
 

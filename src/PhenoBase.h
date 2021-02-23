@@ -35,6 +35,7 @@ class PhenoBase    // This is the base class, it is just and interface (virtual 
         virtual void add(const PhenoBase &)    = 0;
         virtual void remove(const PhenoBase &) = 0;
         virtual void divide(unsigned int)      = 0;
+        virtual void multiply(unsigned int)    = 0;
         virtual void square()                  = 0;
         virtual void multiply_by_index(std::size_t) = 0;
         
@@ -75,6 +76,7 @@ class PhenoScalar: public PhenoBase {
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
+    void multiply(unsigned int);
     void square();
     void multiply_by_index(std::size_t);
     
@@ -97,6 +99,8 @@ class PhenoScalar: public PhenoBase {
     PhenoScalar& operator -= (const PhenoScalar&);    
     PhenoScalar  operator /  (unsigned int) const;
     PhenoScalar& operator /= (unsigned int);  
+    PhenoScalar  operator *  (unsigned int) const;
+    PhenoScalar& operator *= (unsigned int);
   
     pheno_type pheno;
     
@@ -125,6 +129,7 @@ class PhenoVector: public PhenoBase {
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
+    void multiply(unsigned int);
     void square();
     void multiply_by_index(std::size_t);
     
@@ -146,6 +151,8 @@ class PhenoVector: public PhenoBase {
     PhenoVector& operator -= (const PhenoVector&);    
     PhenoVector  operator /  (unsigned int) const;
     PhenoVector& operator /= (unsigned int);  
+    PhenoVector  operator *  (unsigned int) const;
+    PhenoVector& operator *= (unsigned int);
   
     std::vector<pheno_type> pheno;
     
@@ -176,6 +183,7 @@ class PhenoTranscriptome: public PhenoBase {
     void add(const PhenoBase&);
     void remove(const PhenoBase&);
     void divide(unsigned int);
+    void multiply(unsigned int);
     void square();
     void multiply_by_index(std::size_t);
     
@@ -200,6 +208,8 @@ class PhenoTranscriptome: public PhenoBase {
     PhenoTranscriptome& operator -= (const PhenoTranscriptome&);     
     PhenoTranscriptome  operator /  (unsigned int) const;
     PhenoTranscriptome& operator /= (unsigned int); 
+    PhenoTranscriptome  operator *  (unsigned int) const;
+    PhenoTranscriptome& operator *= (unsigned int);
   
     std::vector<pheno_type> expression;
     std::vector<pheno_type> stability;

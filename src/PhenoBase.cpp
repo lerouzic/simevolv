@@ -109,6 +109,17 @@ PhenoScalar PhenoScalar::operator / (unsigned int n) const
     return PhenoScalar(*this) /= n;
 }
 
+PhenoScalar& PhenoScalar::operator *= (unsigned int n)
+{
+    pheno *= n;
+    return *this;
+}
+
+PhenoScalar PhenoScalar::operator * (unsigned int n) const
+{
+    return PhenoScalar(*this) *= n;
+}
+
 void PhenoScalar::add(const PhenoBase& p)
 {
     const PhenoScalar& pp = dynamic_cast<const PhenoScalar&>(p);
@@ -124,6 +135,11 @@ void PhenoScalar::remove(const PhenoBase& p)
 void PhenoScalar::divide(unsigned int n)
 {
     *this /= n;
+}
+
+void PhenoScalar::multiply(unsigned int n)
+{
+    *this *= n;
 }
 
 void PhenoScalar::square()
@@ -251,6 +267,19 @@ PhenoVector PhenoVector::operator / (unsigned int n) const
     return PhenoVector(*this) /= n;
 }
 
+PhenoVector& PhenoVector::operator *= (unsigned int n)
+{
+    for (auto &i: pheno) {
+        i *= n;
+    }
+    return *this;
+}
+
+PhenoVector PhenoVector::operator * (unsigned int n) const
+{
+    return PhenoVector(*this) *= n;
+}
+
 void PhenoVector::add(const PhenoBase& p)
 {
     const PhenoVector& pp = dynamic_cast<const PhenoVector&>(p);
@@ -266,6 +295,11 @@ void PhenoVector::remove(const PhenoBase& p)
 void PhenoVector::divide(unsigned int n)
 {
     *this /= n;
+}
+
+void PhenoVector::multiply(unsigned int n)
+{
+    *this *= n;
 }
 
 void PhenoVector::square()
@@ -413,6 +447,20 @@ PhenoTranscriptome PhenoTranscriptome::operator / (unsigned int n) const
     return PhenoTranscriptome(*this) /= n;
 }
 
+PhenoTranscriptome & PhenoTranscriptome::operator *= (unsigned int n)
+{
+    for (unsigned int i = 0; i < expression.size(); i++)
+        expression[i] *= n;
+    for (unsigned int i = 0; i < stability.size(); i++)
+        stability[i] *= n;
+    return *this;
+}
+
+PhenoTranscriptome PhenoTranscriptome::operator * (unsigned int n) const
+{
+    return PhenoTranscriptome(*this) *= n;
+}
+
 void PhenoTranscriptome::add(const PhenoBase& p)
 {
     const PhenoTranscriptome& pp = dynamic_cast<const PhenoTranscriptome&>(p);
@@ -428,6 +476,11 @@ void PhenoTranscriptome::remove(const PhenoBase& p)
 void PhenoTranscriptome::divide(unsigned int n)
 {
     *this /= n;
+}
+
+void PhenoTranscriptome::multiply(unsigned int n)
+{
+    *this *= n;
 }
 
 void PhenoTranscriptome::square()
