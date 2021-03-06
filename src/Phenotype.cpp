@@ -153,9 +153,9 @@ Phenotype Phenotype::var(const vector<Phenotype>& vp)
     auto result = Phenotype::sumsq(vp).pheno_ptr;
     result->divide(vp.size());
     result->remove(*mm);
-    // Compute the sample variance (multiply by (n-1)/n)
-    result->multiply(vp.size()-1);
-    result->divide(vp.size());
+    // Compute the sample variance (multiply by n/(n-1))
+    result->multiply(vp.size());
+    result->divide(vp.size()-1);
     return result;
 }
 
@@ -169,8 +169,8 @@ Phenotype Phenotype::vcov(const vector<Phenotype>& vp, size_t i)
     result->divide(vp.size());
     result->remove(*mm);
     // Computes the sample covariance
-    result->multiply(vp.size()-1);
-    result->divide(vp.size());
+    result->multiply(vp.size());
+    result->divide(vp.size()-1);
     return(result);
 }
 
