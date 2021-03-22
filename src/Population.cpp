@@ -405,28 +405,28 @@ void Population::write(ostream & out, int generation) const
 			outformat(out, "GenCanFit");
 			
 			for (unsigned int i = 0; i < dim_phen; i++) 
-				outformat(out, i+1, "MInitCan");
+				outformat(out, i+1, "MIniCan");
 			for (unsigned int i = 0; i < dim_phen; i++) 
-				outformat(out, i+1, "VInitCan");
+				outformat(out, i+1, "VIniCan");
 			for (unsigned int i = 0; i < dim_phen; i++)
 				for (unsigned int j = 0; j < dim_phen; j++)
-					outformat(out, i+1, j+1, "MInitCov");
+					outformat(out, i+1, j+1, "MIniCov");
 			for (unsigned int i = 0; i < dim_phen; i++)
 				for (unsigned int j = 0; j < dim_phen; j++)
-					outformat(out, i+1, j+1, "VInitCov");
-			outformat(out, "InitCanFit");
+					outformat(out, i+1, j+1, "VIniCov");
+			outformat(out, "IniCanFit");
 						
 			for (unsigned int i = 0; i < dim_phen; i++) 
-				outformat(out, i+1, "MDynamCan");
+				outformat(out, i+1, "MDynCan");
 			for (unsigned int i = 0; i < dim_phen; i++) 
-				outformat(out, i+1, "VDynamCan");
+				outformat(out, i+1, "VDynCan");
 			for (unsigned int i = 0; i < dim_phen; i++)
 				for (unsigned int j = 0; j < dim_phen; j++)
-					outformat(out, i+1, j+1, "MDynamCov");
+					outformat(out, i+1, j+1, "MDynCov");
 			for (unsigned int i = 0; i < dim_phen; i++)
 				for (unsigned int j = 0; j < dim_phen; j++)
-					outformat(out, i+1, j+1, "VDynamCov");
-			outformat(out, "DynamCanFit");
+					outformat(out, i+1, j+1, "VDynCov");
+			outformat(out, "DynCanFit");
 		}
 		if (nb_herit_test > 0)
 		{	
