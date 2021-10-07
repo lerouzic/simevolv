@@ -107,45 +107,13 @@ ArchiRegulatoryMatrix::~ArchiRegulatoryMatrix()
 shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param, unsigned int loc) const
 {
 	bool clonal = (param.getpar(INIT_CLONAL)->GetString() == CL_clonal);
-	vector<allele_type> temp_allele;
-	for (unsigned int i = 0; i < sall; i++) 
-	{
-		assert(connectivity_matrix.size() > loc);
-		assert(connectivity_matrix[loc].size() > i);
-		if (connectivity_matrix[loc][i] == 0.0) 
-		{
-			temp_allele.push_back(0.0);
-		} 
-		else 
-		{
-			allele_type value;
-			if (clonal) 
-			{
-				value = connectivity_matrix[loc][i];
-			} 
-			else 
-			{
-				value = param.getpar(INIT_ALLELES) -> GetDouble();
-			}
-			temp_allele.push_back(value);
-		}
-	}
-	
+	vector<allele_type> temp_allele = init_matrix[loc];
+	if (!clonal)
+		for (unsigned int i = 0; i < sall; i++) 
+			temp_allele[i] = param.getpar(INIT_ALLELES) -> GetDouble();
+
 	string type_alleles = param.getpar(TYPE_ALLELES) -> GetString();
-    shared_ptr<Allele> a;
-    if (type_alleles==TA_norm)
-    {
-        a = shared_ptr<Allele>(new Allele(temp_allele));
-    }
-    else if (type_alleles==TA_zero)
-    {
-		a = shared_ptr<Allele>(new Allele_zero(temp_allele));
-    }
-    else 
-    {
-		cerr << "Unknown allele type -- theoretically this should not happen" << endl;
-		exit(EXIT_FAILURE);
-	}
+    auto a = shared_ptr<Allele>(new Allele(temp_allele, alltype_matrix[loc]));
     return(a);
 }
 
@@ -300,36 +268,27 @@ unsigned int ArchiRegulatoryMatrix::nb_phen() const
 
 //static unsigned int count_init = 0; // debug instruction
 
-/* initialization of the connectivity matrix depend off the connectivity value */
+/* initialization of init_matrix and alltype_matrix */
 void ArchiRegulatoryMatrix::init_connectivity_matrix(const ParameterSet & param)
 {	
-	rate_type connectivity = param.getpar(INIT_CONNECT)-> GetDouble();
-	rate_type connectivity_diag = param.getpar(INIT_CONDIAG)->GetDouble();
-	
-	for (unsigned int loc = 0; loc < nb_loc(); loc++) 
-	{
-		vector<allele_type> allele_pattern;
-		for (unsigned int n=0 ; n<sall ; n++)
-		{
-			rate_type threshold = connectivity;
-			if (n == loc)
-			{
-				threshold = connectivity_diag;
+	for (size_t loc = 0; loc < nb_loc(); loc++){
+		vector<allele_type> tmp_val_vec;
+		vector<string>      tmp_alt_vec;
+		for (size_t n = 0; n < sall; n++) {
+			allele_type tmp_value = param.exists(INIT_ALLELES_FULL) ? param.getpar(INIT_ALLELES_FULL)->GetDouble(loc*sall+n) : param.getpar(INIT_ALLELES)->GetDouble();
+			string all_type       = param.getpar(TYPE_ALLELES)->GetString(loc*sall+n);
+			rate_type conn_prob = 1.0;
+			if ((n != loc) && (param.exists(INIT_CONNECT))) conn_prob = param.getpar(INIT_CONNECT)-> GetDouble();
+			if ((n == loc) && (param.exists(INIT_CONDIAG))) conn_prob = param.getpar(INIT_CONDIAG)-> GetDouble();
+			if (Random::randnum() > conn_prob) {
+				tmp_value = 0.0;
+				all_type  = TA_immut;
 			}
-			
-			if (Random::randnum() < threshold)
-			{
-				/* This has some interest only in clonal populations. In non-clonal pops, this value will be overwritten anyway. 
-				 * double value = 1.0  - in non-clonal, this would be enough */
-				allele_type value = param.getpar(INIT_ALLELES) -> GetDouble();
-				allele_pattern.push_back(value);
-			}
-			else
-			{
-				allele_pattern.push_back(0);
-			}
+			tmp_val_vec.push_back(tmp_value);
+			tmp_alt_vec.push_back(all_type);
 		}
-		connectivity_matrix.push_back(allele_pattern);		
+		init_matrix.push_back(tmp_val_vec);
+		alltype_matrix.push_back(tmp_alt_vec);
 	}
 }
 

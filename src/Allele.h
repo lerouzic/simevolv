@@ -42,7 +42,8 @@ class Allele
 	public :
 	    //constructors/destructor
         Allele() { }
-	    Allele(const std::vector<allele_type>);
+        Allele(const std::vector<allele_type>);
+	    Allele(const std::vector<allele_type>, const std::vector<std::string>);
 	    Allele(const Allele &);
 	    virtual ~Allele() { }
 	
@@ -63,6 +64,7 @@ class Allele
 	
 	protected :
 	    std::vector<allele_type> allele;
+	    const std::vector<std::string> type_allele;
         
 	private:
         #ifdef SERIALIZATION_TEXT
@@ -73,36 +75,5 @@ class Allele
         #endif
 };
 
-
-class Allele_zero: public Allele
-{
-	friend class Haplotype;
-    friend class Architecture; 
-    friend class ArchiAdditive;
-    friend class ArchiMultilinear;
-    friend class ArchiRegulatoryMatrix;
-    friend class ArchiWagner;
-    friend class ArchiSiegal; 
-    friend class ArchiM2;
-    
-	public:
-	// This is a 'normal Allele' but sites with 0.0 values cannot mutate
-    Allele_zero() { }
-	Allele_zero(const std::vector<allele_type>);
-	Allele_zero(const Allele_zero &);
-	~Allele_zero() { }
-	
-	std::shared_ptr<Allele> make_mutant_at_site(size_t site, const MutationModel&) const;
-	std::shared_ptr<Allele> make_mutant_random_site(const MutationModel&) const;
-	std::shared_ptr<Allele> make_mutant_all_sites(const MutationModel&) const;    
-	
-	private:
-        #ifdef SERIALIZATION_TEXT
-		friend class boost::serialization::access;
-		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-            ar & boost::serialization::base_object<Allele>(*this);
-        }      
-        #endif
-};
 
 #endif // ALLELE_H_INCLUDED

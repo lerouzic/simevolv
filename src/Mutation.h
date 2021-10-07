@@ -132,7 +132,7 @@ class MutationModel
 		MutationModel & operator= (const MutationModel &);
 		
 		
-		allele_type mutate(allele_type oldv) const; 
+		allele_type mutate(allele_type oldv, std::string type_all) const; 
 		
 	protected:
 		std::unique_ptr<MutType> mut;

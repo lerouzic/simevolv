@@ -27,21 +27,27 @@
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(Allele)
-BOOST_CLASS_EXPORT(Allele_zero)
 #endif
 
 using namespace std;
 
 // constructors and destructor
 
-/* constructor called by Haplotype */
 Allele::Allele(const vector<allele_type> content)
 	: allele(content)
+	, type_allele(vector<string>(content.size(), TA_norm))
+{
+}
+
+Allele::Allele(const vector<allele_type> content, const vector<string> all_type)
+	: allele(content)
+	, type_allele(all_type)
 {
 }
 
 Allele::Allele(const Allele & copy)
 	: allele(copy.allele)
+	, type_allele(copy.type_allele)
 {
 }
 
@@ -109,14 +115,25 @@ vector<allele_type> Allele::combine_OR(const Allele & a1, const Allele & a2)
 
 shared_ptr<Allele> Allele::make_mutant_at_site(size_t site, const MutationModel& mutmodel) const
 {
+	// Creates a new allele even if the site is not mutable. To be avoided. 
 	shared_ptr<Allele> a(new Allele(*this));
-	a->allele[site] = mutmodel.mutate(a->allele[site]);
+	a->allele[site] = mutmodel.mutate(a->allele[site], a->type_allele[site]);
 	return(a);
 }
 
 shared_ptr<Allele> Allele::make_mutant_random_site(const MutationModel& mutmodel) const
 {
-	size_t mutated_site = floor(allele.size()*Random::randnum());
+	// Here the algorithm is more complex, as we don't want to risk a mutation in a non-mutable site
+	vector<size_t> non_zero;
+	for (size_t i = 0; i < allele.size(); i++) {
+		if ( !(( type_allele[i] == TA_immut) || ((type_allele[i] == TA_zero && allele[i] == 0.0))) ) 
+			non_zero.push_back(i);
+	}
+	if (non_zero.size() == 0) {
+		// Not ideal, a new shared_ptr is created while its content is identical to *this. 
+		return(make_shared<Allele>(*this)); 
+	}
+	size_t mutated_site = non_zero.at(floor(non_zero.size()*Random::randnum()));
 	return(make_mutant_at_site(mutated_site, mutmodel));
 }
 
@@ -124,7 +141,7 @@ shared_ptr<Allele> Allele::make_mutant_all_sites(const MutationModel& mutmodel) 
 {
 	shared_ptr<Allele> a(new Allele(*this));
 	for(size_t i = 0; i < allele.size(); i++) {
-		a->allele[i] = mutmodel.mutate(a->allele[i]);
+		a->allele[i] = mutmodel.mutate(a->allele[i], a->type_allele[i]);
 	}
 	return(a);
 }
@@ -133,56 +150,4 @@ shared_ptr<Allele> Allele::make_mutant_all_sites(const MutationModel& mutmodel) 
 std::vector<allele_type> Allele::get_raw() const
 {
 	return(allele);
-}
-
-/******************** DERIVED CLASSES *********************************/
-
-// Allele_zero
-
-Allele_zero::Allele_zero(const vector<allele_type> content)
-	: Allele(content)
-{
-}
-
-Allele_zero::Allele_zero(const Allele_zero & copy)
-	: Allele(copy.allele)
-{
-}
-
-
-shared_ptr<Allele> Allele_zero::make_mutant_at_site(size_t site, const MutationModel& mutmodel) const
-{
-	// In theory, this should not be called. However, there is a logical behavior (not to change anything if the site is 0.0). 
-	// What to do? Continue, emit a warning, stop?
-	
-	// This can't be a shared_ptr<Allele> since we need to access the protected member of the base class. C++ is sometimes a bit too subtle... 
-	shared_ptr<Allele_zero> a(new Allele_zero(*this)); 
-	if (a->allele[site] != 0.0)
-		a->allele[site] = mutmodel.mutate(a->allele[site]);
-	return(dynamic_pointer_cast<Allele>(a));
-}
-
-shared_ptr<Allele> Allele_zero::make_mutant_random_site(const MutationModel& mutmodel) const
-{
-	vector<size_t> non_zero;
-	for (size_t i = 0; i < allele.size(); i++) {
-		if (allele[i] != 0.0) 
-			non_zero.push_back(i);
-	}
-	if (non_zero.size() == 0) {
-		// Not ideal, a new shared_ptr is created while its content is identical to *this. 
-		return(dynamic_pointer_cast<Allele>(make_shared<Allele_zero>(*this))); 
-	}
-	size_t mutated_site = non_zero.at(floor(non_zero.size()*Random::randnum()));
-	return(make_mutant_at_site(mutated_site, mutmodel));
-}
-
-shared_ptr<Allele> Allele_zero::make_mutant_all_sites(const MutationModel& mutmodel) const
-{
-	shared_ptr<Allele_zero> a(new Allele_zero(*this)); 
-	for(size_t i = 0; i < allele.size(); i++) {
-		if (a->allele[i] != 0.0)
-			a->allele[i] = mutmodel.mutate(a->allele[i]);
-	}
-	return(dynamic_pointer_cast<Allele>(a));
 }

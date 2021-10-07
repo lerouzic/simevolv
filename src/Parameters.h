@@ -45,6 +45,7 @@ class Parameter
 	    virtual float_type GetDouble() const {assert(false && "function unavailable");}
 	    virtual float_type GetDouble(int) const {assert(false && "function unavailable");}
 	    virtual std::string GetString() const {assert(false && "function unavailable");}
+	    virtual std::string GetString(int) const {assert(false && "function unavailable");}
 	    virtual std::vector<float_type> GetVectorDouble() const {assert(false && "function unavailable");}
 	    virtual bool is_nil() const {assert(false && "function unavailable");}
 	    virtual bool is_initialized() const;
@@ -178,7 +179,31 @@ class Parameter_string: public Parameter
 		std::string value;
 };
 
-
+class Parameter_vector_string: public Parameter
+{
+	public:
+	    // constructors/destructor
+	    Parameter_vector_string();
+	    Parameter_vector_string(const std::vector<std::string>);
+	    ~Parameter_vector_string() {}
+	
+	    // input/output
+	    void read(std::istream&);
+	    void write(std::ostream&) const;
+        void erase();
+	
+	    // functions
+	    std::vector<std::string> Get() const;
+	    std::vector<std::string> GetVectorString() const;
+	    std::string Get_element(int) const;
+	    std::string GetString(int) const;
+	    void Set(const std::vector<std::string>&);
+	    void Add(std::string);
+	
+	protected:
+		std::vector<std::string> possible_values; 
+	    std::vector<std::string> value;
+};
 
 ////////////////////////////////// PARAMETER SET ////////////////////////////////////////
 

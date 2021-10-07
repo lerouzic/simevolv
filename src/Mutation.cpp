@@ -72,10 +72,15 @@ MutationModel & MutationModel::operator= (const MutationModel & mm)
 	return *this;
 }
 
-allele_type MutationModel::mutate(allele_type oldv) const
+allele_type MutationModel::mutate(allele_type oldv, std::string type_all) const
 {
 	assert(mut);
-	return mut->mutate(oldv); 
+	auto candidate = mut->mutate(oldv);
+	if ((type_all == TA_immut) || ((type_all == TA_zero) && (oldv == 0.0)))
+		return(oldv);
+	if (type_all == TA_sign)
+		return((((oldv > 0) && (candidate > 0)) || ((oldv < 0) && (candidate < 0))) ? candidate : -candidate);
+	return(candidate);
 }
 
 

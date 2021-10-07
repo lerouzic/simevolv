@@ -395,6 +395,119 @@ string Parameter_string::GetString() const
 
 
 
+Parameter_vector_string::Parameter_vector_string()
+    : Parameter()
+    , possible_values()
+{
+}
+
+Parameter_vector_string::Parameter_vector_string(const vector<string> posval)
+    : Parameter()
+    , possible_values(posval)
+{
+}
+
+
+void Parameter_vector_string::read(istream & i)
+{
+	value.clear();
+    string val;
+    while (i >> val)
+    {
+        Add(val);
+    }
+}
+
+void Parameter_vector_string::write(ostream & out) const
+{
+    if (is_initialized())
+    {
+        for (vector<string>::const_iterator it = value.begin(); it != value.end(); it++)
+        {
+            out << *it << "\t";
+        }
+    }
+    else
+    {
+        out << "Strings among: ";
+        for (unsigned int i = 0; i < possible_values.size(); i++)
+        {
+			out << possible_values[i] << ",";
+		}
+		out << endl;
+    }
+}
+
+void Parameter_vector_string::erase()
+{
+    initialized = false;
+    value.clear();
+}
+
+vector<string> Parameter_vector_string::Get() const
+{
+    assert (is_initialized() && "Parameter not initialized");
+    count++;
+    return(value);
+}
+
+vector<string> Parameter_vector_string::GetVectorString() const 
+{
+	return(Get());
+}
+
+string Parameter_vector_string::Get_element(int elem) const
+{
+    assert (is_initialized() && "Parameter not initialized");
+    if (count == 0)
+    {
+		count++;  // otherwise accessing multiple elements counts several accesses
+    }
+    if (elem < int(value.size()))
+    {
+		return(value[elem]);
+    }
+    else
+    {
+        return(value[0]); // A warning could be emitted there
+	}
+}
+
+string Parameter_vector_string:: GetString(int el) const 
+{
+	return(Get_element(el));
+}
+
+void Parameter_vector_string::Set(const vector<string>& v)
+{
+	for (vector<string>::const_iterator it = v.begin(); it != v.end(); it++)
+    {
+		if ( (!possible_values.empty()) &&
+			find(possible_values.begin(), possible_values.end(), *it) == possible_values.end()) 
+		{
+			cerr << "Option " << *it << " not recognized." << endl;
+			cerr << "Acceptable options are :" << endl;
+			for (unsigned int i = 0; i < possible_values.size(); i++) 
+			{
+				cerr << "\t" << possible_values[i] << endl;
+			}
+			exit(EXIT_FAILURE);
+		}
+	}
+
+    initialized=true;
+    value = v;
+}
+
+void Parameter_vector_string::Add(string e)
+{
+    assert((possible_values.empty()) || find(possible_values.begin(), possible_values.end(), e) != possible_values.end());
+    initialized = true;
+    value.push_back(e);
+}
+
+
+
 ///////// ParameterSet 
 
 ParameterSet::ParameterSet()
@@ -449,7 +562,8 @@ void ParameterSet::initialize()
     // Initial population parameters
     parameters[INIT_PSIZE] = new Parameter_int(1, 1000*1000);
     parameters[INIT_ALLELES] = new Parameter_gaussian(-999.9,999.9,999.9);
-    parameters[TYPE_ALLELES] = new Parameter_string(TA_options);
+    parameters[INIT_ALLELES_FULL] = new Parameter_vector_double(-999.9, 999.9);
+    parameters[TYPE_ALLELES] = new Parameter_vector_string(TA_options);
     parameters[INIT_CLONAL] = new Parameter_string(CL_options);
 
     // Environmental parameters

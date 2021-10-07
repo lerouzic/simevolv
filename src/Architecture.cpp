@@ -237,29 +237,20 @@ rate_type Architecture::recombination_rate(unsigned int locus) const
 
 /* initialization of the alleles (1 allele = 1 vector of value) */
 shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigned int loc /* = 0 */) const 
-{
-	// Here we don't need to know the locus, but inherited classes may.
+{  
+	vector<string> type_allele_loc;
 	vector<allele_type> tmp;
 	for(unsigned int i = 0; i < sall; i++)
     {
-        tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
-    }
-  
-    string type_alleles = param.getpar(TYPE_ALLELES) -> GetString();
-    shared_ptr<Allele> a;
-    if (type_alleles==TA_norm)
-    {
-        a = shared_ptr<Allele>(new Allele(tmp));
-    }
-    else if (type_alleles==TA_zero)
-    {
-		a = shared_ptr<Allele>(new Allele_zero(tmp));
-    } 
-    else
-    {
-		cerr << "Unknown allele type -- theoretically this should not happen" << endl;
-		exit(EXIT_FAILURE);
-	}
+		if (param.exists(INIT_ALLELES_FULL))
+			tmp.push_back(param.getpar(INIT_ALLELES_FULL) -> GetDouble(loc*sall+i));
+		else
+			tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
+        type_allele_loc.push_back(param.getpar(TYPE_ALLELES) -> GetString(loc*sall+i));
+    }	
+
+    shared_ptr<Allele> a(new Allele(tmp, type_allele_loc));
+
     return(a);
 }
 

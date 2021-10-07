@@ -37,7 +37,8 @@ const std::string GENET_SELFING = "GENET_SELFING";
 const std::string GENET_CLONAL  = "GENET_CLONAL";
 const std::string GENET_EPIGENET = "GENET_EPIGENET";
 const std::string INIT_PSIZE = "INIT_PSIZE";
-const std::string INIT_ALLELES = "INIT_ALLELES";
+const std::string INIT_ALLELES = "INIT_ALLELES";            /* Mean and variance of initial alleles */
+const std::string INIT_ALLELES_FULL = "INIT_ALLELES_FULL";       /* Exhaustive vector of initial allelic values */
 const std::string TYPE_ALLELES = "TYPE_ALLELES";			/* Mutation type for the alleles */
 const std::string INIT_CLONAL = "INIT_CLONAL";	 			/* Initial clonal status */
 const std::string ENVIRO_SDINIT = "ENVIRO_SDINIT";
@@ -154,9 +155,11 @@ const std::string SO_basal = "basal";
 const std::vector<std::string> SO_options = boost::assign::list_of (SO_min)(SO_max)(SO_med)(SO_randbin)(SO_rand)(SO_basal);
 
 // Mutation type for the alleles
-const std::string TA_norm = "normal";
-const std::string TA_zero = "zero";
-const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero);
+const std::string TA_norm = "normal";   // all mutations possible
+const std::string TA_zero = "zero";     // if exactly 0.0: no mutations, otherwise mutations possible
+const std::string TA_immut= "immut";    // the allele can never mutate and stays at its initial state
+const std::string TA_sign = "sign";     // mutations are possible, but the sign is unchanged
+const std::vector<std::string> TA_options = boost::assign::list_of (TA_norm)(TA_zero)(TA_immut)(TA_sign);
 
 // Scaling transformations for the phenotype
 const std::string ST_none = "none";

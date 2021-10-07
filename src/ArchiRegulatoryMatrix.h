@@ -44,7 +44,8 @@ class ArchiRegulatoryMatrix : public Architecture
 	protected :
 		std::vector<pheno_type> So;
 		rate_type recur;
-		std::vector<std::vector<allele_type>> connectivity_matrix; // this contains initial allelic values (for clonal pops), not only 0 or 1
+		std::vector<std::vector<allele_type>> init_matrix;    // this contains initial allelic values
+		std::vector<std::vector<std::string>> alltype_matrix; // this codes for the "mutability" type
 		unsigned int timesteps;
 		unsigned int calcsteps;
 				
@@ -80,7 +81,8 @@ void ArchiRegulatoryMatrix::serialize(Archive & ar, const unsigned int version)
 	ar & sall;
 	ar & So;
 	ar & recur;
-	ar & connectivity_matrix;
+	ar & init_matrix;
+	ar & alltype_matrix;
 	ar & timesteps;
 	ar & calcsteps;
 }
