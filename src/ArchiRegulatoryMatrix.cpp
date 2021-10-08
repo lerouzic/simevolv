@@ -112,7 +112,6 @@ shared_ptr<Allele> ArchiRegulatoryMatrix::allele_init(const ParameterSet & param
 		for (unsigned int i = 0; i < sall; i++) 
 			temp_allele[i] = param.getpar(INIT_ALLELES) -> GetDouble();
 
-	string type_alleles = param.getpar(TYPE_ALLELES) -> GetString();
     auto a = shared_ptr<Allele>(new Allele(temp_allele, alltype_matrix[loc]));
     return(a);
 }

@@ -501,7 +501,17 @@ void Parameter_vector_string::Set(const vector<string>& v)
 
 void Parameter_vector_string::Add(string e)
 {
-    assert((possible_values.empty()) || find(possible_values.begin(), possible_values.end(), e) != possible_values.end());
+	if ( (!possible_values.empty()) &&
+		find(possible_values.begin(), possible_values.end(), e) == possible_values.end()) 
+	{
+		cerr << "Option " << e << " not recognized." << endl;
+		cerr << "Acceptable options are :" << endl;
+		for (unsigned int i = 0; i < possible_values.size(); i++) 
+		{
+			cerr << "\t" << possible_values[i] << endl;
+		}
+		exit(EXIT_FAILURE);
+	}
     initialized = true;
     value.push_back(e);
 }
