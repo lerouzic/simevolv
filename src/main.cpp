@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 		unsigned int current_pargen = param.getpar(SIMUL_GENER)->GetInt();
 		unsigned int intervgen = param.getpar(SIMUL_OUTPUT)->GetInt();
 		unsigned int maxgen = param.exists(SIMUL_MAXGEN) ? 
-            param.getpar(SIMUL_MAXGEN)->GetInt() : global_generation + current_pargen;
+            param.getpar(SIMUL_MAXGEN)->GetInt() : global_generation + current_pargen + 1;
 		
         // current_pargen: number of generations to run with the current parameter file
         // intervgen     : number of generations between output events
