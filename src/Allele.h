@@ -64,16 +64,16 @@ class Allele
 	
 	protected :
 	    std::vector<allele_type> allele;
-	    const std::vector<std::string> type_allele;
+	    std::vector<std::string> type_allele; // should be const, but const would make it difficult to serialize. 
         
 	private:
         #ifdef SERIALIZATION_TEXT
 		friend class boost::serialization::access;
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
             ar & allele;
-        }          
+            ar & type_allele;
+        }
         #endif
 };
-
 
 #endif // ALLELE_H_INCLUDED
