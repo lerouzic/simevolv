@@ -28,6 +28,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <cmath>
 
 using namespace std;
 
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
       ("ipopulation,P", po::value<string>(&ipop_file), "Input population file")
       ("opopulation,Q", po::value<string>(&opop_file), "Output population file")
       ("output,o", po::value<string>(&output_file), "Output file")
+      ("detailedend,i", "Detailed individual file at the end")
+      ("detailedall,I", "Detailed individual file at every generation")
       ("seed,s", po::value<long int>(&seed), "Seed for the random number generator")
       ("template,t", "Print a template for the parameter file")
       ("parcheck,c", "Warns about inconsistencies in the parameter file");
@@ -184,7 +187,24 @@ int main(int argc, char *argv[])
             // in the context of the new parameter file. 
 			if ((global_generation == 0) || (global_generation % intervgen == 0))
 			{
-				pop.write(*pt_output, global_generation);
+				pop.write_summary(*pt_output, global_generation);
+				    // Detailed population output if requested
+				if (vm.count("detailedall")) 
+				{
+					size_t pos_dot = output_file.rfind(".");
+					stringstream detout;
+					if (pos_dot != string::npos) {
+						detout << output_file.substr(0, pos_dot) 
+							<< "_G" << setw(int(log10(maxgen) + 1)) << setfill('0') << global_generation 
+							<< output_file.substr(pos_dot);
+					} else {
+						detout << output_file << "_G" << setw(int(log10(maxgen) + 1)) << setfill('0') << global_generation;
+					}
+					string detout_file = detout.str();
+					ofstream detpopout(detout_file.c_str());
+					pop.write_details(detpopout);
+					detpopout.close();
+				} 
 			}
         
             // Step 2: Run a generation (except at the last generation of the inner loop)
@@ -226,8 +246,25 @@ int main(int argc, char *argv[])
     // A last output is necessary at the end of the simulation
     pop.update_phenotype();
     pop.update_fitness();    
-    pop.write(*pt_output, global_generation);
+    pop.write_summary(*pt_output, global_generation);
     
+    // Detailed population output if requested
+	if (vm.count("detailedend") || vm.count("detailedall")) 
+	{
+		size_t pos_dot = output_file.rfind(".");
+		stringstream detout;
+		if (pos_dot != string::npos) {
+			detout << output_file.substr(0, pos_dot) 
+					<< "_G" << setw(int(log10(global_generation) + 1)) << setfill('0') << global_generation 
+					<< output_file.substr(pos_dot);
+		} else {
+			detout << output_file << "_G" << setw(int(log10(global_generation) + 1)) << setfill('0') << global_generation;
+		}
+		string detout_file = detout.str();
+		ofstream detpopout(detout_file.c_str());
+		pop.write_details(detpopout);
+		detpopout.close();
+	}    
     if (vm.count("parcheck")) 
     {
 		param.warning_unused();

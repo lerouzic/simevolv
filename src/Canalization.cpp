@@ -74,7 +74,7 @@ MiniCanIndiv::MiniCanIndiv(const vector<Individual> & variants, const Individual
 
 /**************************** Canalization ***********************************/
 
-Canalization::Canalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
+Canalization::Canalization(unsigned int can_tests, bool logvar, bool meancentered)
 {
 }
 
@@ -155,8 +155,26 @@ vector<fitness_type> Canalization::canlogfit() const
 
 /************************ Genetic Canalization ****************************/
 
+
+GeneticCanalization::GeneticCanalization(unsigned int can_tests, const Individual & ind, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, logvar, meancentered)
+{
+	
+	if (can_tests > 0) 
+	{
+		vector<Individual> mutants;			
+		for (unsigned int test = 0; test < can_tests; test++) 
+		{
+			mutants.push_back(ind.test_canalization(1, pop)); 
+				// So far: only one mutation per mutant
+		}
+		MiniCanIndiv minican(mutants, ind, logvar, meancentered);
+		popcan.push_back(minican);
+	}
+}
+
 GeneticCanalization::GeneticCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
-	: Canalization(can_tests, pop, logvar, meancentered)
+	: Canalization(can_tests, logvar, meancentered)
 {
 	// In theory, this should not be necessary. In practice, something in the population changes and the Fitness function complains
 	Fitness::update(pop);
@@ -177,10 +195,27 @@ GeneticCanalization::GeneticCanalization(unsigned int can_tests, const Populatio
 	}
 }
 
+
 /************************ Init Disturbance Canalization **********************/
 
+DisturbCanalization::DisturbCanalization(unsigned int can_tests, const Individual & ind, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, logvar, meancentered)
+{	
+	if (can_tests > 0) 
+	{
+		vector<Individual> variants;			
+		for (unsigned int test = 0; test < can_tests; test++) 
+		{
+			variants.push_back(ind.test_disturb(pop)); 
+		}
+		MiniCanIndiv minican(variants, ind, logvar, meancentered);
+		popcan.push_back(minican);
+	}
+}
+
+
 DisturbCanalization::DisturbCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
-	: Canalization(can_tests, pop, logvar, meancentered)
+	: Canalization(can_tests, logvar, meancentered)
 {
 	Fitness::update(pop);
 	
@@ -201,8 +236,24 @@ DisturbCanalization::DisturbCanalization(unsigned int can_tests, const Populatio
 
 /************************* Environmental Canalization *************************/
 
+EnviroCanalization::EnviroCanalization(unsigned int can_tests, const Individual & ind, const Population & pop, bool logvar, bool meancentered)
+	: Canalization(can_tests, logvar, meancentered)
+{
+	
+	if (can_tests > 0) 
+	{
+		vector<Individual> variants;			
+		for (unsigned int test = 0; test < can_tests; test++) 
+		{
+			variants.push_back(ind.test_enviro(pop)); 
+		}
+		MiniCanIndiv minican(variants, ind, logvar, meancentered);
+		popcan.push_back(minican);
+		}
+}
+
 EnviroCanalization::EnviroCanalization(unsigned int can_tests, const Population & pop, bool logvar, bool meancentered)
-	: Canalization(can_tests, pop, logvar, meancentered)
+	: Canalization(can_tests, logvar, meancentered)
 {
 	Fitness::update(pop);
 	

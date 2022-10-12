@@ -44,7 +44,7 @@ class MiniCanIndiv
 class Canalization // virtual pure
 {
 	public:
-		Canalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
+		Canalization(unsigned int, bool logvar = true, bool meancentered = true);
 		virtual ~Canalization() = 0;
 	
 		// get the canalization scores
@@ -67,6 +67,7 @@ class Canalization // virtual pure
 class GeneticCanalization : public Canalization
 {
 	public:
+		GeneticCanalization(unsigned int, const Individual &, const Population &, bool logvar = true, bool meancentered = true);
 		GeneticCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
 		~GeneticCanalization() { }
 };
@@ -74,6 +75,7 @@ class GeneticCanalization : public Canalization
 class DisturbCanalization : public Canalization
 {
 	public:
+		DisturbCanalization(unsigned int, const Individual &, const Population &, bool logvar = true, bool meancentered = true);
 		DisturbCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
 		~DisturbCanalization() { }
 };
@@ -81,6 +83,7 @@ class DisturbCanalization : public Canalization
 class EnviroCanalization : public Canalization
 {
 	public:
+		EnviroCanalization(unsigned int, const Individual &, const Population &, bool logvar = true, bool meancentered = true);
 		EnviroCanalization(unsigned int, const Population &, bool logvar = true, bool meancentered = true);
 		~EnviroCanalization() { }
 };

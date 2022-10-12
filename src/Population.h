@@ -62,7 +62,8 @@ class Population
 	    	
 	    // input / output
             // write summary
-	    void write(std::ostream &, int) const;
+	    void write_summary(std::ostream &, int) const;
+	    void write_details(std::ostream &) const;
             // serialization
         #ifdef SERIALIZATION_TEXT
         friend std::ostream& operator << (std::ostream&, const Population&);

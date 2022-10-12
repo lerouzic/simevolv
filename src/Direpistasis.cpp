@@ -52,6 +52,30 @@ Direpistasis::Direpistasis(unsigned int tests, const Population & pop)
 	fit_epi_var = fit_stat.var();	
 }
 
+Direpistasis::Direpistasis(unsigned int tests, const Individual & ind, const Population & pop)
+{	
+	unsigned int mutants2 = sqrt(tests);
+	unsigned int mutants1 = mutants2;
+	
+	// Below these values, results cannot be calculated. 
+	// Just don't call Direpistasis with lower values
+	if (mutants1 < 1) mutants1 = 2;
+	if (mutants2 < 1) mutants2 = 2;
+		
+	vector<Phenotype> dir_ind;
+	vector<fitness_type> fit_dir;
+
+	DoubleMutantcollection dmutcol(mutants1, mutants2, ind, pop);
+
+	dir_ind.push_back(individual_direpi(dmutcol));
+	fit_dir.push_back(individual_fitdir(dmutcol));
+
+	dir_epi_mean = Phenotype::mean(dir_ind);
+	
+	UnivariateStat<fitness_type> fit_stat(fit_dir);
+	fit_epi_mean = fit_stat.mean();
+}
+
 Phenotype Direpistasis::phen_direpistasis() const
 {
 	return(dir_epi_mean);

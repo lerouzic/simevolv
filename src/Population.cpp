@@ -304,7 +304,7 @@ void Population::make_mutation()
 /* Final summary of an analysis */
 /* This is the function that will generate the output file for the simulation */
 /* Note that it is not only a display function: some potentially heavy calculation is run here */
-void Population::write(ostream & out, int generation) const
+void Population::write_summary(ostream & out, int generation) const
 {
 	vector<Phenotype> phen;
 	vector<fitness_type> fit;
@@ -575,6 +575,144 @@ void Population::write(ostream & out, int generation) const
 	}
 	out << '\n';
 
+}
+
+/* Detailed output of the population at a specific generation */
+void Population::write_details(ostream & out) const
+{
+			
+	/* Need to write the headers. 
+	   This is not extremely clean. 
+       This cannot be disabled, which can be annoying. 
+       There is no double check that the headers actually match with the content of the columns. This part of the code needs to be carefully synchronized with the rest of the function! 
+       Column names are suboptimal, as most need to match those of the write_summary function. */
+       
+    const size_t dim_phen = pop[0].get_phenotype().dimensionality();   // Clearly not elegant (the next is even worse)
+    const size_t dim_gen  = Architecture::Get()->nb_loc() * pop[0].genotype->combine_at_loc(0, &Allele::combine_mean).size();
+       
+	for (unsigned int i = 0; i < dim_phen; i++) 
+	{
+		outformat(out, i+1, "MPhen");
+	}
+	
+	if (out_unstab == OU_yes) 
+	{
+		for (unsigned int i = 0; i < dim_phen; i++) 
+		{
+			outformat(out, i+1, "MUnstab");
+		}
+	}
+	
+	outformat(out, "MFit");
+	
+	outformat(out, "MEpi");
+
+	if (nb_canal_test > 0) 
+	{
+		for (unsigned int i = 0; i < dim_phen; i++) 
+			outformat(out, i+1, "MGenCan");
+			
+		outformat(out, "GenCanFit");
+		
+		for (unsigned int i = 0; i < dim_phen; i++) 
+			outformat(out, i+1, "MIniCan");
+			
+		outformat(out, "IniCanFit");
+		
+		for (unsigned int i = 0; i < dim_phen; i++) 
+			outformat(out, i+1, "MDynCan");
+			
+		outformat(out, "DynCanFit");
+	}
+	
+	if (nb_direpi_test > 0) 
+	{
+		for (unsigned int i = 0; i < dim_phen; i++) 
+		{
+			outformat(out, i+1, "DirPhen");
+		}
+		outformat(out, "DirFit");
+	}
+	if (out_geno == OG_yes) 
+	{
+		for (unsigned int i = 0; i < dim_gen; i++)
+		{
+			outformat(out, i+1, "MeanAll");
+		}
+	}
+
+		out << endl; 
+
+		
+  /* The real results are written now. For a n-dimensional phenotype:
+	 * Col 1: generation number
+	 * n following columns: phenotypic values
+	 * n following columns: unstability (if enabled)
+	 * following column: fitness 
+	 * following column: epigenetic value
+	 * n following columns: canalization score(if enabled)
+	 * following column: fitness canalization score (if enabled)
+	 * n following columns: initdisturb canalization score(if enabled)
+	 * following column: fitness initdisturb canalization score (if enabled)
+	 * n following columns: enviro canalization score(if enabled)
+	 * following column: fitness enviro canalization score (if enabled) 
+	 * n following columns: directional epistasis for all traits (if enabled)
+	 * following column: directional epistasis for fitness (if enabled)
+	 * n following colums: w-matrix
+  */
+	
+	for (const auto & i : pop) 
+	{
+		outformat(out, i.get_phenotype());
+		
+		if ((out_unstab == OU_yes) || (out_unstab == OU_log))
+		// Warning: log or natural scales are not decided here any longer
+		{
+			outformat2(out, i.get_phenotype());
+		}
+		
+		outformat(out, i.get_fitness());
+		outformat(out, i.get_epigenet());
+		if (nb_canal_test > 0) 
+		{
+			// Runs the canalization tests
+			GeneticCanalization can_test(nb_canal_test, i, *this);
+			outformat(out, can_test.meanpop_canphen());
+			outformat(out, can_test.meanpop_canlogfit());
+
+			DisturbCanalization disturb_test(nb_canal_test, i, *this);
+			outformat(out, disturb_test.meanpop_canphen());
+			outformat(out, disturb_test.meanpop_canlogfit());
+
+			EnviroCanalization enviro_test(nb_canal_test, i, *this);
+			outformat(out, enviro_test.meanpop_canphen());
+			outformat(out, enviro_test.meanpop_canlogfit());
+		} 
+
+		if (nb_direpi_test > 0) 
+		{
+			// Runs the directional epistasis tests
+			Direpistasis dir_test(nb_direpi_test, i, *this);
+			outformat(out, dir_test.phen_direpistasis());
+			outformat(out, dir_test.fitness_direpistasis());
+		}
+		
+		if (out_geno == OG_yes) 
+		{
+			vector<pheno_type> matrix_vector_indiv;
+			for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
+			{
+				vector<pheno_type> tmp = i.genotype->combine_at_loc(loc, &Allele::combine_mean);
+
+				for (auto j : tmp) // fills the matrix
+					matrix_vector_indiv.push_back(j);
+
+			}
+			outformat(out, Phenotype(matrix_vector_indiv)); 
+		}
+		out << '\n';
+	}
+	out << '\n';
 }
 
 #ifdef SERIALIZATION_TEXT

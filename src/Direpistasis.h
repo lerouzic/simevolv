@@ -36,6 +36,7 @@ class Direpistasis
 	public:
 		// The parameters are the total number of mutants, and the population to test
 		// Most of the calculation is done in the constructor
+		Direpistasis(unsigned int, const Individual&, const Population&);
 		Direpistasis(unsigned int, const Population&);
 		~Direpistasis() { }
 		
