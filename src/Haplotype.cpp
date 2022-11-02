@@ -82,6 +82,7 @@ void Haplotype::draw_mutation()
     Architecture * archi = Architecture::Get();
     std::vector<rate_type> mutrates    (archi->mutation_rates(*this));
     std::vector<rate_type> mutmutrates (archi->mutmutation_rates());
+    
     for (unsigned int loc = 0; loc < archi->nb_loc(); loc++)
     {
         if (Random::randnum() < mutrates[loc])
@@ -121,7 +122,7 @@ void Haplotype::make_mutmutation()
 
 void Haplotype::make_mutmutation(unsigned int loc)
 {
-	Architecture * archi = Architecture::Get();
+	Architecture * archi = Architecture::Get();	
 	shared_ptr<Allele> a = archi->allele_mut_mutation(haplotype[loc], loc);
 	haplotype[loc] = a;
 }

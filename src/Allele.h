@@ -48,6 +48,7 @@ class Allele
 	    Allele(const Allele &);
 	    virtual ~Allele() { }
 	
+		virtual Allele * clone() const { return new Allele(*this); }
 	    //operator overload
 	    virtual bool operator== (const Allele&) const;
 	    virtual bool operator!= (const Allele&) const;
@@ -89,6 +90,8 @@ class Allele_mut : public Allele
 		Allele_mut(const std::vector<allele_type>, rate_type, const std::vector<std::string>);
 		Allele_mut(const Allele_mut&);
 		virtual ~Allele_mut() { }
+		
+		virtual Allele * clone() const { return new Allele_mut(*this); }
 		
 		bool operator== (const Allele_mut&) const;
 		bool operator!= (const Allele_mut&) const;

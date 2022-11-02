@@ -15,6 +15,7 @@
 #include "Random.h"
 
 #include <ctime>
+#include <cmath>
 #include <unistd.h>
 #include <cassert>
 #include <iostream>
@@ -138,8 +139,8 @@ std::vector<double> Random::randbivgauss(double cor)
     double x1 = Random::randgauss();
     double x2 = Random::randgauss();
     
-    std::vector<double> ans(2);
-    ans.push_back(x1*sq2o2 - x2*sq2o2);
-    ans.push_back(x1*sq2o2 + x2*sq2o2);
+    std::vector<double> ans;
+    ans.push_back(x1);
+    ans.push_back(cor*x1 + sqrt(1-cor*cor)*x2);
     return(ans);
 }

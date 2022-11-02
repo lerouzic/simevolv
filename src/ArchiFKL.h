@@ -35,8 +35,8 @@ class ArchiFKL : public ArchiAdditive
 	
 		virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo &, bool sdinittest = false, bool sddynamtest = false) const;
 		virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
-		virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0, bool test = false) const;
-		virtual std::shared_ptr<Allele_mut> allele_mut_mutation(std::shared_ptr<const Allele_mut>, unsigned int loc = 0) const;
+		virtual std::shared_ptr<Allele> allele_mutation(std::shared_ptr<Allele>, unsigned int loc = 0, bool test = false) const;
+		virtual std::shared_ptr<Allele> allele_mut_mutation(std::shared_ptr<Allele>, unsigned int loc = 0) const;
 
 	protected :
 		unsigned int nphen;

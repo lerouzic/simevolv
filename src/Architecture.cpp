@@ -52,8 +52,6 @@ Architecture::Architecture(const ParameterSet& param)
     , sall (1) // by default, change for the architecture that needed a vector as allele
     , transfo("none") // Transformation option (defaults to none)
     , mutrate (vector<rate_type> (0))
-    , mutmodels (vector<MutationModel> ())
-    , mutmodels_test (vector<MutationModel> ())
     , plasticity_strength (vector<pheno_type> (0))
     , plasticity_signal (vector<pheno_type> (0))
 {
@@ -282,7 +280,7 @@ shared_ptr<Allele> Architecture::allele_init(const ParameterSet & param, unsigne
 }
 
 /* Replace the value at the mutated site by a new value */
-shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */, bool test /* = false */) const 
+shared_ptr<Allele> Architecture::allele_mutation(shared_ptr<Allele> templ, unsigned int loc /* = 0 */, bool test /* = false */) const 
 {
 	// The default type of mutation is questionable. Arbitrarily, a Fisher model like mutation (all dimensions of the allele are mutated independently)
 	if (test) {
@@ -292,7 +290,7 @@ shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ,
 	}
 }
 
-shared_ptr<Allele> Architecture::allele_mut_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
+shared_ptr<Allele> Architecture::allele_mut_mutation(shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 { // Default alleles cannot change their mutation rates. 
 	return(templ); 
 }

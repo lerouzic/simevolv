@@ -37,6 +37,7 @@ class MutType
 		virtual ~MutType();
 		
 		virtual allele_type mutate(allele_type oldv, size_t site = 0) const = 0;
+		virtual rate_type   mutate_mut(rate_type oldv) const { assert (false && "Not available for this mutation model."); }
 		virtual std::vector<allele_type> mutate(std::vector<allele_type> oldv) const; 
 		virtual std::unique_ptr<MutType> clone() const = 0;
 		
@@ -127,8 +128,10 @@ class MutMultivGaussianCumul: public MutType
 		MutMultivGaussianCumul(const MutMultivGaussianCumul &);
 		~MutMultivGaussianCumul() { }
 		
-		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
+		allele_type              mutate(allele_type oldv, size_t site /* = 0 */) const;
 		std::vector<allele_type> mutate(std::vector<allele_type> oldv) const;
+		rate_type                mutate_mut(rate_type oldv) const;
+		
 		virtual std::unique_ptr<MutType> clone() const;
 		
 	protected:
@@ -160,6 +163,8 @@ class MutMultivGaussianStationary: public MutType
 		
 		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
 		std::vector<allele_type> mutate(std::vector<allele_type> oldv) const;
+		rate_type                mutate_mut(rate_type oldv) const;
+
 		virtual std::unique_ptr<MutType> clone() const;
 		
 	protected:
@@ -198,6 +203,7 @@ class MutationModel
 		
 		allele_type              mutate(allele_type              oldv, std::string type_all, size_t site = 0) const; 
 		std::vector<allele_type> mutate(std::vector<allele_type> oldv, std::vector<std::string> type_all) const;
+		rate_type                mutate_mut(rate_type            oldv) const;
 		
 	protected:
 		std::unique_ptr<MutType> mut;

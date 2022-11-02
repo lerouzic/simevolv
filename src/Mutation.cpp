@@ -103,7 +103,7 @@ MutationModel & MutationModel::operator= (const MutationModel & mm)
 allele_type MutationModel::mutate(allele_type oldv, std::string type_all, size_t site /* = 0 */) const
 {
 	assert(mut);
-	auto candidate = mut->mutate(oldv, site);
+	allele_type candidate = mut->mutate(oldv, site);
 	if ((type_all == TA_immut) || ((type_all == TA_zero) && (oldv == 0.0)))
 		return(oldv);
 	if (type_all == TA_sign)
@@ -113,13 +113,25 @@ allele_type MutationModel::mutate(allele_type oldv, std::string type_all, size_t
 
 std::vector<allele_type> MutationModel::mutate(std::vector<allele_type> oldv, std::vector<std::string> type_all) const
 {
-	std::vector<allele_type> ans(oldv.size());
+	assert(mut);
 	
-	for (size_t i = 0; i < oldv.size(); i++) {
-		ans[i] = mutate(oldv[i], type_all[i], i);
+	std::vector<allele_type> candidate = mut->mutate(oldv);
+	
+	for (size_t i = 0; i < candidate.size(); i++) {
+		if ((type_all[i] == TA_immut) || ((type_all[i] == TA_zero) && (oldv[i] == 0.0)))
+			candidate[i] = oldv[i];
+		if ((type_all[i] == TA_sign) && (((oldv[i] > 0) && candidate[i] < 0) || ((oldv[i] < 0) && (candidate[i] > 0)) ))
+			candidate[i] = -candidate[i];
 	}
-	
-	return(ans);
+	return(candidate);
+}
+
+
+rate_type MutationModel::mutate_mut(rate_type oldv) const
+{
+	assert(mut);
+	auto candidate = mut->mutate_mut(oldv);
+	return(candidate);
 }
 
 /////////////////// Mutation types /////////////////////
@@ -235,9 +247,8 @@ MutMultivGaussianCumul::MutMultivGaussianCumul(const MutMultivGaussianCumul & mm
 }
 
 allele_type MutMultivGaussianCumul::mutate(allele_type oldv, size_t site = 0) const
-{
-	assert(site == 0); // otherwise, the std::vector version of mutate() should be used
-	return oldv + mutmutsd * Random::randgauss();
+{ // Does it really make sense? There will not be any change in the correlated sites
+	return oldv + mutsd[site] * Random::randgauss();
 }
 
 std::vector<allele_type> MutMultivGaussianCumul::mutate(std::vector<allele_type> oldv) const
@@ -249,7 +260,10 @@ std::vector<allele_type> MutMultivGaussianCumul::mutate(std::vector<allele_type>
 	return multirand;
 }
 
-
+rate_type MutMultivGaussianCumul::mutate_mut(rate_type oldv) const
+{
+	return oldv + mutmutsd * Random::randgauss();
+}
 
 std::unique_ptr<MutType> MutMultivGaussianCumul::clone() const
 {
@@ -283,17 +297,24 @@ MutMultivGaussianStationary::MutMultivGaussianStationary(const MutMultivGaussian
 
 allele_type MutMultivGaussianStationary::mutate(allele_type oldv, size_t site = 0) const
 {
-	assert(site == 0); // otherwise, the std::vector version of mutate() should be used
-	return mutmutsd * Random::randgauss();
+	return mutsd[site] * Random::randgauss();
 }
 
 std::vector<allele_type> MutMultivGaussianStationary::mutate(std::vector<allele_type> oldv) const
 { // no need for oldv, just here for the interface
+
 	std::vector<allele_type> multirand = Random::randbivgauss(mutcor[0]); // only works with bivariate distributions
+
 	for (size_t i = 0; i < multirand.size(); i++)
 		multirand[i] = mutsd[i] * multirand[i];
 	return multirand;
 }
+
+rate_type MutMultivGaussianStationary::mutate_mut(rate_type oldv) const
+{
+	return mutmutsd * Random::randgauss();
+}
+
 
 std::unique_ptr<MutType> MutMultivGaussianStationary::clone() const
 {

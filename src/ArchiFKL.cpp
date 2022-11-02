@@ -55,14 +55,16 @@ std::vector<rate_type> ArchiFKL::mutation_rates(const Haplotype & hap) const
 	std::vector<rate_type> mutrates(nb_loc());
 	rate_type tmp_sum = 0.0;
 	for (size_t loc = 0; loc < nb_loc(); loc++) {
-		const Allele_mut & tmp_all = dynamic_cast<const Allele_mut &>(*hap.allele_at_loc(loc));
-		mutrates[loc] = exp(tmp_all.get_mutrate());
+		if (const Allele_mut * bp = dynamic_cast<const Allele_mut *>(hap.allele_at_loc(loc).get())) {
+			mutrates[loc] = exp(bp->get_mutrate());
+		} else {
+			assert(false && "Bad Allele class.");
+		}
 		tmp_sum += mutrates[loc];
 	}
 	for (size_t loc = 0; loc < nb_loc(); loc++) {
 		mutrates[loc] *= mutrate[loc]/tmp_sum;
 	}
-	
 	return mutrates;
 }
 
@@ -72,7 +74,7 @@ std::vector<rate_type> ArchiFKL::mutmutation_rates() const
 }
 
 Phenotype ArchiFKL::phenotypic_value (const Genotype& genotype, bool envir, const EpigeneticInfo & epi, bool sdinittest, bool sddynamtest) const
-{
+{ // This is a multivariate additive model. 
     PhenoVector phenotype(nphen);
 
 	for (unsigned int all = 0; all < nphen; all++)
@@ -81,10 +83,9 @@ Phenotype ArchiFKL::phenotypic_value (const Genotype& genotype, bool envir, cons
     for (unsigned int loc = 0 ; loc < nloc ; loc++)
     {
 		PhenoVector sumloc = genotype.combine_at_loc(loc, &Allele::combine_add);
-		assert(sumloc.dimensionality() == nphen + 1); // The first slot of the allele stands for the mutation rate
 		
 		for (unsigned int all = 0; all < nphen; all++)
-			phenotype[all] += sumloc[all+1];
+			phenotype[all] += sumloc[all];
     }
     
     for (unsigned int all = 0; all < nphen; all++)
@@ -101,13 +102,10 @@ shared_ptr<Allele> ArchiFKL::allele_init(const ParameterSet & param, unsigned in
 	vector<string> type_allele_loc;
 	vector<allele_type> tmp;
 	
-	// The first allele slot is the (log) mutation rate
-	tmp.push_back(log(mutrate[loc]));
-	
-	for(unsigned int i = 0; i < sall-1; i++)
+	for(unsigned int i = 0; i < sall; i++)
     {
 		if (param.exists(INIT_ALLELES_FULL))
-			tmp.push_back(param.getpar(INIT_ALLELES_FULL) -> GetDouble(loc*nphen+i));
+			tmp.push_back(param.getpar(INIT_ALLELES_FULL) -> GetDouble(loc*nphen + i));
 		else
 			tmp.push_back(param.getpar(INIT_ALLELES) -> GetDouble());
     }
@@ -115,7 +113,7 @@ shared_ptr<Allele> ArchiFKL::allele_init(const ParameterSet & param, unsigned in
     for (unsigned int i = 0; i < sall; i++)
 		type_allele_loc.push_back(param.getpar(TYPE_ALLELES) -> GetString(loc*sall+i));
 
-    shared_ptr<Allele> a(new Allele(tmp, type_allele_loc));
+    shared_ptr<Allele> a(new Allele_mut(tmp, log(mutrate[loc]), type_allele_loc));
 
     return(a);
 }
@@ -130,9 +128,10 @@ shared_ptr<Allele> ArchiFKL::allele_mutation(const shared_ptr<Allele> templ, uns
 	}
 }
 
-shared_ptr<Allele_mut> ArchiFKL::allele_mut_mutation(shared_ptr<const Allele_mut> templ, unsigned int loc /* = 0 */) const 
+shared_ptr<Allele> ArchiFKL::allele_mut_mutation(shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
 {
-	return(templ->make_mutant_mutation(mutmodels[loc]));
+	const Allele_mut * bp = dynamic_cast<const Allele_mut *>(templ.get());
+	return(bp->make_mutant_mutation(mutmodels[loc]));
 }
 
 

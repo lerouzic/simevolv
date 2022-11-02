@@ -47,7 +47,6 @@ class Random
 	protected :
 	    static Random * instance;    
 
-		static constexpr double sq2o2 = 0.7071068;
 	    long int seed;
 	    gsl_rng * random_generator;
 };

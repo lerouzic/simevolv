@@ -134,7 +134,7 @@ vector<allele_type> Allele::output_mean_with(const Allele & a) const
 shared_ptr<Allele> Allele::make_mutant_at_site(size_t site, const MutationModel& mutmodel) const
 {
 	// Creates a new allele even if the site is not mutable. To be avoided. 
-	shared_ptr<Allele> a(new Allele(*this));
+	shared_ptr<Allele> a(this->clone());
 	a->allele[site] = mutmodel.mutate(a->allele[site], a->type_allele[site], site);
 	return(a);
 }
@@ -158,7 +158,7 @@ shared_ptr<Allele> Allele::make_mutant_random_site(const MutationModel& mutmodel
 
 shared_ptr<Allele> Allele::make_mutant_all_sites(const MutationModel& mutmodel) const
 {
-	shared_ptr<Allele> a(new Allele(*this));
+	shared_ptr<Allele> a(this->clone());
 	a->allele = mutmodel.mutate(a->allele, a->type_allele);
 	return(a);
 }
@@ -212,7 +212,7 @@ rate_type Allele_mut::get_mutrate() const
 shared_ptr<Allele_mut> Allele_mut::make_mutant_mutation(const MutationModel& mutmodel) const
 {
 	shared_ptr<Allele_mut> a(new Allele_mut(*this));
-	a->mutrate = mutmodel.mutate(mutrate, TA_norm);
+	a->mutrate = mutmodel.mutate_mut(mutrate);
 	return(a);
 }
 

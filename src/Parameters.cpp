@@ -566,7 +566,7 @@ void ParameterSet::initialize()
     parameters[GENET_MUTMUTRATES] = new Parameter_vector_double(0.0, 1.0);
     parameters[GENET_MUTCOR] = new Parameter_vector_double(-1.0, 1.0);
     parameters[GENET_MUTSD] = new Parameter_vector_double(0.0, 999.9);
-    parameters[GENET_MUTMUTSD] = new Parameter_double(0.0, 10.0);
+    parameters[GENET_MUTMUTSD] = new Parameter_vector_double(0.0, 10.0);
     parameters[GENET_RECRATES] = new Parameter_vector_double(0.0, 0.5);
     parameters[GENET_SELFING] = new Parameter_double(0.0, 1.0);
     parameters[GENET_CLONAL]  = new Parameter_double(0.0, 1.0);
