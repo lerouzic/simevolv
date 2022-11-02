@@ -80,13 +80,18 @@ unsigned int Haplotype::nb_loc() const
 void Haplotype::draw_mutation()
 {
     Architecture * archi = Architecture::Get();
+    std::vector<rate_type> mutrates    (archi->mutation_rates(*this));
+    std::vector<rate_type> mutmutrates (archi->mutmutation_rates());
     for (unsigned int loc = 0; loc < archi->nb_loc(); loc++)
     {
-        if (Random::randnum() < archi->mutation_rate(loc))
+        if (Random::randnum() < mutrates[loc])
         // This is not really efficient (many drawings with low probabilities)
         {
 			make_mutation(loc);     
         }
+        if ((mutmutrates[loc] > 0.0) && (Random::randnum() < mutmutrates[loc])) {
+			make_mutmutation(loc);
+		}
     }
 }
 
@@ -95,7 +100,7 @@ void Haplotype::draw_mutation()
  * then > make_mutation(loc) */
 void Haplotype::make_mutation(bool test /* = false */)
 {
-    int loc = floor(Random::randnum()*nb_loc()); // static_cast<double>(nb_loc())
+    int loc = floor(Random::randnum()*nb_loc());
 	make_mutation(loc, test);
 }
 
@@ -108,6 +113,23 @@ void Haplotype::make_mutation(unsigned int loc, bool test /* = false */)
 	haplotype[loc] = a;
 }
 
+void Haplotype::make_mutmutation()
+{
+	int loc = floor(Random::randnum()*nb_loc());
+	make_mutmutation(loc);
+}
+
+void Haplotype::make_mutmutation(unsigned int loc)
+{
+	Architecture * archi = Architecture::Get();
+	shared_ptr<Allele> a = archi->allele_mut_mutation(haplotype[loc], loc);
+	haplotype[loc] = a;
+}
+
+std::shared_ptr<const Allele> Haplotype::allele_at_loc(unsigned int loc) const
+{
+	return(haplotype[loc]);
+}
 
 /* perform the recombination between the the father and the mother haplotype */
 Haplotype Haplotype::recombine(const Haplotype & hap1, const Haplotype & hap2) 

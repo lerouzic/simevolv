@@ -322,7 +322,7 @@ void Population::write_summary(ostream & out, int generation) const
 		vector<pheno_type> matrix_vector_indiv;
         for (unsigned int loc = 0 ; loc < Architecture::Get()->nb_loc() ; loc++) 
         {
-            vector<pheno_type> tmp = i.genotype->combine_at_loc(loc, &Allele::combine_mean);
+            vector<pheno_type> tmp = i.genotype->combine_at_loc(loc, &Allele::output_mean);
 
             for (auto j : tmp) // fills the matrix
                 matrix_vector_indiv.push_back(j);

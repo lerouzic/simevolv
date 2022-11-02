@@ -32,6 +32,7 @@ class Allele
     friend class Haplotype;
     friend class Architecture; 
     friend class ArchiAdditive;
+    friend class ArchiFKL;
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
@@ -48,23 +49,27 @@ class Allele
 	    virtual ~Allele() { }
 	
 	    //operator overload
-	    bool operator== (const Allele&) const;
-	    bool operator!= (const Allele&) const;
+	    virtual bool operator== (const Allele&) const;
+	    virtual bool operator!= (const Allele&) const;
 	
 	    //functions
 	    unsigned int all_size() const;
-		static std::vector<allele_type> combine_add(const Allele &, const Allele &);
+		static std::vector<allele_type> combine_add (const Allele &, const Allele &);
 		static std::vector<allele_type> combine_mean(const Allele &, const Allele &);
-        static std::vector<allele_type> combine_OR(const Allele &, const Allele &);
+        static std::vector<allele_type> combine_OR  (const Allele &, const Allele &);
+        static std::vector<allele_type> output_mean (const Allele &, const Allele &);
 		
 		virtual std::shared_ptr<Allele> make_mutant_at_site(size_t site, const MutationModel&) const;
 		virtual std::shared_ptr<Allele> make_mutant_random_site(const MutationModel&) const;
 		virtual std::shared_ptr<Allele> make_mutant_all_sites(const MutationModel&) const;
-        std::vector<allele_type> get_raw() const;
+        virtual std::vector<allele_type> get_raw() const;
 	
 	protected :
 	    std::vector<allele_type> allele;
 	    std::vector<std::string> type_allele; // should be const, but const would make it difficult to serialize. 
+	    
+		// This is necessary to make the "output_mean" static function working with derived classes
+		virtual std::vector<allele_type> output_mean_with(const Allele &) const;
         
 	private:
         #ifdef SERIALIZATION_TEXT
@@ -74,6 +79,38 @@ class Allele
             ar & type_allele;
         }
         #endif
+};
+
+class Allele_mut : public Allele
+{
+	public:
+		Allele_mut() { }
+		Allele_mut(const std::vector<allele_type>, rate_type);
+		Allele_mut(const std::vector<allele_type>, rate_type, const std::vector<std::string>);
+		Allele_mut(const Allele_mut&);
+		virtual ~Allele_mut() { }
+		
+		bool operator== (const Allele_mut&) const;
+		bool operator!= (const Allele_mut&) const;
+				
+		std::shared_ptr<Allele_mut> make_mutant_mutation(const MutationModel&) const;
+		virtual std::vector<allele_type> get_raw() const;
+		rate_type get_mutrate() const;
+		
+
+	protected: 
+		rate_type mutrate;
+		
+		virtual std::vector<allele_type> output_mean_with(const Allele &) const;
+		
+	private:
+		#ifdef SERIALIZATION_TEXT
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
+			ar & boost::serialization::base_object<Allele>(*this);
+			ar & mutrate;
+		}
+		#endif
 };
 
 #endif // ALLELE_H_INCLUDED

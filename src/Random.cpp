@@ -122,3 +122,24 @@ double Random::randgauss()
     return(gsl_ran_gaussian(Random::instance->random_generator, 1.0));
 }
 
+std::vector<double> Random::randbivgauss(double cor)
+{
+    if (!Random::is_initialized())
+    {
+        cerr << "The random number generator is used prior to initialization" << endl;
+    }
+    if (Random::instance == NULL)
+    {
+        Random::initialize();
+    }
+    assert(cor >= -1.0);
+    assert(cor <=  1.0);
+    
+    double x1 = Random::randgauss();
+    double x2 = Random::randgauss();
+    
+    std::vector<double> ans(2);
+    ans.push_back(x1*sq2o2 - x2*sq2o2);
+    ans.push_back(x1*sq2o2 + x2*sq2o2);
+    return(ans);
+}

@@ -18,6 +18,7 @@
 #include "ArchiMultilinear.h"
 #include "ArchiRegulatoryMatrix.h"
 #include "ArchiBoolean.h"
+#include "ArchiFKL.h"
 #include "Parconst.h"
 #include "Random.h"
 
@@ -110,7 +111,13 @@ void Architecture::initialize(const ParameterSet& param)
 		Architecture::instance = new ArchiM2(param);
     }
     else if(type_archi==AR_Boolean)
+    {
         Architecture::instance = new ArchiBoolean(param);
+	} 
+	else if(type_archi==AR_FKL)
+	{
+		Architecture::instance = new ArchiFKL(param);
+	}
     else
     {
         cerr << "Wrong architecture type" << endl;
@@ -225,6 +232,26 @@ rate_type Architecture::mutation_rate(unsigned int locus) const
     return(mutrate[locus]);
 }
 
+std::vector<rate_type> Architecture::mutation_rates() const
+{
+	std::vector<rate_type> mutrates(nb_loc());
+	for (size_t loc = 0; loc < nb_loc(); loc++) {
+		mutrates[loc] = mutation_rate(loc);
+	}
+	return(mutrates);
+}
+
+std::vector<rate_type> Architecture::mutation_rates(const Haplotype & hap) const
+{ // by default, we don't care about the Haplotype
+	return(mutation_rates());
+}
+
+std::vector<rate_type> Architecture::mutmutation_rates() const
+{ // defaults to a vector of zeros
+	std::vector<rate_type> mutmutrates(nb_loc(), 0.0);
+	return(mutmutrates);
+}
+
 /* return the recombination rate at a given locus */
 rate_type Architecture::recombination_rate(unsigned int locus) const
 {
@@ -263,6 +290,11 @@ shared_ptr<Allele> Architecture::allele_mutation(const shared_ptr<Allele> templ,
 	} else {
 		return(templ->make_mutant_all_sites(mutmodels[loc]));
 	}
+}
+
+shared_ptr<Allele> Architecture::allele_mut_mutation(const shared_ptr<Allele> templ, unsigned int loc /* = 0 */) const 
+{ // Default alleles cannot change their mutation rates. 
+	return(templ); 
 }
 
 /* Updates parameters when the parameter set changes. 

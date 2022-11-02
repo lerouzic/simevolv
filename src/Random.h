@@ -15,6 +15,10 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
+
+
+#include <vector>
+
 // GNU Scientific Library functions:
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -38,10 +42,12 @@ class Random
 	    static long int get_seed();
 	    static double randnum();
 	    static double randgauss();
+	    static std::vector<double> randbivgauss(double cor);
 		
 	protected :
 	    static Random * instance;    
-    
+
+		static constexpr double sq2o2 = 0.7071068;
 	    long int seed;
 	    gsl_rng * random_generator;
 };

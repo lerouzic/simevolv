@@ -19,6 +19,7 @@
 #include "Parameters.h"
 #include "GeneticMap.h"
 #include "Allele.h"
+#include "Haplotype.h"
 #include "Genotype.h"
 #include "Phenotype.h"
 #include "EpigeneticInfo.h"
@@ -58,13 +59,17 @@ class Architecture  	/* Pure virtual class */
         virtual unsigned int nb_phen() const;
 	    unsigned int all_size() const;
 	    rate_type mutation_rate(unsigned int) const;
+	    virtual std::vector<rate_type> mutation_rates() const;
+	    virtual std::vector<rate_type> mutation_rates(const Haplotype &) const;
+	    virtual std::vector<rate_type> mutmutation_rates() const;
 	    rate_type recombination_rate(unsigned int) const;
 	    		
 		// to be defined by inherited classes 
 	    virtual Phenotype phenotypic_value(const Genotype&, bool envir, const EpigeneticInfo&, bool sdinittest = false, bool sddynamtest = false) const = 0; // no default
 	    virtual std::shared_ptr<Allele> allele_init(const ParameterSet &, unsigned int loc = 0) const;
 	    virtual std::shared_ptr<Allele> allele_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0, bool test = false) const;
-	
+	    virtual std::shared_ptr<Allele> allele_mut_mutation(const std::shared_ptr<Allele>, unsigned int loc = 0) const;
+		
 	protected :
 	    static Architecture* instance;
 
@@ -80,7 +85,8 @@ class Architecture  	/* Pure virtual class */
         std::vector<pheno_type> plasticity_signal;
 	    	    
 		Architecture() {} // default constructor necessary for serialization
-	    virtual void update_param_internal(const ParameterSet&);		
+	    virtual void update_param_internal(const ParameterSet&);
+
 	
 	private:
         #ifdef SERIALIZATION_TEXT

@@ -38,6 +38,7 @@ class Haplotype
     friend class DiploGenotype;
     friend class Architecture;
     friend class ArchiAdditive;
+    friend class ArchiFKL;
     friend class ArchiMultilinear;
     friend class ArchiRegulatoryMatrix;
     friend class ArchiWagner;
@@ -61,7 +62,11 @@ class Haplotype
 	    unsigned int nb_loc() const;
 	    void draw_mutation();				
 	    void make_mutation(bool test = false); 				
-	    void make_mutation(unsigned int, bool test = false); 
+	    void make_mutation(unsigned int, bool test = false);
+	    void make_mutmutation();
+	    void make_mutmutation(unsigned int);
+	    
+		std::shared_ptr<const Allele> allele_at_loc(unsigned int) const;
 	    
 	    static Haplotype recombine(const Haplotype &, const Haplotype &);
 	    

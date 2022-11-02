@@ -30,8 +30,11 @@ const std::string GENET_NBPHEN = "GENET_NBPHEN";
 const std::string GENET_MUTTYPE = "GENET_MUTTYPE"; 		/* Type of mutations: "individual" or "locus" */
 const std::string GENET_MUTMEM  = "GENET_MUTMEM";		/* Memory of mutational effects: "cumul" or "stationary" */
 const std::string GENET_MUTRATES = "GENET_MUTRATES";
+const std::string GENET_MUTMUTRATES = "GENET_MUTMUTRATES";
+const std::string GENET_MUTCOR = "GENET_MUTCOR";
 const std::string GENET_PLOIDY = "GENET_PLOIDY";
 const std::string GENET_MUTSD    = "GENET_MUTSD";
+const std::string GENET_MUTMUTSD = "GENET_MUTMUTSD";
 const std::string GENET_RECRATES = "GENET_RECRATES";
 const std::string GENET_SELFING = "GENET_SELFING";
 const std::string GENET_CLONAL  = "GENET_CLONAL";
@@ -132,7 +135,8 @@ const std::string AR_wagner = "wagner";
 const std::string AR_siegal = "siegal";
 const std::string AR_m2 = "m2";
 const std::string AR_Boolean = "boolean";
-const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2)(AR_Boolean);
+const std::string AR_FKL = "fkl"; // Fisher-Kimura-Lande
+const std::vector<std::string> AR_options = boost::assign::list_of (AR_add)(AR_mult)(AR_wagner)(AR_siegal)(AR_m2)(AR_Boolean)(AR_FKL);
 
 // Output for the genotype 
 const std::string OG_yes = "yes";

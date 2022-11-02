@@ -32,11 +32,12 @@
 class MutType
 { // This is an interface
 	public:
-		MutType() { }
+		MutType();
 		// MutType(const MutType &) = delete;
-		virtual ~MutType() { }
+		virtual ~MutType();
 		
-		virtual allele_type mutate(allele_type oldv) const = 0;
+		virtual allele_type mutate(allele_type oldv, size_t site = 0) const = 0;
+		virtual std::vector<allele_type> mutate(std::vector<allele_type> oldv) const; 
 		virtual std::unique_ptr<MutType> clone() const = 0;
 		
 	private:
@@ -53,7 +54,7 @@ class MutBoolean: public MutType
 		MutBoolean(const MutBoolean &);
 		~MutBoolean() { }
 	
-		allele_type mutate(allele_type oldv) const;
+		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
 		virtual std::unique_ptr<MutType> clone() const;
 		
 	private:
@@ -73,7 +74,7 @@ class MutGaussianCumul: public MutType
 		MutGaussianCumul(const MutGaussianCumul &);
 		~MutGaussianCumul() { }
 		
-		allele_type mutate(allele_type oldv) const;
+		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
 		virtual std::unique_ptr<MutType> clone() const;
 		
 	protected:
@@ -99,7 +100,7 @@ class MutGaussianStationary: public MutType
 		MutGaussianStationary(const MutGaussianStationary &);
 		~MutGaussianStationary() { }
 		
-		allele_type mutate(allele_type oldv) const;
+		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
 		virtual std::unique_ptr<MutType> clone() const;
 	
 	protected:
@@ -118,6 +119,69 @@ class MutGaussianStationary: public MutType
 		#endif
 };
 
+
+class MutMultivGaussianCumul: public MutType
+{
+	public:
+		MutMultivGaussianCumul(std::vector<allele_type> sd, std::vector<allele_type> cor, allele_type mutmutsd);
+		MutMultivGaussianCumul(const MutMultivGaussianCumul &);
+		~MutMultivGaussianCumul() { }
+		
+		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
+		std::vector<allele_type> mutate(std::vector<allele_type> oldv) const;
+		virtual std::unique_ptr<MutType> clone() const;
+		
+	protected:
+		std::vector<allele_type> mutsd;
+		std::vector<allele_type> mutcor;
+		allele_type mutmutsd;
+		
+	private:
+		MutMultivGaussianCumul() { mutsd.push_back(0.0); mutsd.push_back(0.0); mutcor.push_back(0.0); }
+		
+		#ifdef SERIALIZATION_TEXT
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & boost::serialization::base_object<MutType>(*this);
+			ar & mutsd;
+			ar & mutcor;
+			ar & mutmutsd;
+		}
+		#endif
+};
+
+class MutMultivGaussianStationary: public MutType
+{
+	public:
+		MutMultivGaussianStationary(std::vector<allele_type> sd, std::vector<allele_type> cor, allele_type mutmutsd);
+		MutMultivGaussianStationary(const MutMultivGaussianStationary &);
+		~MutMultivGaussianStationary() { }
+		
+		allele_type mutate(allele_type oldv, size_t site /* = 0 */) const;
+		std::vector<allele_type> mutate(std::vector<allele_type> oldv) const;
+		virtual std::unique_ptr<MutType> clone() const;
+		
+	protected:
+		std::vector<allele_type> mutsd;
+		std::vector<allele_type> mutcor;
+		allele_type mutmutsd;
+		
+	private:
+		MutMultivGaussianStationary() { mutsd.push_back(0.0); mutsd.push_back(0.0); mutcor.push_back(0.0); }
+		
+		#ifdef SERIALIZATION_TEXT
+		friend class boost::serialization::access;
+		template<class Archive> void serialize(Archive & ar, const unsigned int version)
+		{
+			ar & boost::serialization::base_object<MutType>(*this);
+			ar & mutsd;
+			ar & mutcor;
+			ar & mutmutsd;
+		}
+		#endif
+};
+
 ///////////////////////////////////////////////
 // Mutation model (the interface that should be used)
 
@@ -132,7 +196,8 @@ class MutationModel
 		MutationModel & operator= (const MutationModel &);
 		
 		
-		allele_type mutate(allele_type oldv, std::string type_all) const; 
+		allele_type              mutate(allele_type              oldv, std::string type_all, size_t site = 0) const; 
+		std::vector<allele_type> mutate(std::vector<allele_type> oldv, std::vector<std::string> type_all) const;
 		
 	protected:
 		std::unique_ptr<MutType> mut;
@@ -145,6 +210,8 @@ class MutationModel
 			ar.template register_type<MutBoolean>();
 			ar.template register_type<MutGaussianCumul>();
 			ar.template register_type<MutGaussianStationary>();
+			ar.template register_type<MutMultivGaussianCumul>();
+			ar.template register_type<MutMultivGaussianStationary>();
 			ar & mut;
 		}
 		#endif
