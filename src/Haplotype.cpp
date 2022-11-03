@@ -102,13 +102,17 @@ void Haplotype::draw_mutation()
 void Haplotype::make_mutation(bool test /* = false */)
 { // We have to normalize based on the locus mutation rates
 	std::vector<rate_type> mutrates (Architecture::Get()->mutation_rates(*this));
-	rate_type sum_mutrates = 0.0;
-	for (auto mu  : mutrates) sum_mutrates += mu;
+	std::vector<rate_type> cumsum_mutrates(nb_loc());
+	cumsum_mutrates[0] = mutrates[0];
+	if (nb_loc() > 1)
+		for (size_t loc = 1; loc < nb_loc(); loc++) {
+			cumsum_mutrates[loc] = cumsum_mutrates[loc-1] + mutrates[loc];
+		}
 	
 	// weighted sampling of the locus
-	auto rr = Random::randnum() / sum_mutrates;
+	auto rr = Random::randnum() * cumsum_mutrates[nb_loc() - 1];
 	for (size_t loc = 0; loc < nb_loc(); loc++) {
-		if (rr < mutrates[loc]) {
+		if (rr < cumsum_mutrates[loc]) {
 			make_mutation(loc, test);
 			return;
 		}
