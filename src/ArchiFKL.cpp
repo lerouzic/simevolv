@@ -60,7 +60,7 @@ std::vector<rate_type> ArchiFKL::mutation_rates(const Haplotype & hap) const
 		} else {
 			assert(false && "Bad Allele class.");
 		}
-		tmp_sum += mutrates[loc];
+		tmp_sum += mutrate[loc]*mutrates[loc];
 	}
 	for (size_t loc = 0; loc < nb_loc(); loc++) {
 		mutrates[loc] *= mutrate[loc]/tmp_sum;
