@@ -100,9 +100,20 @@ void Haplotype::draw_mutation()
 /* force to make a mutation at a random locus 
  * then > make_mutation(loc) */
 void Haplotype::make_mutation(bool test /* = false */)
-{
-    int loc = floor(Random::randnum()*nb_loc());
-	make_mutation(loc, test);
+{ // We have to normalize based on the locus mutation rates
+	std::vector<rate_type> mutrates (Architecture::Get()->mutation_rates(*this));
+	rate_type sum_mutrates = 0.0;
+	for (auto mu  : mutrates) sum_mutrates += mu;
+	
+	// weighted sampling of the locus
+	auto rr = Random::randnum() / sum_mutrates;
+	for (size_t loc = 0; loc < nb_loc(); loc++) {
+		if (rr < mutrates[loc]) {
+			make_mutation(loc, test);
+			return;
+		}
+	}
+	assert (false && "Thou shalt not be here!");
 }
 
 /* force to make a mutation at a chosen locus :
