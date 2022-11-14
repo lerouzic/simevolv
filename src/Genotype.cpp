@@ -155,6 +155,7 @@ Haplotype HaploGenotype::produce_gamete() const
 std::vector<allele_type> HaploGenotype::combine_at_loc(unsigned int loc, std::vector<allele_type> (*combineFUN)(const Allele &, const Allele &)) const 
 {
 	assert(loc < nb_loc());
-	// For haploid genomes, the "combine" function does not make sense. 
-	return(gam.haplotype[loc]->get_raw());
+	// For haploid genomes, the "combine" function does not make sense. However, for consistency, it is probably better to call the same combine function
+	// as in the diploid case. 
+	return(combineFUN(*gam.haplotype[loc], *gam.haplotype[loc]));
 }
