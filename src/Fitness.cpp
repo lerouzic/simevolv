@@ -353,20 +353,19 @@ void Fitness_Phenotype_MultivarGaussian::compute_invsigma(const size_t n_traits)
 	if (strength.size() < n_traits) strength = expand_vec(strength, n_traits);
 	if (cor.size() < ((n_traits^2) - n_traits)/2) cor = expand_vec(cor, (n_traits*n_traits - n_traits)/2);
 	
-	// when inverting the selection matrix, zero strengths -> inf variances and the matrix is not positive definite. 
-	for (auto &i : strength) if (i == 0.0) i = 1e-20; // numeric_limits<fitness_type>::min();
+	// The algorithm is cleaner when inverting the covariance matrix first, and then weighting to
+	// obtain the inverse covariance.
 	
-	// The first step is to reconstruct a variance-covariance matrix from selection strengths and correlations
+	// The first step is to construct the correlation matrix
 	gsl_matrix *mat = gsl_matrix_alloc(n_traits, n_traits);
 	
 	for (size_t i = 0; i < n_traits; i++) {
-		gsl_matrix_set(mat, i, i, 1./2./abs(strength[i]));
-		if (i < n_traits - 1) {
+		gsl_matrix_set(mat, i, i, 1.0);
+		if (i < n_traits - 1) {	
 			for (size_t j = i+1; j < n_traits; j++) {
 				size_t cor_index = i+j*(j-1)/2; // index of element i, j in a upper triangular matrix
-				fitness_type cov = cor[cor_index]*sqrt(1./2./abs(strength[i]))*sqrt(1./2./abs(strength[j]));
-				gsl_matrix_set(mat, i, j, cov);
-				gsl_matrix_set(mat, j, i, cov);
+				gsl_matrix_set(mat, i, j, cor[cor_index]);
+				gsl_matrix_set(mat, j, i, cor[cor_index]);
 			}
 		}
 	}
@@ -377,6 +376,12 @@ void Fitness_Phenotype_MultivarGaussian::compute_invsigma(const size_t n_traits)
 	gsl_linalg_LU_decomp(mat, p, &s); // Hoping that the way we build the matrix ensures positive definite propreties. Otherwise, crash. 
 	invsigma = gsl_matrix_alloc(n_traits, n_traits);
 	gsl_linalg_LU_invert(mat, p, invsigma);
+
+	// And turn it into an inverse covariance matrix
+	for (size_t i = 0; i < n_traits; i++)
+		for (size_t j = 0; j < n_traits; j++)	
+			gsl_matrix_set(invsigma, i, j, gsl_matrix_get(invsigma, i, j)*2.0*sqrt(strength[i])*sqrt(strength[j]));
+	
 	gsl_permutation_free(p);
 	gsl_matrix_free(mat);
 }
