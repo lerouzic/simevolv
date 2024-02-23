@@ -44,3 +44,7 @@ table.list.mean <- function(ll) {
 	rowMeans(arr, dims=2)
 }
 
+table.list.var <- function(ll) {
+	arr <- do.call(abind, c(ll, list(along=3)))
+	apply(arr, 1:2, var)
+}
